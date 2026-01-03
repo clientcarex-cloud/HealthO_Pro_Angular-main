@@ -1,0 +1,367 @@
+<div class="container-fluid py-2 px-3" style="min-height: 500px;">
+
+    <ng-container *ngIf="!showTerminal">
+
+        <!-- HEADING  -->
+        <div class="row mb-3 g-3 justify-content-between">
+            <div class="col-lg-6 col-12">
+                <!-- Laboratory Tests -->
+                <div class="row border-5 border-start border-primary rounded-2 ps-2">
+                    <div class="col-12">
+                        <span class="fw-medium fs-5">Print Templates</span>
+                    </div>
+                    <div class="col-12">
+                        <span class="text-wrap td-color">List of all Types of Templates</span>
+                    </div>
+                </div>
+            </div>
+            <!-- ADD NEW BUTTON FOR ADDING TESTS  -->
+            <div class="col-lg-6 col-12 d-flex justify-content-lg-end justify-content-start">
+                <app-addnewbutton buttonText="Add Template" (onAddNewClick)="openXL(addTemplate, '')"
+                    content="content"></app-addnewbutton>
+            </div>
+        </div>
+
+        <div class="row g-2 mb-3 justify-content-between">
+            <div class="col-lg-7 col-12">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <app-searchbox placeholder="Search Tests" [spellcheck]="false" [applyAutoFocus]="false"
+                            (searchTermChange)="searchQuery($event)"></app-searchbox>
+                    </div>
+
+                    <div class="col-4">
+                        <app-select selectBindLabel="name" [selectItems]="templateTypes"
+                            (onSelectionChanged)="selectType($event)" [removeMessage]="true" [labelText]="''"
+                            placeHolder="Select Type"
+                            [selectValue]="printType && printType!=='' ? printType : null"></app-select>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-12 d-flex justify-content-lg-end justify-content-start align-items-center">
+                <div class="row">
+                    <div class="col-4">
+                        <span class="fw-light">Showing</span>
+                    </div>
+                </div>
+                <div class="col-4 px-1">
+                    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans"
+                        style="width: auto" name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option [value]="all_count">All</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <span class="fw-light">Entries</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                <app-datatable>
+                    <ng-container class="tableheader">
+                        <th style="width: 20px">S.no</th>
+                        <th>Name & Last Updated</th>
+                        <th>Type</th>
+                        <th class="text-center">Is Default</th>
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <tr *ngFor="let test of templates;let i=index" class="text-black">
+                            <td class="fs-5">{{ (page_number * page_size) - page_size + i + 1 }}</td>
+                            <td (click)="getTemplateData(test)">
+                                <div class="d-flex flex-column">
+                                    <div class="text-black">
+                                        {{test?.name}}
+                                    </div>
+                                    <small class="td-color">
+                                        {{timeSrvc.decodeTimestamp(test?.last_updated)}}
+                                    </small>
+                                </div>
+                            </td>
+                            <td (click)="getTemplateData(test)">
+                                {{test?.print_template_type?.name}}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <app-checkbox classVal="form-check" [checkboxValue]="test?.is_default"
+                                        (onCheckboxValueChanged)="updateDefault(test, $event)" [showLabel]="false"
+                                        activeText="" inactiveText=""></app-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+
+        <div class="row g-3 justify-content-between align-items-center">
+            <div class="col-lg-6 col-12 font-DMSans">
+                <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number *
+                    page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }}
+                        Entries</span>
+            </div>
+
+            <div class="col-lg-6 col-12">
+                <div class="d-flex justify-content-end font-DMSans">
+                    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+                        (pageChange)="onPageChange($event)"></app-pagination>
+                </div>
+            </div>
+        </div>
+
+    </ng-container>
+
+    <ng-container *ngIf="showTerminal">
+
+        <!-- report templates page  -->
+        <div class="row g-2 mb-2">
+            <div class="col-lg-2 col-12 cursor-pointer" (click)="resetPage()">
+                <div class="row align-items-center ">
+                    <div class="col-2">
+                        <i class="bi bi-arrow-left fs-4"></i>
+                    </div>
+                    <div class="col-10 text-left">
+                        Go Back
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-10 col-12 d-flex gap-2 justify-content-end align-items-center">
+                <small class="text-end fs-6 td-color">
+                    {{selectedTemplate?.name}}
+                </small>
+
+                <span>
+                    <button class="btn btn-success shadow rounded-3"
+                        (click)="createNew? saveTemplateData() : UpdateTemplateData()">Save Template</button>
+                </span>
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-12" class="d-flex gap-1 overflow-hidden" [class.flex-wrap]="showAll">
+                <ng-container *ngFor="let tag of tags">
+                    <button *ngIf="tag.tag_display_name && tag.tag_display_name!==''"
+                        (click)="addTextAtCursor(tag.tag_name)"
+                        class="btn bg-soft-primary btn-sm rounded-pill border border text-nowrap">{{tag.tag_display_name}}</button>
+                </ng-container>
+            </div>
+
+            <!-- *ngIf="tags?.length > 6" -->
+            <div class="col-12 mt-2 text-primary">
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex gap-2  p-1 rounded-pill border border-black" role="group"
+                        aria-label="Basic example">
+
+                        <button type="button" class="btn rounded-pill d-flex align-items-center btn-sm"
+                            (click)="changeContent(1)" [ngClass]="{'bg-black text-white': showContent == 1}">
+                            Content
+                        </button>
+
+                        <button type="button" class="btn rounded-pill d-flex align-items-center btn-sm"
+                            (click)="changeContent(2)" [ngClass]="{'bg-black text-white': showContent == 2}">
+                            Header
+                        </button>
+
+                        <button type="button" class="btn rounded-pill d-flex align-items-center btn-sm"
+                            (click)="changeContent(3)" [ngClass]="{'bg-black text-white': showContent == 3}">
+                            Footer
+                        </button>
+
+                        <button type="button" class="btn rounded-pill d-flex align-items-center" *ngIf="false && selectedTemplate.print_template_type?.id == 18"
+                            (click)="changeContent(4)" [ngClass]="{'bg-black text-white': showContent == 4}">
+                            {{!showContent ? '' : ''}}Word
+                            <span *ngIf="showContent == 4"><i class="ri-edit-line fs-5 ps-2"></i></span>
+                        </button>
+                    </div>
+
+                    <button class="btn bg-transparent border-0 p-0" (click)="showAll = !showAll">Show {{ !showAll ? 'All (' + tags?.length + ')' : 'less'}}</button>
+                </div>
+
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-12">
+                <!-- <app-editor [htmlData]="templateTypeData?.data" (wordDataChange)="ReportInput($event)"></app-editor> -->
+                <ng-container *ngIf="showContent == 1">
+                    <ckeditor #ckeditor [data]="templateTypeData?.data" (change)="ReportInput($event)"
+                        name="ckeditor_text" editorUrl="https://cdn.ckeditor.com/4.14.0/full/ckeditor.js"
+                        [config]="ckEditorConfig"></ckeditor>
+                </ng-container>
+
+                <ng-container *ngIf="showContent == 2">
+                    <ckeditor #ckeditor [data]="templateTypeData?.header" (change)="ReportInput($event)"
+                        name="ckeditor_text" editorUrl="https://cdn.ckeditor.com/4.14.0/full/ckeditor.js"
+                        [config]="ckEditorConfig"></ckeditor>
+                </ng-container>
+
+                <ng-container *ngIf="showContent == 3">
+                    <ckeditor #ckeditor [data]="templateTypeData?.footer" (change)="ReportInput($event)"
+                        name="ckeditor_text" editorUrl="https://cdn.ckeditor.com/4.14.0/full/ckeditor.js"
+                        [config]="ckEditorConfig"></ckeditor>
+                </ng-container>
+
+                <ng-container *ngIf="showContent == 4">
+                    <app-devrich-printtemplates #devRich [blankDocumentWithHeader]="templateTypeData?.rtf_content"
+                        [showHeader]="true" (extractedContentChange)="saveRTF($event)"
+                        *ngIf="showContent == 4"></app-devrich-printtemplates>
+                </ng-container>
+
+
+
+            </div>
+        </div>
+
+    </ng-container>
+
+</div>
+
+
+
+<ng-template #addTemplate let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+        <span class="modal-title" id="modal-basic-title">Add Report Template</span>
+        <button type="button" class="btn-close" aria-label="Close"
+            (click)="submitted=false;modal.dismiss('Cross click');this.submitted=false;"></button>
+    </div>
+    <form [formGroup]="baseForm" (ngSubmit)="saveTemplate()">
+        <div class="modal-body">
+            <div class="container-full">
+                <div class="row g-2 ">
+
+                    <!-- report name name input  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <div class="col-12">Template Name <span class="text-danger">*</span></div>
+                            <div class="col-12">
+                                <!-- Name Input  -->
+                                <app-input [removeLabel]="true" placeHolder="Enter Template Name"
+                                    (onValueChanged)="formatString($event, 'name')" [formSubmitted]="submitted"
+                                    formControlName="name" [applyAutoFocus]="true"
+                                    classVal="form-control fw-light rounded-3"></app-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template_type  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <div class="col-12">Template Type<span class="text-danger">*</span></div>
+                            <div class="col-12">
+                                <div class="row align-items-center">
+                                    <div class="col-12">
+                                        <app-select [selectItems]="templateTypes" selectBindLabel="name"
+                                            [formSubmitted]="submitted" placeHolder="Select Template Type"
+                                            formControlName="print_template_type"></app-select>
+
+                                    </div>
+                                    <!-- <div class="col-1 p-0">
+                                    <button class="btn p-0" (click)="openXL(type, 'sm')"> 
+                                        <i class="bi bi-plus-circle fs-4"></i>
+                                    </button>
+                                </div> -->
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- is default  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <!-- <div class="col-12">Is Default</div> -->
+                            <div class="col-12 py-2 d-flex align-items-center">
+                                <app-checkbox formControlName="is_default" [formSubmitted]="submitted"
+                                    classVal="form-check" [showLabel]="false" activeText="Is Default"
+                                    inactiveText="Is Default"></app-checkbox>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-footer py-0 px-3 bg-light-blue border-top">
+            <button type="submit" class="btn btn-success btn-sm rounded-3">
+                Save Template<span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span>
+            </button>
+        </div>
+    </form>
+</ng-template>
+
+
+<ng-template #type let-modal>
+    <div class="modal-header py-1 px-3 bg-dark">
+        <span class="modal-title text-white" id="modal-basic-title">Add Report Template</span>
+        <button type="button" class="text-white btn bg-transparent border-0" aria-label="Close"
+            (click)="submitted=false;modal.dismiss('Cross click');this.submitted=false;">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+    <div class="modal-body bg-light-blue">
+        <div class="container-full ">
+            <div class="row g-2 ">
+                <!-- report name name input  -->
+                <div class="col-12 mb-2">
+                    <div class="row">
+                        <div class="col-12">Report Name <span class="text-danger">*</span></div>
+                        <div class="col-12">
+                            <!-- Name Input  -->
+                            <app-input [removeLabel]="true" placeHolder="Enter Type Name"
+                                (onValueChanged)="formatString($event, 'type')" [formSubmitted]="submitted"
+                                [applyAutoFocus]="true" [inputValue]="reportType"
+                                classVal="form-control fw-light rounded-3"></app-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer py-0 px-3 bg-light-blue">
+        <button type="submit" class="btn btn-success btn-sm rounded-3"
+            (click)="saveType(); modal.dismiss('Cross click')">
+            Save Type<span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span>
+        </button>
+    </div>
+
+</ng-template>
+
+
+
+<!-- close modal  -->
+<ng-template #warningModal let-modal>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 fs-5">
+                    Are you sure you want to exit without saving ?
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer py-1 px-3  d-flex justify-content-end">
+        <button class="btn btn-danger rounded-3" (click)="submitted=false;modal.dismiss('Cross click')">
+            No, Stay
+        </button>
+
+        <button class="btn btn-success rounded-3" (click)="changesMade=false;resetPage();modal.dismiss('Cross click')">
+            Yes, Exit
+        </button>
+    </div>
+</ng-template>

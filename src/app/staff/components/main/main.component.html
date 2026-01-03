@@ -1,0 +1,63 @@
+<div class="container-full font-Readex">
+
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="tabsNavigation d-flex">
+                <ul ngbNav #nav="ngbNav" class="nav nav-section-custom mb-2 font-inter" [activeId]="1">
+                  
+                    <li [ngbNavItem]="1">
+                        <a ngbNavLink>Employees</a>
+                        <ng-template ngbNavContent>
+                            <app-employees></app-employees>
+                        </ng-template>
+                    </li>
+                    <li [ngbNavItem]="2">
+                        <a ngbNavLink>Attendance</a>
+                        <ng-template ngbNavContent>
+                            <app-overview></app-overview>
+                        </ng-template>
+                    </li>
+
+                    <li [ngbNavItem]="3">
+                        <a ngbNavLink>Payroll</a>
+                        <ng-template ngbNavContent>
+                            <!-- <div class="container-full">
+                                <div class="row">
+                                    <div class="col-12 text-center">
+                                        <div style="height: 50vh" class="d-flex justify-content-center align-items-center fs-4 logoColor fw-light">
+                                            <span>Feature Under Development</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <app-payroll staffQuery=""></app-payroll>
+                        </ng-template>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-12 col-lg-4 col-sm-12">
+            <div
+                class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+                <button routerLinkActive="active" routerLink="/staff/add" class="btn border rounded-3 bg-white">Add
+                    Employee</button>
+                <app-info-btn></app-info-btn>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+
+
+</div>

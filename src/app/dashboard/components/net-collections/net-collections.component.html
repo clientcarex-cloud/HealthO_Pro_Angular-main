@@ -1,0 +1,91 @@
+<!-- <p>net-collections works!</p> -->
+<div class="card card-animate  border overflow-hidden">
+    <div
+        class="card-header border-b-0 d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <div class="d-flex gap-2 align-items-center">
+            <span class="ri-wallet-3-line fs-4"></span>
+            <span class="card-title mb-0 font-monsterract fw-medium text-dark">NET
+                COLLECTIONS</span>
+        </div>
+    </div>
+    <div class="card-body">
+        <app-datatable
+            tableHeaderClass="bg-transparent text-dark fw-medium bg-white font-monsterract">
+            <ng-container class="tableheader">
+
+                <td>Collections</td>
+                <td class="py-2 text-end">Cash</td>
+                <td class="text-end">UPI</td>
+                <td class="text-end">Cheque</td>
+                <td class="text-end">Card</td>
+                <td class="text-end">Total</td>
+
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr>
+                    <td class="fs-5 font-monsterract py-2 fw-medium text-muted">New Patient</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.new_collections.Cash)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.new_collections.UPI)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.new_collections.Cheque)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.new_collections.Card)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.new_collections.total)}}</td>
+                </tr>
+                <tr>
+                    <td class="fs-5 font-monsterract py-2 fw-medium text-muted">Previous Due</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.previous_due_collections.Cash)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.previous_due_collections.UPI)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.previous_due_collections.Cheque)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.previous_due_collections.Card)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.previous_due_collections.total)}}</td>
+                </tr>
+                <tr>
+                    <td class="fs-5 font-monsterract py-2 fw-medium text-muted">Refund</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.refund_collections.Cash) != "0" ? "-" +
+                        formatCurrency(collections.refund_collections.Cash) : 0}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.refund_collections.UPI) != "0" ? "-" +
+                        formatCurrency(collections.refund_collections.UPI) : 0}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.refund_collections.Cheque) != "0" ? "-" +
+                        formatCurrency(collections.refund_collections.Cheque) : 0}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.refund_collections.Card) != "0" ? "-" +
+                        formatCurrency(collections.refund_collections.Card) : 0}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.refund_collections.total) != "0" ? "-" +
+                        formatCurrency(collections.refund_collections.total) : 0}}</td>
+                </tr>
+                <tr class="bg-light-blue">
+                    <td class="fs-5 font-monsterract py-2 fw-medium text-black">Subtotals</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.subtotals.Cash)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.subtotals.UPI)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.subtotals.Cheque)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.subtotals.Card)}}</td>
+                    <td class="fs-5 font-monsterract fw-bold text-end">
+                        {{formatCurrency(collections.subtotals.total)}}</td>
+                </tr>
+
+            </ng-container>
+        </app-datatable>
+    </div>
+
+    <!-- <div class="card-body" *ngIf="collections_loading">
+    <app-load-animation></app-load-animation>
+</div> -->
+
+</div>

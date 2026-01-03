@@ -1,0 +1,41 @@
+.input-box {
+  position: relative;
+}
+
+.input-box-icon {
+  font-size: 14px;
+  position: absolute;
+  top: 50%; /* Center vertically within the input-box */
+  right: 10px; /* Adjust as needed */
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  opacity: 0.5;
+  cursor: pointer;
+  transform: translateY(-50%); /* Center vertically within the input-box */
+}
+
+.input-box-icon:hover {
+  opacity: 1;
+}
+
+.input-box-icon:before,
+.input-box-icon:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: " ";
+  height: 12px;
+  width: 2px;
+  background-color: gray;
+}
+
+.input-box-icon:before {
+  transform: rotate(45deg);
+}
+
+.input-box-icon:after {
+  transform: rotate(-45deg);
+}/*# sourceMappingURL=app-input.component.css.map */

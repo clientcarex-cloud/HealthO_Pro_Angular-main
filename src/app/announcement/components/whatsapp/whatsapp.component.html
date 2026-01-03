@@ -1,0 +1,106 @@
+<!-- WHATSAPP COMPONENT  -->
+<div class="container-full">
+
+    <div class="row mb-2">
+        <span class="font-Readex fw-medium">WhatsApp Messages</span>
+    </div>
+
+    <div class="row mb-2">
+        <app-display-data [data]="dataWhatsApp"></app-display-data>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+            <div class="row">
+                <div class="col-11">
+                    <app-select labelText="Select Campaign" selectValue="Greetings" placeHolder="Select Campaign"  [selectItems]="campaign" ></app-select>
+                </div>
+                <div class="col-1 d-flex align-items-end justify-content-start">
+                    <button class="btn btn-transparent fs-4 p-0">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+            <app-select labelText="Send To" placeHolder="Select" selectedValue="Ref. Doctors & Labs" ></app-select>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+            <div class="font-Readex d-flex flex-column">
+                <div>Message</div>
+                <div class="border rounded-3 p-2">
+                    <div>
+                        <span class="bg-status p-2 rounded">Images_.png
+                            <span>
+                                <button class="btn btn-transparent">x</button>
+                            </span>
+                        </span>
+                    </div>
+                    <app-textarea name="textarea1" labelText="" [LabelShow]="false" [Value]="textareaValue"
+                        classVal="form-control p-2 border-0"></app-textarea>
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                    <div>
+                        <button class="btn btn-transparent d-flex align-items-center gap-2">
+                            <span><i class="bi bi-plus-square-fill"></i></span>
+                            <span class="text-nowrap">Insert Variable</span>
+                        </button>
+                    </div>
+                    <div class="d-flex flex-row gap-1">
+                        <span>
+                            <button class="btn btn-transparent fs-5 p-1"><i class="bi bi-paperclip"></i></button>
+                        </span>
+                        <span>
+                            <button class="btn btn-transparent fs-5 p-1"><i class="bi bi-emoji-laughing-fill"></i></button>
+                        </span>
+                        <span>
+                            <button class="btn btn-transparent fs-5 p-1"><i class="bi bi-type-bold"></i></button>
+                        </span>
+                        <span>
+                            <button class="btn btn-transparent fs-5 p-1"><i class="bi bi-type-italic"></i></button>
+                        </span>
+                        <span>
+                            <button class="btn btn-transparent fs-5 p-1"><i class="bi bi-type-strikethrough"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-4 col-md-12 col-md-12">
+            <div class="font-Readex d-flex flex-column">
+                <div>
+                    Preview
+                </div>
+                <div class="border-5 border p-3">
+                    <div style="height:9vh">
+    
+                    </div>
+                    <div>
+                        {{textareaValue}}
+                    </div>
+                    <div class="text-gray d-flex align-items-end justify-content-end text-end fs-6 font-IBMPlex">
+                        <span>11.14 PM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-2">
+        <div class="font-Readex text-gray">
+            Count: {{count}} & Characters {{charac}}/160
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-2">
+            <button class="btn btn-success rounded-3 btn-lg">
+                Send<i class="bi bi-send-fill ps-2"></i>
+            </button>
+        </div>
+    </div>
+</div>

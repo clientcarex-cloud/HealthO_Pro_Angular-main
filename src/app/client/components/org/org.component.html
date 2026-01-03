@@ -1,0 +1,549 @@
+<div class="d-flex flex-sm-row flex-lg-nowrap flex-xl-nowrap flex-wrap gap-3 align-items-center pe-5">
+
+    <div class="d-flex align-item-lg-center flex-sm-row flex-column align-item-start justify-content-start gap-3" style="align-items: center;">
+        
+        <span class="d-sm-flex d-none">
+            <button class="border-0 bg-transparent p-0" routerLink="/admin/client">
+                <i class="ri-arrow-left-line fs-4 td-color"></i>
+            </button>
+        </span>
+
+        <div class="d-flex flex-lg-nowrap flex-xl-nowrap flex-wrap gap-2 align-items-center ">
+            <div
+                [class]="'d-flex align-items-center gap-1 rounded-pill ps-1 pe-2 py-1 ' + returnOrgClass()">
+                <span>
+                    <img class="rounded-circle border" style="width:27px; height: 27px; object-fit: contain;"
+                        [src]="organization?.b_logo && organization?.b_logo != '' ? organization?.b_logo : '/assets/images/no-profile-picture-icon.svg'">
+                </span>
+                <span class="fs-5 text-nowrap fw-medium">
+                    {{organization?.organization_name ? capitalSrvc.capitalizeReturn(organization?.organization_name) : ''}}
+                </span>
+            </div>
+
+            <div class="d-none d-md-flex d-lg-flex d-xl-flex fs-4 fw-semibold">|</div>
+
+            <app-patient-details  class="d-none d-md-flex d-lg-flex d-xl-flex" 
+            [name]="organization?.owner || ''" [time]="'+91' + organization?.phone_number"></app-patient-details>
+        
+            <div class="d-none d-md-flex d-lg-flex d-xl-flex fs-4 fw-semibold">|</div>
+
+            <app-patient-details *ngIf="organization?.last_activity_at" [time]="'Last Activity'"
+            [name]="timeSrvc.howManyDaysBack(organization?.last_activity_at) != 0 ? timeSrvc.howManyDaysBack(organization?.last_activity_at) + ' days back' : timeSrvc.decodeTimestamp(organization?.last_activity_at)"></app-patient-details>
+            <span *ngIf="!organization?.last_activity_at" class="text-danger">No Activity</span>
+        </div>
+    </div>
+
+    <div class="d-sm-flex d-none fs-4 fw-semibold" *ngIf="organization?.subscription_status">|</div>
+
+    <div class="fs-4"  *ngIf="organization?.subscription_status">
+        <button (click)="lockAccount()" [ngbTooltip]="organization?.subscription_status?.is_subscription_active ? 'Click to lock the account, that shows blurry screen with message `Account Expired Please Contact Admin.`' : 'Remove Blurry Screen.'"
+        class="btn d-flex align-items-center rounded-pill" 
+        [ngClass]="organization?.subscription_status?.is_subscription_active ? 'border-success' : 'border-danger text-danger'">
+    
+    <i [ngClass]="organization?.subscription_status?.is_subscription_active ? 'ri-lock-unlock-line' : 'ri-lock-line'"></i>
+    
+    <span class="ms-2">
+        {{ organization?.subscription_status?.is_subscription_active ? 'Lock Account' : 'Locked' }}
+    </span>
+</button>
+
+        <!-- <app-checkbox [showLabel]="false" activeText="Unlocked" inactiveText="Locked" classVal="form-check form-check-lg form-switch d-flex flex-row align-items-center"
+            [checkboxValue]="organization?.subscription_status?.is_subscription_active" (onCheckboxValueChanged)="lockAccount()"
+            [labelClass]="!organization?.subscription_status?.is_subscription_active ? 'text-danger m-0 px-1' : 'text-black m-0 px-1'"></app-checkbox> -->
+    </div>
+
+    <div class="d-sm-flex d-none fs-4 fw-semibold">|</div>
+
+    <div class="fs-5">
+        <app-checkbox ngbTooltip="Toggle Login Status" [showLabel]="false" activeText="Login Active" inactiveText="Login Disabled" classVal="form-check form-check-lg form-switch d-flex flex-row align-items-center"
+            [checkboxValue]="!organization?.is_account_disabled" (onCheckboxValueChanged)="toggleOrganization($event)"
+            [labelClass]="organization?.is_account_disabled ? 'text-danger m-0 px-1' : 'text-black m-0 px-1'"></app-checkbox>
+    </div>
+</div>
+
+<div class="d-flex" *ngIf="false">
+    <!--  [time]="timeSrvc.dateAsString(organization?.last_activity_at, true, true)" -->
+    <app-patient-details *ngIf="organization?.last_activity_at"
+    [name]="timeSrvc.howManyDaysBack(organization?.last_activity_at) != 0 ? timeSrvc.howManyDaysBack(organization?.last_activity_at) + ' days back' : timeSrvc.decodeTimestamp(organization?.last_activity_at)"></app-patient-details>
+    <span *ngIf="!organization?.last_activity_at" class="text-danger">No Activity</span>
+</div>
+
+<div class="container-full pt-2">
+    <div class="row">
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs-custom">
+                <li ngbNavItem (click)="getData();">
+                    <a ngbNavLink class="fs-5">Messaging</a>
+                    <ng-template ngbNavContent>
+                        <div class="container-full p-2">
+                            <ng-container *ngTemplateOutlet="messaging"></ng-container>
+                        </div>
+                    </ng-template>
+                </li>
+                <li ngbNavItem >
+                    <a ngbNavLink (click)="getMenus();" class="fs-5">Modules</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="modules"></ng-container>
+                    </ng-template>
+                </li>
+                <li ngbNavItem (click)="getCurrentPlans();">
+                    <a ngbNavLink class="fs-5">Subscription Plan</a>
+                    <ng-template ngbNavContent>
+                        <div class="container-full p-2">
+                            <ng-container *ngTemplateOutlet="subscription"></ng-container>
+                        </div>
+                    </ng-template>
+                </li>
+                <li ngbNavItem>
+                    <a ngbNavLink class="fs-5">Profile</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngIf="organization">
+                            <app-setup [organization]="organization"></app-setup>
+                        </ng-container>
+                    </ng-template>
+                </li>
+            </ul>
+
+            <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<ng-template #messaging>
+
+    
+    <div class="row mb-1" *ngIf="organization?.business_settings?.last_updated_by">
+        <div class="col-12">
+            <div class="d-flex gap-1 flex-nowrap text-nowrap">
+                <span>Last Updated by</span> <b>{{organization?.business_settings?.last_updated_by?.last_updated_by}}</b> <span>at</span> <b>{{timeSrvc.dateAsString(organization?.business_settings?.last_updated)}}</b>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row gap-2 flex-row flex-wrap justify-content-evenly flex-sm-nowrap">
+        <ng-container *ngTemplateOutlet="whatsApp"></ng-container>
+        <ng-container *ngTemplateOutlet="sms"></ng-container>
+    </div>
+</ng-template>
+
+<ng-template #whatsApp>
+    <div class="col-lg-6 col-xl-6 col-sm-12 col-12 bg-white border rounded-3 p-3">
+
+        <div class="row mb-1">
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <div class="fw-medium d-flex align-items-center justify-content-between gap-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="d-flex align-items-center gap-2">
+                                    WhatsApp Messaging
+                                    <i class="ri-whatsapp-line text-success fs-4 p-0" style="line-height: 10px"></i>
+                                </div>
+                                <div class="td-color">
+                                    Enables sending reports, bills, and lab information via WhatsApp.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex pb-2 flex-row align-items-center">
+                        <app-checkbox labelText="" inactiveText="" activeText="" [showLabel]="false"
+                            classVal="form-switch form-switch-lg"
+                            [checkboxValue]="organization?.business_settings?.is_whatsapp_active"
+                            (onCheckboxValueChanged)="toggleMessagingService($event, 'is_whatsapp_active')"></app-checkbox>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row mb-3" [style]="!organization?.business_settings?.is_whatsapp_active ? 'color: #b5b5b5' : '' ">
+            <div class="col-12">
+                <app-display-data [data]="dataWhatsApp"></app-display-data>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 d-flex flex-row gap-2">
+                <button (click)="openCreditsModel(addCredits, 2)" class="btn btn-primary rounded-3 shadow">Add Credits</button>
+
+                <button (click)="title = 'Update WhatsApp Secret Key' ; openModal(updateWAToken, { size : 'lg' })" 
+                class="btn btn-dark rounded-3 shadow">Secret Key</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 fw-medium mb-2">
+                Purchase History
+            </div>
+
+            <div class="col-12">
+                <app-datatable tableClass="table table-striped">
+                    <ng-container class="tableheader">
+                        <th>Date & Time</th>
+                        <th>Credits Added</th>
+                        <th>Remarks</th>
+                    </ng-container>
+                    <ng-container class="tablebody" *ngFor="let item of whatsAppPurchaseHistory">
+                        <tr (mouseenter)="popover3.open()" (mouseleave)="popover3.close()">
+                            <td class="fs-6 fw-semibold">{{timeSrvc.dateAsString(item.added_on, true, true)}} </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fs-5 fw-semibold" style="line-height: 13px">{{item.new_credits}}</span>
+                                    <small *ngIf="item?.last_updated_by?.full_name" class="td-color">{{item?.last_updated_by?.full_name}}</small>
+                                </div>
+                                
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column text-black" [ngbPopover]="item.remarks" [openDelay]="300"
+                                [closeDelay]="0" triggers="mouseenter:mouseleave" #popover3="ngbPopover">
+                                    <small class="text-truncate fw-medium td-color" style="max-width: 150px;">
+                                        {{item.remarks}}
+                                    </small>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #sms>
+
+    <div class="col-lg-6 col-xl-6 col-sm-12 col-12 bg-white border rounded-3 p-3">
+        <div class="row mb-1">
+            <div class="col-12">
+                <div class="d-flex flex-column">
+                    <div class="fw-medium d-flex align-items-center justify-content-between gap-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="d-flex align-items-center gap-2">
+                                    SMS Messaging
+                                    <i class="ri-message-2-line text-primary fs-4 p-0" style="line-height: 10px"></i>
+                                </div>
+                                <div class="td-color">
+                                    Enables sending reports, bills, and lab information via SMS.
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <!-- Optional button here -->
+                        </div>
+                    </div>
+
+                    <div class="d-flex pb-2 flex-row align-items-center">
+                        <app-checkbox labelText="" inactiveText="" activeText="" [showLabel]="false"
+                            classVal="form-switch form-switch-lg"
+                            [checkboxValue]="organization?.business_settings?.is_sms_active"
+                            (onCheckboxValueChanged)="toggleMessagingService($event, 'is_sms_active')"></app-checkbox>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3" [style]="!organization?.business_settings?.is_sms_active ? 'color: #b5b5b5' : '' ">
+            <div class="col-12">
+                <app-display-data [data]="dataSMS"></app-display-data>
+            </div>
+        </div>
+
+        <div class="row mb-3"  [style]="!organization?.business_settings?.is_sms_active ? 'color: #b5b5b5' : '' ">
+            <div class="col-12">
+                <button (click)="openCreditsModel(addCredits, 1)" class="btn btn-primary rounded-3 shadow">Add Credits</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 fw-medium mb-2">
+                Purchase History
+            </div>
+
+            <div class="col-12">
+                <app-datatable  tableClass="table table-striped">
+                    <ng-container class="tableheader">
+                        <th>Date & Time</th>
+                        <th>Credits Added</th>
+                        <th>Remarks</th>
+                    </ng-container>
+                    <ng-container class="tablebody" *ngFor="let item of SMSPurchaseHistory">
+                        <tr (mouseenter)="popover4.open()" (mouseleave)="popover4.close()">
+                            <td class="fs-6 fw-semibold">{{timeSrvc.dateAsString(item.added_on, true, true)}} </td>
+                            <td>
+                                <!-- {{item.new_credits}} -->
+                                <div class="d-flex flex-column">
+                                    <span class="fs-5 fw-semibold" style="line-height: 13px">{{item.new_credits}}</span>
+                                    <small *ngIf="item?.last_updated_by?.full_name" class="td-color">{{item?.last_updated_by?.full_name}}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column td-color" [ngbPopover]="item.remarks" [openDelay]="300"
+                                [closeDelay]="0" #popover4="ngbPopover" triggers="mouseenter:mouseleave">
+                                    <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                                        {{item.remarks}}
+                                    </small>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+
+
+    </div>
+</ng-template>
+
+
+<ng-template let-modal #addCredits>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">{{title}}</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <form [formGroup]="baseForm">
+            <div class="container-full">
+
+                <div class="row mb-3">
+                    <div class="col-12 text-end">
+                        Current {{baseForm.get('service_type')?.value == 1 ? 'SMS' : 'WhatsApp'}} Balance : <span class="fw-semibold fs-5">{{baseForm.get('service_type')?.value == 1 ? dataSMS[0].count : dataWhatsApp[0].count }}</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-8 fs-5">
+                        <app-input labelText="Credits" [imp]="true" formControlName="new_credits" [inputLength]="5"
+                        [classVal]="'form-control fw-bold rounded-3 fs-4'" placeHolder="" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                        ></app-input>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12 fs-5">
+                        <app-textarea-input labelText="Remarks" formControlName="remarks" [defaultRows]="3"
+                        classVal="form-control p-2 rounded-3" placeHolder="" ></app-textarea-input>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <button (click)="saveCredits()"
+                        class="btn btn-success rounded-3 px-3 fs-5 shadow">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</ng-template>
+
+<ng-template let-modal #updateWAToken>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">{{title}}</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body modal-bg">
+        <app-update-token [org]="organization"></app-update-token>
+    </div>
+</ng-template>
+
+
+<ng-template #modules>
+    <div class="container-full ">
+
+
+        <div class="row">
+            <div class="col-6 bg-white rounded-3 rounded-3 px-3 py-2 border">
+
+                <div class="d-flex gap-1">
+                    <span>Last Updated by</span> <b>{{accessed_menus?.last_updated_by?.last_updated_by}}</b> <span>at</span> <b>{{timeSrvc.dateAsString(accessed_menus?.last_updated)}}</b>
+                </div>
+
+                <table class="table-subscribe">
+                    <thead class="fw-light">
+                        <tr>
+                            <th>Module</th>
+                            <th class="text-center">
+                                <!-- Is Active -->
+                                <div class="d-flex justify-content-center">
+                                    <div>Is Active</div>
+                                    <!-- <div>
+                                        <app-checkbox [showLabel]="false" activeText="" inactiveText="" (onCheckboxValueChanged)="toggleMenuONOFF($event, null, true)"
+                                    [checkboxValue]="accessed_menus?.modules?.length == menus.length"></app-checkbox>
+                                    </div> -->
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let item of menus">
+                        <tr class="bg-white border shadow">
+                            <td class="py-1 fs-5">
+                                <div class="border-end">
+                                    {{item.label}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center fs-4">
+                                    <app-checkbox [showLabel]="false" activeText="" inactiveText="" (onCheckboxValueChanged)="toggleMenuONOFF($event, item.id)"
+                                    [checkboxValue]="accessed_menus?.modules?.includes(item.id)"></app-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #subscription>
+    <div class="container-full bg-white p-3 border rounded-3">
+
+        <div class="row mb-3" *ngIf="currentPlans.length != 0">
+            <div class="col-8 bg-soft-primary py-3 ps-3 rounded-3 shadow position-relative">
+                <!-- First col-6 content -->
+                <div class="row">
+                    <div class="col-12 fs-5 fw-light logoColor">
+                        Current plan is
+                    </div>
+                    <div class="col-12 fs-4 logoColor mb-2">
+                        {{currentPlans && currentPlans[0]?.plan_name}}
+                    </div>
+
+                    <div class="col-12 fs-5 logoColor">
+                       Plans Ends - <b class="text-danger">{{currentPlans && timeSrvc.dateAsString(currentPlans[0]?.plan_end_date)}}</b>
+                    </div>
+
+                    <div class="col-12 fs-5 logoColor">
+                        Account Locks - <b class="text-danger">{{currentPlans && timeSrvc.dateAsString(currentPlans[0]?.subscription_status?.account_locks_on)}}</b>
+                     </div>
+
+                    <div class="col-12 fs-5 logoColor">
+                        Purchased - <b>{{currentPlans && timeSrvc.dateAsString(currentPlans[0]?.added_on)}}</b>
+                     </div>
+
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <button (click)="openModal(AddSubscription, { size: '' }); getPlans() ; selectedPlan = null"
+                class="btn btn-primary fs-5 px-3 rounded-3 shadow">Add Plan</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 fw-semibold">
+                {{organization.organization_name}}`s All Plans
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <table class="table-subscribe">
+                    <thead class="fw-light">
+                        <tr>
+                            <th>Name & Added by</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <!-- <th>Account Locks On</th> -->
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let item of currentPlans">
+                        <tr class="bg-white border shadow">
+                            <td class="py-1">
+                                <div class="border-end">
+                                    <div class="d-flex flex-column">
+                                        <span class=" fs-5 fw-medium" style="line-height: 1">{{item.plan_name}}</span>
+                                        <span class="td-color" *ngIf="item?.created_by?.last_updated_by">{{'By ' + item?.created_by?.last_updated_by}}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="border-end fs-5">{{item.plan_start_date ? timeSrvc.dateAsString(item.plan_start_date, true, true) : ''}}</div>
+                            </td>
+                            <td>
+                                <div class="border-end text-danger fs-5">{{item.plan_end_date ? timeSrvc.dateAsString(item.plan_end_date, true, true) : ''}}</div>
+                            </td>
+                            <!-- <td>
+                                <div class="border-end text-danger">{{item.subscription_status?.account_locks_on ? timeSrvc.dateAsString(item.subscription_status?.account_locks_on, true, true) : ''}}</div>
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #AddSubscription let-modal>
+    <div class="modal-header py-2 px-3 bg-white d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">
+            <!-- Add Plan -->
+        </span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+
+    <div class="container-full p-3">
+        <div class="row mb-5">
+            <div class="col-12 fs-5">
+                <app-select labelText="Select Plan" [imp]="true" [selectItems]="sub_plans" (onSelectionChanged)="planSelected($event)"
+                [selectBindLabel]="'name'" placeHolder="" classVal="fw-semibold ng-select-container border-0 rounded-3"></app-select>
+            </div>
+
+            <div class="col-lg-4 col-6 fs-5">
+                <app-datepicker datePickerFormat="Y-m-d" [setMax]="false" [setMin]="false" labelText="Start Date" placeHolder="Select Date" (dateValueChange)="planDateSelected($event)"></app-datepicker>
+            </div>
+        </div>
+
+        <div class="row mb-3" *ngIf="selectedPlan">
+            <div class="col-12 d-flex align-items-center mb-2">
+                Plan Details <i class="ri-information-line"></i>
+            </div>
+            <div class="col-12">
+                <div class="card mb-3 border">
+                    <div class="card-body">
+                        <h5 class="card-title fs-5 fw-semibold">{{ selectedPlan?.name }}</h5>
+                        <p class="card-text fs-5 fw-semibold">₹ {{ selectedPlan?.plan_price }}</p>
+                        <p class="card-text fs-5 fw-semibold">
+                            Validity: {{ selectedPlan?.plan_validity_in_days }} days & 
+                            {{ selectedPlan?.grace_period }} grace period.
+                        </p>
+                        <p class="card-text">Subscription Type: {{ selectedPlan?.subscription_type?.name }}</p>
+                        <!-- class="badge bg-info" -->
+                        <span *ngIf="selectedPlan?.subscription_type?.id == 2">
+                            {{ selectedPlan?.calculation_type?.name }}
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end">
+                <button (click)="savePlan()"
+                class="btn btn-success fs-5 px-3">Save</button>
+            </div>
+        </div>
+    </div>
+</ng-template>

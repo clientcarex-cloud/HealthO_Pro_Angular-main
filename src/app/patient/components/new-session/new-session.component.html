@@ -1,0 +1,428 @@
+<!-- ADD PATIENTS COMPONENT  -->
+<div class="container-full p-0  overflow-hidden">
+
+    <form [formGroup]="baseForm">
+
+
+        <div class="row mb-2 d-lg-none d-md-none d-flex align-items-center">
+            <div class="col-12">
+                Add tests
+            </div>
+            <div class="col-12">
+                <div>
+
+                    <button #otherElement style="opacity: 0;">Focus Out Element</button>
+                    <ng-autocomplete historyHeading="" [isLoading]="searchLoading" [historyListMaxNumber]="0"
+                        [data]="searchData" [searchKeyword]="'name'" placeholder="Add Lab Tests / Packages"
+                        (inputChanged)="getSearches($event)" (selected)="onItemSelected($event); auto_complete_mobile.clear()" [minQueryLength]="2"
+                        (keydown.enter)="selectFirstOption($event); auto_complete_mobile.clear()" [itemTemplate]="itemTemplate"
+                        [notFoundTemplate]="notFoundTemplate" #auto_complete_mobile>
+                    </ng-autocomplete>
+                </div>
+            </div>
+        </div>
+
+        <!-- TESTS TABLE  -->
+
+        <div class="row mb-2  rounded-3 p-0 g-0">
+            <div class="border border-bottom-0 rounded-top bg-white font-Readex" style="min-height:225px; ">
+                <table class="table table-hover bg-white rounded-3">
+                    <thead class="bg-soft-primary text-muted">
+                        <tr class=" fw-light">
+                            <th class="sort1 text-nowrap fw-medium" data-sort="sno" style='width:20px;'>S.no</th>
+                            <th class="sort1 text-nowrap fw-medium fullWidthColumn" data-sort="testName">Test Name</th>
+                            <td></td>
+                            <th class="sort1 text-nowrap fw-medium ps-2" data-sort="status">Status</th>
+                            <th class="sort1 text-nowrap fw-medium text-end" data-sort="total">Total (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let test of selectedTests; let i = index">
+                        <tr class=" td-color">
+                            <td class="fs-5 text-black text-nowrap">{{ i + 1 }}.</td>
+                            <td>
+                                <div class="d-flex flex-row align-items-center gap-3">
+                                    <div class="d-flex flex-column gap-0">
+                                        <div class="d-flex gap-2 align-items-center">
+
+                                            <span class="fw-medium text-nowrap fs-lg-5 fs-6 text-black">
+                                                {{removeDigitsAfterPlus(test.name) }}
+                                            </span>
+                                            
+                                            <small *ngIf="test.sourcing_lab" >
+                                                <small 
+                                                    class="bg-dark fw-light d-flex align-items-center text-white rounded-3 px-1">
+                                                    {{test?.sourcing_lab?.partner?.organization_name || test?.sourcing_lab?.organization_name}}
+                                                </small>
+                                            </small>
+
+                                        </div>
+                                        <small>{{ test.date }}</small>
+                                    </div>
+                                    <div class="di cursor-pointer" (click)="toggleAccordionnn(test.id + 'pkg')"
+                                        *ngIf="test.package">
+                                        <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === test.id + 'pkg'}"
+                                            class="fas fa-chevron-down text-black"></i>
+                                    </div>
+                                </div>
+
+                            </td>
+                            <td class="text-danger text-center fs-4">
+                                <app-deletebutton btnClassVal="bg-transparent fs-6 border-0" placement="bottom"
+                                    ngbTooltip="Remove Test" deleteIconClass="bi bi-x-lg text-danger"
+                                    (click)="deleteTest(i, test)" *ngIf="test.canRemove"></app-deletebutton>
+                            </td>
+                            <td>
+                                <select *ngIf="!test.package"
+                                    class="form-select-control border-light-blue px-2 py-1 rounded"
+                                    (change)="applyStatus(i, $event)">
+                                    <ng-container *ngFor="let item of status">
+                                        <option [selected]="item.id == 1" [value]="item.id">{{ item.name }}</option>
+                                    </ng-container>
+                                </select>
+                            </td>
+                            <td class="text-end">{{ test.total }}</td>
+                        </tr>
+
+                        <!-- Place the package test rows inside the outer ng-container loop -->
+                        <tr *ngIf="test.package  && activeId === test.id + 'pkg'" style="background-color: aliceblue;">
+                            <td colspan="5" class="bg-muted py-1">
+                                <div aria-labelledby="tableDropdown"
+                                    [ngClass]="{'active': activeId === test.id + 'pkg'}"
+                                    class="testsTable  bg-white border border-black mx-5 px-5 rounded-3">
+                                    <table class="table">
+
+                                        <tbody>
+                                            <tr *ngFor="let item of test.package_tests; let i = index">
+                                                <!-- <td>{{ i + 1 }}</td> -->
+                                                <td class="text-nowrap fw-medium py-1">
+                                                    <!-- {{ item.name }} -->
+                                                    <div class="d-flex gap-2 align-items-center">
+
+                                                        <span class="fw-medium text-nowrap fs-lg-5 fs-6 text-black">
+                                                            {{ item.name }}
+                                                        </span>
+                                                        
+                                                        <small *ngIf="item.sourcing_lab" >
+                                                            <small 
+                                                                class="bg-dark fw-light d-flex align-items-center text-white rounded-3 px-1">
+                                                                {{b_id && item?.sourcing_lab?.initiator == b_id ? '' : 'From '}}{{item?.sourcing_lab?.partner?.organization_name}}
+                                                            </small>
+                                                        </small>
+            
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div
+                class="px-2 py-1 d-flex justify-content-between align-items-center font-Readex bg-white border rounded-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="ng-autocomplete d-lg-flex d-md-flex d-none">
+                        <ng-template #itemTemplate let-item>
+
+                            <a class="py-1 px-2 d-flex justify-content-between align-items-center border-bottom">
+
+                                <span class="d-flex flex-column">
+                                    
+                                    <span *ngIf="!item?.lab_tests" [innerHTML]="removeDigitsAfterPlus(item.name)"
+                                    class="fw-normal fs-6"></span>
+
+                                    <span *ngIf="item?.lab_tests" [innerHTML]="item.name" class="fw-normal fs-6"></span>
+                                    
+                                    <small *ngIf="!item?.lab_tests && item?.sourcing_lab && (item?.sourcing_lab?.partner?.organization_name || item?.sourcing_lab?.organization_name)">
+                                        <small class="item-type text-white  px-2 py-0 me-2 rounded bg-dark"
+                                        [innerHTML]="item?.sourcing_lab?.partner?.organization_name || item?.sourcing_lab?.organization_name"
+                                       ></small>
+
+                                       <!-- [innerHTML]="item?.sourcing_lab?.initiator == b_id ? 'Process by ' + item?.sourcing_lab?.partner?.organization_name : 'From ' + item?.sourcing_lab?.partner?.organization_name " -->
+                                    </small>
+                                
+                                </span>
+
+
+                                <small class="d-flex justify-content-end align-items-center">
+
+                                    <small *ngIf="!item?.lab_tests && item.short_code && item.short_code!==''"
+                                        class="item-type text-black  px-2 py-0 me-2 rounded bg-soft-warning"
+                                        [innerHTML]="item.short_code"></small>
+
+                                    <small>
+                                        <small *ngIf="!item?.lab_tests"
+                                        class="item-type text-black px-2  py-0 rounded bg-soft-danger"
+                                        [innerHTML]="item.department"></small>
+                                    </small>
+
+                                    <small *ngIf="!item?.lab_tests"
+                                        class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                                        [innerHTML]="( this.patientDetails?.referral_lab || this.patientDetails?.partner ) && item?.revised_price && item?.revised_price?.revised_price ? item?.revised_price.revised_price : item.price"></small>
+
+                                    <small *ngIf="item?.lab_tests" class="item-type text-dark px-2 py-0 rounded "
+                                        [innerHTML]="'...Package'"></small>
+                                    <small *ngIf="item?.lab_tests"
+                                        class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                                        [innerHTML]="'Tests : ' + item?.lab_tests.length"></small>
+                                    <small *ngIf="item?.lab_tests"
+                                        class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                                        [innerHTML]="item.offer_price"></small>
+
+                                </small>
+                            </a>
+                        </ng-template>
+
+                        <ng-template #notFoundTemplate let-notFound>
+                            <div [innerHTML]="returnNotFoundHTML()"
+                                *ngIf="testTerm && testTerm != '' && !searchLoading"></div>
+                        </ng-template>
+
+
+                        <!-- [customFilter]="customSearch"  -->
+                        <ng-autocomplete historyHeading="" [isLoading]="searchLoading" [historyListMaxNumber]="0"
+                            [data]="searchData" [searchKeyword]="'name'" placeholder="Add Lab Tests / Packages"
+                            [spellcheck]="false" (selected)="onItemSelected($event); auto_complete.clear()" [itemTemplate]="itemTemplate"
+                            [notFoundTemplate]="notFoundTemplate" #auto_complete [minQueryLength]="2"
+                            (keydown.enter)="selectFirstOption($event); auto_complete.clear()" (inputChanged)="getSearches($event)">
+                        </ng-autocomplete>
+                    </div>
+
+                    <!-- <div *ngIf="showPNDT">
+                        <button class="btn btn-soft-danger border-danger rounded-3"
+                            (click)="openXl(PNDTForm, 'xl', false)">Fill PNDT Form</button>
+                    </div> -->
+                </div>
+
+
+                <div class="text-black fw-medium fs-6 text-end">
+                    {{getTotalTestsAmount()}}
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="d-flex justify-content-end align-items-end font-Readex">
+                <table class="billTable">
+                    <tbody class=" text-black">
+                        <ng-container *ngIf="user_permissions?.sa || user_permissions?.permissions?.includes(5)">
+                            <tr>
+                                <td class="td-color" style="vertical-align: bottom">Discount Type</td>
+                                <td>
+                                    <div class="d-flex gap-0 flex-row">
+                                        <div style="width:100px">
+                                            <select (change)="togglePercentage($event)"
+                                                class="form-select bg-soft-primary rounded-0 rounded-start text-start font-Readex"
+                                                placeholder="0">
+                                                <option class="fw-bold" value="%">%</option>
+                                                <option value="lumpsum" selected>₹</option>
+                                            </select>
+                                        </div>
+                                        <div style="width:135px">
+                                            <form [formGroup]="discountGroup">
+                                                <input [spellcheck]="false" #inputElement
+                                                    [(ngModel)]="discountGroup.value.discount_input"
+                                                    (input)="validatorsInput($event, inputElement)" formControlName="discount_input"
+                                                    class="form-control rounded-0 rounded-end text-end">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="td-color">
+                                    Discount (₹)
+                                </td>
+                                <td class="text-end">
+                                    {{dispDiscount}}
+                                </td>
+                            </tr>
+                            <tr style="padding: 0px 0px;">
+                                <td colspan="2">
+                                    <hr style="margin: 0px; color: black">
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <tr>
+                            <td class="td-color">Net Amount</td>
+                            <td class="text-end">
+                                <!-- {{totalAmount}} -->
+                                {{netamount}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">
+                                <div class="d-flex flex-row align-items-center gap-2">
+                                    <div>Total Paid</div>
+                                    <!-- [ngbTooltip]="payModesCount==1 ? 'Add Paymode' : 'Remove Paymode'" -->
+                                    <div>
+
+                                        <button style="width: 22px; height: 22px"
+                                            (click)="payModesCount===1 ? add_remove_paymode(true) : add_remove_paymode(false)"
+                                            class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                                            <ng-container *ngIf="payModesCount===1">
+                                                <i class="ri-add-line"></i>
+                                            </ng-container>
+                                            <ng-container *ngIf="payModesCount===2">
+                                                <i class="ri-subtract-line"></i>
+                                            </ng-container>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </td>
+                            <td>
+                                <!-- first pay mode action  -->
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex gap-0 flex-row">
+                                        <select style="width:110px" (change)="HandlePayModeChange($event)"
+                                            class="form-select bg-soft-primary rounded-start rounded-0"
+                                            name="cashSelect" aria-label="Text input with select button"
+                                            formControlName="pay_mode_id">
+                                            <option disabled>Select Mode</option>
+                                            <ng-container *ngFor="let mode of payModes">
+                                                <option [value]="mode.id" *ngIf="mode.is_active">{{mode.name}}</option>
+                                            </ng-container>
+                                        </select>
+                                        <input style="width:125px" type="text" formControlName="paid_amount"
+                                            placeholder="" id="first_paid_input" autocomplete="off" autocorrect="off"
+                                            autocapitalize="none"
+                                            class="form-control rounded-end rounded-0 text-end fw-bold DMSans"
+                                            (input)="validatePaid($event)" [disabled]="totalAmount===0">
+                                    </div>
+                                    <small *ngIf="showReturn().bool && baseForm.get('pay_mode_id')?.value == 1"
+                                        class="text-end">
+                                        Return <span class="text-danger fw-medium">{{showReturn().val}}</span>
+                                    </small>
+                                </div>
+
+                                <!-- second pay mode option  -->
+                                <div class="d-flex flex-column mt-1" *ngIf="payModesCount===2">
+                                    <div class="d-flex gap-0 flex-row">
+                                        <form [formGroup]="secondMode" class="d-flex gap-0 flex-row">
+                                            <select style="width:110px"
+                                                class="form-select bg-soft-primary rounded-start rounded-0"
+                                                name="cashSelect" aria-label="Text input with select button"
+                                                formControlName="paymode">
+                                                <option disabled>Select Mode</option>
+                                                <ng-container *ngFor="let mode of extraPayModes">
+                                                    <option [value]="mode.id">{{mode.name}}</option>
+                                                </ng-container>
+                                            </select>
+                                            <input style="width:125px" type="number" formControlName="paidAmount"
+                                                placeholder=""
+                                                class="form-control rounded-end rounded-0 text-end fw-bold DMSans"
+                                                (input)="validateSecondModePaid($event)" [disabled]="totalAmount===0">
+                                        </form>
+                                    </div>
+                                    <small *ngIf="showReturn().bool && secondMode.get('paymode')?.value==1"
+                                        class="text-end">
+                                        Return <span class="text-danger fw-medium">{{showReturn().val}}</span>
+                                    </small>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:150px" class="text-danger fw-semibold ">
+                                Amount Due</td>
+                            <td style="width:235px" class="text-end text-danger fw-bold">
+                                <!-- {{dispAmount}} -->
+                                {{getDue()}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-color" style="width:150px">
+                                Remarks</td>
+                            <td style="width:235px" class="text-end text-danger fw-bold">
+
+                                <app-input [applyAutoFocus]="true" placeHolder="" [inputValue]="remarkSave"
+                                    (onValueChanged)="remarkInput($event)"
+                                    classVal="form-control fw-light rounded-2 rounded-end"
+                                    [removeLabel]="true"></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="row mb-2 g-2 justify-content-between align-items-end">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <div class="row g-2">
+
+                    <div class="col-lg-8 col-12">
+                        <ng-container *ngIf="user_permissions?.sa || user_permissions?.permissions?.includes(6)">
+                            <div class="row g-0 justify-content-start align-items-end font-DMSans">
+
+                                <!-- DISCOUNTS SELECT  -->
+                                <div class="col-6">
+                                    <label class="form-label mb-0" for="printOptions">Special Discount</label>
+                                    <select name="printOptions" #discountType placeholder="select"
+                                        (change)="applyDiscount()" [disabled]="disableDiscount"
+                                        class="form-select w-100 bg-soft-primary rounded-start rounded-0">
+                                        <option disabled>Select Discount</option>
+                                        <option *ngIf="disableDiscount">No Discount here</option>
+                                        <ng-container *ngFor="let discount of discTypes">
+                                            <option [value]="discount.id" *ngIf="discount.is_active">{{discount.name}}
+                                            </option>
+                                        </ng-container>
+                                    </select>
+
+                                </div>
+
+                                <div class="col-6">
+                                    <button type="button" class="btn w-100 rounded-end rounded-0" (click)="validateDiscount()"
+                                        [ngClass]="isDiscountApplied ? 'btn-success' : 'btn-info'"
+                                        [disabled]="disableDiscount">
+                                        {{ isDiscountApplied ? 'Discount Applied' : 'Apply Discount' }}
+                                    </button>
+
+                                    <!-- <button (click)="test()">test</button> -->
+                                </div>
+                            </div>
+                            <div class="row font-DMSans fw-normal" *ngIf="selectedDiscount.is_active">
+                                <small>{{selectedDiscount.name}} applied of <span
+                                        class="text-success">{{selectedDiscount.number}}
+                                        <span *ngIf="selectedDiscount.is_prcntg">%</span>
+                                        <span *ngIf="!selectedDiscount.is_prcntg">₹</span>
+                                        Discount</span>
+                                </small>
+                            </div>
+                        </ng-container>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 d-flex flex-column">
+                <ng-container *ngIf="!minimum_paid_amount.is_active">
+                    <button type="submit" (click)="paidAmountCheck() ? savePayment() : saveAndNext()"
+                        [class.btn-primary]="!paidAmountCheck()" [disabled]="inProgress"
+                        [class.btn-success]="paidAmountCheck()" class="btn rounded-1 ">
+                        <span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1 "></span>
+                        <span *ngIf="!inProgress">{{ paidAmountCheck() ? 'Pay & '+ this.getNextPrint() : 'Save & '+
+                            this.getNextPrint()}}</span>
+                    </button>
+                </ng-container>
+                <ng-container *ngIf="minimum_paid_amount.is_active">
+                    <button type="submit" (click)="savePayment()" [disabled]="inProgress"
+                        class="btn rounded-1 btn-success">
+                        <span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1 "></span>
+                        <span *ngIf="!inProgress">Pay & Next</span>
+                    </button>
+                </ng-container>
+
+            </div>
+        </div>
+
+    </form>
+</div>

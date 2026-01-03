@@ -1,0 +1,66 @@
+<app-master pageTitle="COUNTRIES">
+    <ng-container class="searchbox">
+        <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)">
+        </app-searchbox>
+    </ng-container>
+    <ng-container class="addnew">
+        <app-addnewbutton buttonText="Add Country" content="content" (onAddNewClick)="addItem(content)">
+        </app-addnewbutton>
+    </ng-container>
+    <ng-container class="datacontent">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="sort1 fullWidthColumn" data-sort="identifier">Name</th>
+                <th class="sort1" data-sort="status">Status</th>
+                <th class="sort1">Action</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let data of dataList$ | async">
+                    <td>
+                        <ngb-highlight [result]="data.name" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td class="status">
+                        <app-checkbox labelText="Status" [showLabel]="false"
+                        [checkboxValue]="data.status"
+                        [(ngModel)]="data.status"
+                        (onCheckboxValueChanged)="updateCountryStatus(data)"></app-checkbox>                        
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <app-editbutton content="content" (onEditClick)="updateItem(content, data, data.name)">
+                            </app-editbutton>
+                            <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)">
+                            </app-deletebutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+    <ng-container class="paginationcontent">
+        <app-pager>
+            <ng-container class="pager">
+                <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                    (pageChange)="service.page = $event">
+                </app-pagination>
+            </ng-container>
+        </app-pager>
+    </ng-container>
+</app-master>
+
+<!-- Add New Country -->
+<ng-template #content role="document">
+    <app-newmodel [modelTitle]="modalTitle" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3">
+                    <app-input labelText="Name" placeHolder="Enter Name" formControlName="name"
+                        [formSubmitted]="submitted" requiredMessage="Name is required"
+                        maxLengthMessage="Name should not exceed 50 chars"
+                        [applyAutoFocus]="true"></app-input>
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

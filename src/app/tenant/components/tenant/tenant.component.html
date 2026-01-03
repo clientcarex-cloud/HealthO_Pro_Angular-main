@@ -1,0 +1,95 @@
+<app-master pageTitle="TENANTS">
+    <ng-container class="searchbox">
+        <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)">
+        </app-searchbox>
+    </ng-container>
+    <ng-container class="addnew">
+        <app-addnewbutton buttonText="Add Country" content="content" (onAddNewClick)="addItem(content)">
+        </app-addnewbutton>
+    </ng-container>
+    <ng-container class="datacontent">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="sort1" data-sort="identifier">Identifier</th>
+                <th class="sort1 fullWidthColumn" data-sort="name">Name</th>
+                <th class="sort1" data-sort="dbName">Database</th>
+                <th class="sort1" data-sort="status">Status</th>
+                <th class="sort1">Action</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let data of dataList$ | async">
+                    <td>
+                        <ngb-highlight [result]="data.identifier" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.name" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.dbName" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td class="status">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="SwitchCheck1"
+                                [(ngModel)]="data.status" (change)="updateTenantStatus(data)">
+                            <label class="form-check-label ms-2" for="SwitchCheck1">{{data.status ? "Active" :
+                                "Inactive"}}</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <app-editbutton content="content"
+                                (onEditClick)="updateItem(content, data, data.identifier)">
+                            </app-editbutton>
+                            <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)">
+                            </app-deletebutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+    <ng-container class="paginationcontent">
+        <app-pager>
+            <ng-container class="pager">
+                <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                    (pageChange)="service.page = $event">
+                </app-pagination>
+            </ng-container>
+        </app-pager>
+    </ng-container>
+</app-master>
+
+<!-- Add New Tenant -->
+<ng-template #content role="document">
+    <app-newmodel [modelTitle]="modalTitle" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3">
+                    <app-input labelText="Identifier" placeHolder="Enter Identifier" formControlName="identifier"
+                        [formSubmitted]="submitted" requiredMessage="Identifier is required"
+                        maxLengthMessage="Identifier should not exceed 25 chars" 
+                        [isReadOnly]="identifierReadOnly"
+                        [applyAutoFocus]="true" 
+                        [applyAllowLettersOnly]="true"
+                        [applyAllowUnderScore]="false"></app-input>                    
+                </div>
+                <div class="mb-3">
+                    <app-input labelText="Name" placeHolder="Enter Name" formControlName="name"
+                        [formSubmitted]="submitted" requiredMessage="Name is required"
+                        maxLengthMessage="Name should not exceed 500 chars"
+                        [applyAutoFocus]="identifierReadOnly"></app-input>                     
+                </div>
+                <div class="mb-3">
+                    <app-input labelText="Database" placeHolder="Enter Database Name" formControlName="dbName"
+                        [formSubmitted]="submitted" requiredMessage="Database Name is required"
+                        maxLengthMessage="Database Name should not exceed 25 chars"
+                        [applyAllowLettersOnly]="true"
+                        [applyAllowUnderScore]="true"></app-input>                    
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

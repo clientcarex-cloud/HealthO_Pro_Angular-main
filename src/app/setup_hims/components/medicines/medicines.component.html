@@ -1,0 +1,268 @@
+<div class="container-full" [class.px-3]="!hideTitle" [class.py-2]="!hideTitle" style="min-height: 500px;">
+
+  <!-- HEADING  -->
+  <div class="row mb-3 g-3 justify-content-between" *ngIf="!hideTitle">
+      <div class="col-lg-6 col-12">
+          <div class="row border-5 border-start border-primary rounded-2 ps-2">
+              <div class="col-12">
+                  <span class="fw-medium fs-5">Item Master</span>
+              </div>
+              <div class="col-12">
+                  <span class="text-wrap td-color">Turn on/off essential features required for Items</span>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-lg-6 col-12 d-flex gap-2 justify-content-lg-end justify-content-start">
+        <app-addnewbutton (onAddNewClick)="selected_item = null ;openModal(otherModal, { size: 'lg', centered: true, scrollable: true })" buttonText="Import" content="content"></app-addnewbutton>
+        <app-addnewbutton (onAddNewClick)="selected_item = null ;openModal(addUpdate, { size: '', centered: true })" buttonText="Add Item" content="content"></app-addnewbutton>
+      </div>
+  </div>
+
+  <!-- search box  -->
+  <div class="row g-2 mb-3 justify-content-between">
+      <div class="col-lg-8 col-12">
+          <div class="row g-2">
+              <div class="col-4">
+                  <app-searchbox placeholder="Search Items" [spellcheck]="false" [applyAutoFocus]="false"
+                      (searchTermChange)="searchQuery($event)" [searchTerm]="query"></app-searchbox>
+              </div>
+              <div class="col-4">
+                  <app-select [selectItems]="categories" selectBindLabel="name" placeHolder="Select Category"
+                      (onSelectionChanged)="categorySelect($event)"></app-select>
+              </div>
+              <div class="col-4">
+                <app-select [selectItems]="operational_types" selectBindLabel="name" placeHolder="Select Operation Type"
+                    (onSelectionChanged)="operationSelect($event)"></app-select>
+            </div>
+              <!-- <div class="col-2 d-flex gap-2" *ngIf="!sourcing_lab">
+                  <button class="btn btn-primary rounded-3 text-nowrap" *ngIf="!inProgress"
+                      (click)="toggleBulkEdit()">Bulk Edit</button>
+                  <button class="btn btn-success rounded-3 px-2 d-flex flex-row align-items-center gap-2 "
+                      *ngIf="isBulkEditing" [disabled]="inProgress" (click)="bulkSave()">
+                      <span>{{inProgress ? 'Saving' : 'Save'}}</span>
+                      <span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span></button>
+              </div> -->
+          </div>
+      </div>
+
+      <div class="col-lg-3 col-12 d-flex justify-content-lg-end justify-content-start align-items-center">
+          <div class="row">
+              <div class="col-4">
+                  <span class="fw-light">Showing</span>
+              </div>
+          </div>
+          <div class="col-4 px-1">
+              <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans"
+                  style="width: auto" name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option [value]="all_count">All</option>
+              </select>
+          </div>
+          <div class="col-3">
+              <span class="fw-light">Entries</span>
+          </div>
+
+      </div>
+
+  </div>
+
+  <div class="row mb-3">
+      <div class="col-12">
+          <app-datatable>
+              <ng-container class="tableHeader">
+                  <th>Item Name</th>
+                  <th>Composition</th>
+                  <th>Category</th>
+                  <th>Operation Type</th>
+                  <th>HSN Code</th>
+                  <th>Discount</th>
+                  <th>CGST/SGST Tax</th>
+                  <!-- <th>Quantity</th> -->
+                  <!-- <th>MRP</th> -->
+                  <th>Action</th>
+              </ng-container>
+              <ng-container class="tableBody">
+                  <tr class="text-nowrap" *ngFor="let item of global_services">
+                      <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                          <span class="fw-semibold py-1">
+                              <ngb-highlight [result]="item?.name" [term]="query"></ngb-highlight>
+                          </span>
+                      </td>
+                      <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                        <small class="td-color">
+                            <ngb-highlight [result]="item?.composition" [term]="query"></ngb-highlight>
+                        </small>
+                    </td>
+                      <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                        <small>
+                            <ngb-highlight [result]="item?.category?.name" [term]="query"></ngb-highlight>
+                        </small>
+                    </td>
+                    <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                        <small>
+                            <ngb-highlight [result]="item?.operation_type?.name" [term]="query"></ngb-highlight>
+                        </small>
+                    </td>
+                    
+                      <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                          <app-small-text text="{{item?.short_code}}" query="{{query}}" classVal="td-color"></app-small-text>
+                      </td>
+                      <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                        <span class="fw-semibold">{{item?.discount || 0}} %</span>
+                      </td> 
+                      <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                        <span class="fw-semibold">{{item?.tax || 0}} %</span>
+                      </td> 
+                      <!-- <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                        <span class="fw-semibold">{{item?.quantity}} pcs.</span>
+                      </td> -->
+                      <!-- <td (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                          <span class="fw-semibold">₹ {{item?.price || 0}}</span>
+                      </td> -->
+                      <td>
+                          <div class="d-flex align-items-center fs-5">
+                              
+                              <button class="btn bg-transparent border-0 p-1" ngbTooltip="Edit Test Details" (click)="selected_item = item;openModal(addUpdate, { size: '', centered: true })">
+                                  <i class="ri-edit-2-line fs-4"></i>
+                              </button>
+
+                              <app-checkbox classVal="form-switch" [checkboxValue]="item.is_active" [showLabel]="false"
+                              activeText="" inactiveText="" (onCheckboxValueChanged)="updateIsActive(item, $event)"></app-checkbox>
+                          </div>
+                      </td>
+                  </tr>
+              </ng-container>
+          </app-datatable>
+      </div>
+  </div>
+
+  <div class="row g-3 justify-content-between align-items-center">
+      <div class="col-lg-6 col-12 font-DMSans">
+          <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number *
+              page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }}
+                  Entries</span>
+      </div>
+
+      <div class="col-lg-6 col-12">
+          <div class="d-flex justify-content-end font-DMSans">
+              <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+                  (pageChange)="onPageChange($event)">
+              </app-pagination>
+          </div>
+      </div>
+  </div>
+      
+</div>
+
+<ng-template #addUpdate let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+        <span class="modal-title fs-5" id="modal-basic-title">
+            {{selected_item ? 'Update Item' : 'Add Item'}}
+        </span>
+        <button type="button" class="btn-close" aria-label="Close"
+            (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <app-add-medicine #addmedicines [medicine]="selected_item || null" (saved)="getData();modal.dismiss('Cross click');"></app-add-medicine>
+    </div>
+
+    <div class="modal-footer py-1 px-3 bg-light-blue border-top d-flex justify-content-end">
+        
+        <button type="button" class="btn btn-success rounded-3 fs-5" aria-label="Close"
+            (click)="addmedicines.saveApiCall()">Save</button>
+    </div>
+</ng-template>
+
+
+<ng-template #otherModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Import Medicines From Excel</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+
+            <div class="row mb-3">
+                <div class="col-12 fw-semibold">
+                    Ensure that the following columns are present in Excel: name, category, operation_type, and short_code.
+                </div>
+                <div class="col-12 fw-semibold d-flex gap-3 align-items-center">
+                    <div>
+                        operational_type Accepted Values - 
+                        <ng-container *ngFor="let item of operational_types; let last = last">
+                            <span>{{ item.name }}{{ last ? '.' : ',' }}</span>
+                          </ng-container> 
+                    </div>                     
+                    <button (click)="test()" class="btn btn-sm btn-dark rounded-3">ExcelSheet Template</button>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-lg-5 col-12">
+                    <div class="font-DMSans d-flex flex-row gap-2 rounded-3">
+                    
+                        <label for="fileUpload" class="visually-hidden">Upload Image</label>
+                        <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                            class="form-control bg-soft-primary rounded-5 d-none"
+                            (change)="onFileChanged($event)" name="fileUpload" id="fileUpload"
+                            accept=".xlsx, .xls">
+
+                        <button type="button" (keydown.enter)="$event.stopPropagation()"
+                            class="input-group-text btn bg-white border rounded-3 d-flex gap-2 
+                                    fs-5 fw-medium form-control align-items-center shadow" (click)="file.click()">
+                                <i class="ri-upload-2-line"></i> {{otherData ? fileName : 'Choose File'}}
+                        </button>
+
+                        <button id="deleteExcel" (click)="resetExcel(file)" *ngIf="otherData"
+                            class="input-group-text btn rounded-3">
+                            <i class="ri-close-line fs-4 text-danger"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-7 col-12 d-flex justify-content-end">
+                    <button class="btn btn-success rounded-3" (click)="saveBulkMedicines()">Save</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <app-small-text [text]="ValidationErrors" classVal="text-danger lh-0"></app-small-text>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="ValidationErrors == ''">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>S.no</th>
+                            <th class="text-nowrap" *ngFor="let key of keys">{{key}}</th>
+                        </ng-container>
+                        <ng-container class="tablebody">
+                            <ng-container *ngIf="otherData">
+                                <tr *ngFor="let item of otherData; let i = index">
+                                    <td>
+                                        <span class="fw-semibold fs-5">{{i + 1}}</span>
+                                    </td>
+                                    <!-- Dynamically display all properties of each item -->
+                                    <ng-container *ngFor="let entry of objectEntries(item)">
+                                        <td>
+                                        <span class="fw-semibold fs-5">
+                                            {{ entry[1] }} <!-- Value of the property -->
+                                        </span>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

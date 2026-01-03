@@ -1,0 +1,123 @@
+<div class="container-full">
+
+    <form [formGroup]="baseForm">
+
+        <div class="row mb-3">
+            <div class="col-lg-8 col-12">
+                <div class="row g-1">
+                    <div class="col-10">
+                        <app-select labelText="Type" labelClass="form-label mb-1"
+                        [imp]="true" [formSubmitted]="submitted" [removeMessage]="true"[selectBindLabel]="'name'"
+                        [selectItems]="roomTypes" placeHolder="Select Type" formControlName="room_type" ></app-select>
+                    </div>
+                    <div class="col-2 d-flex flex-column">
+                    <label for="addFor" class="form-label mb-1 visibility-none">i</label>
+                        <button type="button" style="width: 22px; height: 22px" name="addFor"
+                            (click)="is_adding_room_type = true;openModal(rommTypeModal, { size: '', })"
+                            class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                            <i class="ri-add-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row mb-3">
+
+            <div class="col-lg-9 col-12">
+                <app-input labelText="Name" labelClass="form-label mb-1" [imp]="true"
+                [formSubmitted]="submitted" formControlName="name" placeHolder="Enter name"></app-input>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-lg-5 col-12">
+                <div class="row g-1">
+                    <div class="col-10">
+                        <app-select labelText="Floor" labelClass="form-label mb-1"
+                        [imp]="true" [formSubmitted]="submitted" [removeMessage]="true"[selectBindLabel]="'name'"
+                        [selectItems]="floors" placeHolder="Select Floor" formControlName="floor" ></app-select>
+                    </div>
+                    <div class="col-2 d-flex flex-column">
+                    <label for="addFor" class="form-label mb-1 visibility-none">i</label>
+                        <button type="button" style="width: 22px; height: 22px" name="addFor"
+                            (click)="is_adding_room_type = false;openModal(rommTypeModal, { size: '', })"
+                            class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                            <i class="ri-add-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+ 
+        </div>
+
+        <div class="row mb-3">
+
+            <div class="col-lg-4 col-12">
+                <app-input labelText="Room Number" labelClass="form-label mb-1" [imp]="true" [applyUpperCase]="true"
+                [formSubmitted]="submitted" formControlName="room_number" placeHolder="Enter Number" classVal="form-control fw-semibold rounded-3"></app-input>
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <app-input labelText="Total No.of Beds" labelClass="form-label mb-1" [imp]="true" [applyAllowNumbersOnly]="true"
+                [formSubmitted]="submitted" formControlName="total_beds" placeHolder="Enter Number" classVal="form-control fw-semibold rounded-3"></app-input>
+            </div>
+
+        </div>
+
+        <div class="row g-0">
+
+            <div class="col-lg-4 col-12 p-0">
+                <app-input labelText="Charges Per Bed" labelClass="form-label mb-1" [imp]="true" [applyAllowNumbersOnly]="true"
+                [formSubmitted]="submitted" formControlName="charges_per_bed" placeHolder="Enter Price"  classVal="form-control fw-semibold rounded-0 rounded-start"></app-input>
+                
+            </div>
+
+            <div class="col-lg-3 col-12 p-0">
+                <div class="form-label mb-1 visibility-none">For</div>
+                <app-nom-select ngbTooltip="Disabled" [inputDisabled]="true" [selectItems]="timeCategory" bindValue="id" bindLabel="name" [selectedValue]="baseForm.value?.time_category" 
+                classVal="form-select fw-semibold rounded-0 rounded-end bg-light-blue" [showDisabled]="true" (valueChanged)="setTimeCategory($event)"></app-nom-select>
+                <!-- <app-select labelText="Floor" labelClass="form-label mb-1"
+                [imp]="true" [formSubmitted]="submitted" [removeMessage]="true"[selectBindLabel]="'name'"
+                [selectItems]="timeCategory" placeHolder="Select " formControlName="time_category" ></app-select> -->
+            </div>
+            
+        </div>
+    </form>
+</div>
+
+
+
+
+<ng-template #rommTypeModal let-modal>
+
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+      <span class="modal-title fs-5" id="modal-basic-title">Add {{is_adding_room_type ? 'Room Type' : 'Floor'}}</span>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+    <div class="modal-body " style="background-color: #F8FAFC; ">
+      <form [formGroup]="typeForm">
+        <div class="container-full">
+          <div class="row">
+            <div class="col-12">
+              <app-input labelText="Name" labelClass="form-label mb-1" [imp]="true" [removeCloseIcon]="true" formControlName="name"
+              placeHolder="" [applyAllowLettersOnly]="true" [applyEmptySpace]="true" [formatLetter]="true" [applyAutoFocus]="true"
+              [inputLength]="100" classVal="form-control fs-6 fw-semibold rounded-3" [formSubmitted]="submitted"></app-input>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  
+    <div class="modal-footer bg-light-blue py-1 px-3 border-top">
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-success rounded-3 fs-5" (click)="saveRoomType(modal);">Save</button>
+      </div>
+    </div>
+  
+  </ng-template>

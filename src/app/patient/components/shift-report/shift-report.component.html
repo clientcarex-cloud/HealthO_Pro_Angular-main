@@ -1,0 +1,300 @@
+
+<div ngbDropdown *ngIf="showDropdownContainer">
+    <button class="btn dropdown-menu-end btn-primary rounded-3 gap-2 py-1 d-flex align-items-center" ngbDropdownToggle>
+      Shift Report <i class="ri-arrow-down-s-line"></i>
+    </button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="container-full p-3" style="width:350px">
+
+      <div class="container-full" *ngIf="!shiftLoad">
+        <div class="row align-items-center justify-content-end mb-3" *ngIf="!selectStaff?.is_superadmin">
+          <div class="col-4">
+            <div class=" border td-color d-flex align-items-center justify-content-center gap-1 px-1 py-1 rounded-3">
+              {{timeSrvc.getStringDate(SR_start_date)}} <i class="ri-calendar-line"></i>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row align-items-center mb-3" *ngIf="SR_template.id != 5">
+          <div class="col-3">
+            Employee :
+          </div>
+
+          <div class="col-9">
+            <app-select placeHolder="Select Employee" [selectItems]="staffs" [inputDisable]="!selectStaff?.is_superadmin" selectBindLabel="name"
+              (onSelectionChanged)="selectShirtReportStaff($event)" [selectValue]="selectStaff" ></app-select>
+          </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+          <div class="col-3">
+            Report :
+          </div>
+
+          <div class="col-9">
+            <app-select placeHolder="Select Report" [selectItems]="reports" selectBindLabel="name"
+            [selectValue]="reports && reports.length!==0 ? reports[0] : []" (onSelectionChanged)="selectShirtReportTemplate($event)"></app-select>
+          </div>
+        </div>
+
+
+        <div class="row g-0 mb-3" *ngIf="selectStaff?.is_superadmin">
+          <div class="col-12 mb-2">
+            Select Date
+          </div>
+
+          <div class="col-12 ">
+            <div class="row g-2">
+              <div class="col-4">
+                <button class="rounded-pill w-100 btn-sm text-center" (click)="setToday()"
+                [class.bg-white]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border-0]="timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == '')">Today</button>
+        
+              </div>
+
+              <div class="col-4">
+                <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="setYesterday()"
+                [class.bg-white]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border-0]="timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == '')"
+                >Yesterday</button>
+              </div>
+
+              <div class="col-4">
+                <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="setSevenDays()"
+                [class.bg-white]="!(timeSrvc.getLast7Days().startDate === SR_start_date && timeSrvc.getLast7Days().endDate === SR_end_date)"
+
+                >Last 7 Days</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="row align-items-center">
+              <div class="col-3">
+                <hr>
+              </div>
+              <div class="col-6 text-center text-muted fw-light">
+                <small>or By Start Date & End Date</small>
+              </div>
+              <div class="col-3">
+                <hr>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="row">
+              <div class="col-6">
+                <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                  (input)="set_shiftReport_start_date($event)" dateFormat="Y-m-d" placeholder="Start Date"
+                  [ngModel]="SR_start_date" [maxDate]="datePickerMaxDate"
+                  [altInput]="true" [convertModelValue]="true" />
+              </div>
+              <!-- <div class="col-1 p-0 d-flex justify-content-center align-items-center ">
+             -
+            </div> -->
+              <div class="col-6">
+                <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                  (input)="set_shiftReport_end_date($event)" dateFormat="Y-m-d" placeholder="End Date"
+                  [ngModel]="SR_end_date"
+                  [minDate]="SR_start_date ? SR_start_date : ''" [maxDate]="datePickerMaxDate" [altInput]="true"
+                  [convertModelValue]="true" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary shadow rounded-3" (click)="getShiftReport()">Preview
+              <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="viewPrintLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+            <button class="btn btn-success shadow rounded-3" (click)="printShiftReport()">Print
+              <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="printLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+  <!-- patients page  -->
+
+  <div class="container-full pt-0" *ngIf="!showDropdownContainer" >
+    <ng-container *ngIf="!shiftLoad">
+      <!-- selectStaff?.is_superadmin -->
+    <div class="row align-items-center mb-3" *ngIf="false">
+      <div class="col-3">
+        Date :
+      </div>
+      <div class="col-4">
+        <div class=" border td-color d-flex align-items-center justify-content-start gap-2 px-2 py-1 rounded-3">
+          {{timeSrvc.getStringDate(SR_start_date)}} <i class="ri-calendar-line"></i>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="row align-items-center mb-3" *ngIf="SR_template.id != 5">
+      <div class="col-3">
+        Employee :
+      </div>
+
+      <div class="col-9">
+        <app-select placeHolder="Select Employee" [inputDisable]="!selectStaff?.is_superadmin" [selectItems]="staffs" selectBindLabel="name"
+          (onSelectionChanged)="selectShirtReportStaff($event)" [selectValue]="selectStaff" ></app-select>
+      </div>
+    </div>
+
+    <div class="row align-items-center mb-3">
+      <div class="col-3">
+        Report :
+      </div>
+
+      <div class="col-9">
+        <app-select placeHolder="Select Report" [selectItems]="reports" selectBindLabel="name"
+        [selectValue]="reports && reports.length!==0 ? reports[0] : []" (onSelectionChanged)="selectShirtReportTemplate($event)"></app-select>
+      </div>
+    </div>
+
+    <div class="row align-items-center mb-3">
+      <div class="col-3">
+        Type :
+      </div>
+
+      <div class="col-9">
+        <app-select placeHolder="Select Report" [selectItems]="reportsTypes" selectBindLabel="name"
+        [selectValue]="reportsTypes && reportsTypes.length!==0 ? reportsTypes[0] : []" (onSelectionChanged)="selectReportType($event)"></app-select>
+      </div>
+    </div>
+
+    <!-- *ngIf="selectStaff?.is_superadmin" -->
+    <div class="row g-0 mb-3" >
+      <div class="col-12 mb-2">
+        Select Date
+      </div>
+
+      <div class="col-12 ">
+        <div class="row g-2">
+          <div class="col-4">
+            <button class="rounded-pill w-100 btn-sm text-center" (click)="setToday()"
+            [class.bg-white]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+            [class.border]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+            [class.border-0]="timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == '')">Today</button>
+    
+          </div>
+
+          <div class="col-4">
+            <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="setYesterday()"
+            [class.bg-white]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+            [class.border]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+            [class.border-0]="timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == '')"
+            >Yesterday</button>
+          </div>
+
+          <div class="col-4">
+            <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="setSevenDays()"
+            [class.bg-white]="!(timeSrvc.getLast7Days().startDate === SR_start_date && timeSrvc.getLast7Days().endDate === SR_end_date)"
+
+            >Last 7 Days</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="row align-items-center">
+          <div class="col-3">
+            <hr>
+          </div>
+          <div class="col-6 text-center text-muted fw-light">
+            <small>or By Start Date & End Date</small>
+          </div>
+          <div class="col-3">
+            <hr>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="row">
+          <div class="col-6">
+            <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+              (input)="set_shiftReport_start_date($event)" dateFormat="Y-m-d" placeholder="Start Date"
+              [ngModel]="SR_start_date" [maxDate]="datePickerMaxDate"
+              [altInput]="true" [convertModelValue]="true" />
+          </div>
+          <!-- <div class="col-1 p-0 d-flex justify-content-center align-items-center ">
+         -
+        </div> -->
+          <div class="col-6">
+            <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+              (input)="set_shiftReport_end_date($event)" dateFormat="Y-m-d" placeholder="End Date"
+              [ngModel]="SR_end_date"
+              [minDate]="SR_start_date ? SR_start_date : ''" [maxDate]="datePickerMaxDate" [altInput]="true"
+              [convertModelValue]="true" />
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12 d-flex gap-2" [class.pt-3]="!selectStaff?.is_superadmin">
+        <button class="btn btn-primary shadow rounded-3" (click)="getShiftReport()" [disabled]="viewPrintLoading || printLoading">Preview
+          <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="viewPrintLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+        <button class="btn btn-success shadow rounded-3" (click)="printShiftReport()" [disabled]="viewPrintLoading || printLoading">Print
+          <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="printLoading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+
+  <ng-container *ngIf="shiftLoad">
+    <div class=" d-flex justify-content-center">
+      <div class="spinner-border" role="status" style="height: 75px; width: 75px">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </ng-container>
+  </div>
+
+
+  <ng-template #reportModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+      <div>
+        <button (click)="print()" class="btn shadow btn-success me-2 rounded-3">Print</button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+  
+  
+    <div class="modal-body p-0">
+      <div class="container-full py-0 px-3">
+        <div class="row p-0 g-0 " id="report">
+        </div>
+  
+        <!-- <iframe [src]="" -->
+      </div>
+    </div>
+  
+    <!-- <div class="modal-footer p-0 bg-light-blue">
+      <div class="container-full py-3">
+        <div class="row py-0 g-0" >
+        </div>
+      </div>
+    </div> -->
+  </ng-template>

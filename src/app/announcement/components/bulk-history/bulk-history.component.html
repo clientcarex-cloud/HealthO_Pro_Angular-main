@@ -1,0 +1,67 @@
+
+<app-layout [showNav]="false" [showPageTitle]="false" [showMap]="false" [displayInformation]="true" 
+[labPackage]="false">
+
+    <ng-container class="searchbox">
+        <app-select classVal="fw-normal fs-5 ng-select-container border-0  rounded-3" labelText="" [selectItems]="types" placeHolder="Select Type"  selectBindLabel="name"
+        [selectValue]="msg_type ? types[msg_type - 1] : types[2]" (onSelectionChanged)="selectType($event)"></app-select>
+    </ng-container>
+
+      <ng-container class="datepicker">
+        <app-datepicker #datePicker datePickerFormat="Y-m-d" placeHolder="All Time (Active)" 
+         (dateValueChange)="getRangeValue($event)" 
+       ></app-datepicker>
+    </ng-container>
+
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+          name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option [value]="all_count">All</option>
+        </select>
+      </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th>S.no</th>
+                <th>Sent Msgs</th>
+                <th>Compaign Name</th>
+                <th>User</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let item of history; let i = index">
+                    <td class="fw-semibold fs-5">{{i+1}}</td>
+                    <td>
+                        <app-patient-details name="{{item?.sent_messages}}" time="{{timeSrvc.dateAsString(item?.added_on, true, true)}}"></app-patient-details>
+                    </td>
+                    <td>{{item?.template?.templateName}}</td>
+                    <td>{{item?.created_by?.name}}</td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+</ng-container>
+
+</app-layout>

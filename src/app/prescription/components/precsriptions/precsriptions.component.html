@@ -1,0 +1,307 @@
+
+
+<!-- <app-patients 
+    [is_cms]="true"
+    [showDocCons]="true" 
+    [showAppointmentColumn]="true" 
+    [addPrescription]="true" 
+    [showTests]="false" 
+    [showServices]="false" 
+    [addPatientOption]="false"
+    [estimatePrice]="false"
+    [shiftReportOption]="false"
+    routeUrl="/billing/patientbilling/" 
+    extraStatusQuery="&transaction=1"
+    [patientStatuses]="['all', 'pending', 'completed']"
+></app-patients> -->
+
+
+<!-- PATIENT COMPONENT  -->
+<app-layout [showMap]="false" [showPageTitle]="false" [displayInformation]="false" [labPackage]="false"
+  [extraFilter]="true" [showSelectPrint]="false" [extraFilterSecond]="true" [showNav]="true">
+
+  <ng-container class="tabsNavigation">
+    <div class="btn-group rounded-pill font-inter pe-1">
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'all' }" (click)="setStatus('all')">
+        All
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'pending' }"
+        (click)="setStatus('pending')">
+        Pending
+      </button>
+      <!-- <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'processing' }"
+        (click)="setStatus('processing')">
+        Processing
+      </button> -->
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'emergency' }"
+        (click)="setStatus('emergency')">
+        Emergency <span class="bg-danger rounded-pill btn-sm border-0 text-white"
+          *ngIf="emergencyCount && emergencyCount !==0">{{emergencyCount}}</span>
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'completed' }"
+        (click)="setStatus('completed')">
+        Completed
+      </button>
+      <!-- <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'cancelled' }"
+        (click)="setStatus('cancelled')">
+        Cancelled
+      </button> -->
+    </div>
+  </ng-container>
+
+  <!-- <ng-container class="addNewoptions"> -->
+
+    <!-- <button class="btn bg-white border rounded-3 text-nowrap font-Readex" *ngIf="viewAppointmentsOption"
+      (click)="openXl(viewAppointments, 'xl')">
+      View Appointments
+    </button> -->
+
+    <!-- <button class="btn bg-white border rounded-3 text-nowrap font-Readex" *ngIf="shiftReportOption"
+      (click)="openModal(ShiftReportModal, { size: '', scrollable: true })">
+      Shift Report
+    </button> -->
+
+    <!-- <button class="btn bg-white border rounded-3 text-nowrap font-Readex" *ngIf="estimatePrice"
+      (click)="openXl(estimate, 'xl')">
+      Estimate
+    </button> -->
+
+    <!-- <ng-container *ngIf="(user_permissions.sa || user_permissions.permissions.includes(1)) && addPatientOption">
+      <app-addnewbutton buttonText="{{addText}}" (onAddNewClick)="addPatient()" 
+      classVal="btn bg-primary text-white rounded-3 text-nowrap"></app-addnewbutton>
+    </ng-container>
+    <app-info-btn></app-info-btn>
+  </ng-container> -->
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)" [selectToday]="true"></app-datepicker-section>
+  </ng-container>
+
+  <!-- <ng-container class="extraFilter" *ngIf="showDeptFilter">
+    <app-select [selectItems]="departments" [labelText]="''" selectBindLabel="name" [multipleSelect]="true"
+      placeHolder='Select Department' (onSelectionChanged)="selectDepartment($event)"></app-select>
+  </ng-container> -->
+
+  <!-- <ng-container class="extraFilterSecond" *ngIf="user_permissions.sa && showDeptFilter">
+    <app-select [selectItems]="staffs" [labelText]="''" selectBindLabel="name" [multipleSelect]="false"
+      [inputDisable]="user_permissions.loading" [isLoading]="user_permissions.loading"
+      (onSelectionChanged)="selectStaff($event)" placeHolder='Select User'></app-select>
+  </ng-container> -->
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" [(ngModel)]="page_size" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader ">
+        <th class="text-nowrap text-black serialNumber">Sno.</th>
+        <th>
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Patients</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+              *ngIf="patients && patients.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th>Age/Gender</th>
+        <th class="text-nowrap">Patient IDs</th>
+        <th>Doctor</th>
+        <th>Consultation</th>
+        <th>Status</th>
+        <th>Digital Rx</th>
+        <th>Manual Rx</th>
+        <!-- <th class="text-nowrap">Amount Due</th> -->
+
+      </ng-container>
+
+      <ng-container class="tablebody" *ngFor="let item of patients; let i = index">
+        <tr>
+            <td class="fw-semibold text-black serialNumber">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+            <td (dblclick)="showPatient(item)">
+              <app-patient-details [name]="item.patient.name" [time]="timeSrvc.decodeTimestamp(item.patient.added_on)" [query]="query"
+                [title]="item.patient.title"></app-patient-details>
+            </td>
+            <td>
+                <div class="d-flex flex-column">
+                    <small class="text-nowrap">
+                        {{item?.patient?.ULabPatientAge == 'DOB' ?
+                        item?.patient.dob + " " +
+                        item?.patient?.ULabPatientAge : item?.patient.age +
+                        " " + item?.patient?.ULabPatientAge }}
+                    </small>
+                    <small class="td-color text-nowrap">{{item?.patient?.gender}}</small>
+                </div>
+            </td>
+            <td>
+                <app-patient-ids mr_no="{{item?.patient?.mr_no}}" visit_id="{{item?.patient?.visit_id}}"></app-patient-ids>
+            </td>
+            <td>
+                <app-patient-details name="{{item?.consultation?.name}}" time="{{item?.consultation?.department}}"></app-patient-details>
+            </td>
+            <td>
+                <app-patient-details name="{{item?.case_type}} - {{item?.is_online ? 'Online' : 'Walk-In'}}" time="{{timeSrvc.decodeTimestamp(item.added_on)}}"></app-patient-details>
+            </td>
+            <td>
+                <small [class.text-success]="item?.status_id?.includes('ompleted')">{{item?.status_id}}</small>
+            </td>
+            <td>
+                <div class="d-flex flex-row flex-nowrap gap-2">
+                    <button *ngIf="!item?.patient_prescription;" class="btn btn-sm p-0" (click)="selectedPatient = item; selectedConsultation = item; openModal(Prescription, { size: 'xl', scrollable: false })">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                          <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M9 14H15" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M12 17V11" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <button *ngIf="item?.patient_prescription;" class="btn btn-sm p-0" (click)="selectedPatient = item; selectedConsultation = item; openModal(Prescription, { size: 'xl', scrollable: false })">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 14H15" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 17V11" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                  </button>
+
+                    <button *ngIf="item?.patient_prescription;" class="btn btn-sm btn-success rounded-3"
+                      (click)="printPrescription({ patient_id : item.patient.id, doctor_consultation: item.id }, false)">
+                      Print
+                    </button>
+                    
+                    <!-- <ng-template #viewPresc>
+                      <button class="btn btn-success btn-sm rounded-3" *ngIf="item?.patient_prescription"
+                      (click)="selectedPatient = item; selectedConsultation = item; openModal(Prescription, { size: 'xl', scrollable: true })">
+                        View
+                    </button>
+                    </ng-template> -->
+                </div>
+            </td>
+
+            <td>
+
+              <div class="d-flex flex-row flex-nowrap gap-1" >
+                  <button (click)="printPrescription({ patient_id : item.patient.id, doctor_consultation: item.id }, true)" class="btn btn-sm btn-primary rounded-3 ">
+                    Manual Rx
+                  </button>
+              </div>
+
+            </td>
+            
+        </tr>
+      </ng-container>
+
+      <ng-container class="tablebody">
+        <tr *ngIf="!patients || patients.length === 0">
+          <td colspan="10">
+            <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+              style="vertical-align: middle;min-height: 100px;">
+
+              <span *ngIf="query!==''">
+                No Data Found with Search Query " <span class="fw-bold text-black">{{query}}</span> "
+              </span>
+
+              <span *ngIf="query==='' && !pageLoading">
+                No patients registered on this day.
+              </span>
+
+              <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-black pt-2 fw-light">Loading</div>
+              </span>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </ng-container>
+
+</app-layout>
+
+
+<!-- <ng-template #viewAppointments let-modal>
+  <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-4 " id="modal-basic-title">Appointments</span>
+    <div>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+    <app-appointments [fromPatientsPage]="true"></app-appointments>
+  </div>
+</ng-template> -->
+
+
+<ng-template #Prescription let-modal>
+  <div class="modal-header  border-bottom py-1 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-5" id="modal-basic-title">Prescription -
+      {{selectedPatient.patient.title}}{{selectedPatient.patient.name}}</span>
+    <div>
+
+      <div class="d-flex flex-row gap-2 align-items-center">
+        <button class="btn btn-primary rounded-3"
+        (click)="prescriptionComponent.printPrescription(false, true)">
+        Manual Rx
+      </button>
+
+      <button *ngIf="prescriptionComponent?.prescription" class="btn btn-success rounded-3"
+        (click)="prescriptionComponent.printPrescription(false)">
+        Print
+      </button>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+    <app-add-prescription #prescriptionComponent [patient]="selectedPatient"
+      [consultation]="selectedConsultation" (saved)="getData()"></app-add-prescription>
+  </div>
+  <div class="modal-footer py-1 d-flex justify-content-end border-top bg-light-blue">
+    <button (click)="prescriptionComponent.saveApiCall()" class="btn btn-success fs-5 rounded-3 ">
+      {{prescriptionComponent.prescription ? "Update" : "Save"}}
+    </button>
+  </div>
+</ng-template>

@@ -1,0 +1,172 @@
+<div class="container-fluid mx-2">
+    <div class="row my-2 mb-1 border-5 border-start border-primary rounded-2 ps-2 pe-3" *ngIf="!hideExtra">
+        <div class="col-8">
+            <div class="col-12">
+                <span class="fw-medium fs-5">Letterhead Setting</span>
+              </div>
+              <div class="col-12">
+                <span class="text-wrap td-color">Set your business letterhead, header, footer and margins for prints</span>
+              </div>
+        </div>
+
+        <div class="col-4 d-flex align-items-center justify-content-end" >
+            <button (click)="updateSetting()" class="btn btn-success px-3 rounded-3">Save</button>
+        </div>
+    </div>
+
+    <form [formGroup]="baseForm" class="mt-2" (change)="updateSetting()">
+        <div class="row my-3" *ngIf="!loading && !errorShow">
+            <div class="col-7 mb-2 float-start d-flex justify-content-start">
+              <img class="  border rounded-3 bg-light-blue" style="height: 105mm; width: 147.5mm; object-fit: contain;" [src]="baseForm.get('b_letterhead')?.value || '/assets/images/blank.png'" >
+            </div>        
+
+            <div class="col-5">
+                <div class="row align-items-end">
+                    <div class="col-12">
+                      <input name="logo" *ngIf="!baseForm.get('b_letterhead')?.value" type="file" class="form-control" accept="image/png, image/gif, image/jpeg, image/jpg" (change)="onFileChanged($event,'b_letterhead')">
+                    </div>
+                    <div class="col-12" *ngIf="!baseForm.get('b_letterhead')?.value"><small class="fw-light td-color">Accepts png, jpg & jpeg</small></div>
+                    <div class="col-12">
+                      <button name="removeBtn"  *ngIf="baseForm.get('b_letterhead')?.value" (click)="clearLogo('b_letterhead')" class="btn btn-soft-danger border-danger shadow rounded-3">Remove LetterHead</button>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+
+                    <div class="col-12">
+                        <app-checkbox [showLabel]="false" classVal="" formControlName="display_letterhead" activeText="Display Letterhead in Print" 
+                        inactiveText="Display Letterhead in Print"></app-checkbox>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+
+                    <div class="col-12">
+                        <app-checkbox [showLabel]="false" classVal="" formControlName="display_page_no" activeText="Show Page Numbers" 
+                        inactiveText="Show Page Numbers"></app-checkbox>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+
+                    <div class="col-12">
+                        <app-checkbox [showLabel]="false" classVal="" formControlName="invoice_space" activeText="Keep Header and Footer Space In Invoice" 
+                        inactiveText="Keep Header and Footer Space In Invoice"></app-checkbox>
+                    </div>
+                </div>
+                <div class="row mt-2">
+
+                    <div class="col-12">
+                        <app-checkbox [showLabel]="false" classVal="" formControlName="receipt_space" activeText="Keep Header and Footer Space In Receipt" 
+                        inactiveText="Keep Header and Footer Space In Receipt"></app-checkbox>
+                    </div>
+                </div>
+
+
+
+                <div class="row mt-2">
+                    <div class="col-12">
+                        Set Font Style
+                    </div>
+                    <div class="col-8">
+                        <select formControlName="default_font" class="form-select py-1 ps-2 pe-0 fs-5" [style.font-family]="returnStyle()">
+                            <option class="fs-5 fw-normal" [value]="font.id" *ngFor="let font of fonts" [style.font-family]="font?.name">{{ font?.name }}</option>
+                          </select>
+                    </div>
+                </div>
+
+                <div class="row mt-2 align-items-center">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                Set Header Margin
+                            </div>
+                            <div class="col-8">
+                                <select class="form-select rounded-3 fs-4 fw-bold" formControlName="header">
+                                    <ng-container *ngFor="let i of indexNum">
+                                        <option class="fs-6" [value]="i"> {{i}} </option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                            <div class="col-4 fs-4 fw-bold">
+                                px
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                Set Footer Margin
+                            </div>
+                            <div class="col-8">
+                                <select class="form-select rounded-3 fs-4 fw-bold" formControlName="footer">
+                                    <ng-container *ngFor="let i of indexNum">
+                                        <option class="fs-6" [value]="i"> {{i}} </option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                            <div class="col-4 fs-4 fw-bold">
+                                px
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3 align-items-center">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                Set Left Margin
+                            </div>
+                            <div class="col-8">
+                                <select class="form-select rounded-3 fs-4 fw-bold" formControlName="margin_left">
+                                    <ng-container *ngFor="let i of leftNRight">
+                                        <option class="fs-6" [value]="i"> {{i}} </option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                            <div class="col-4 fs-4 fw-bold">
+                                px
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                Set Right Margin
+                            </div>
+                            <div class="col-8">
+                                <select class="form-select rounded-3 fs-4 fw-bold" formControlName="margin_right">
+                                    <ng-container *ngFor="let i of leftNRight">
+                                        <option class="fs-6" [value]="i"> {{i}} </option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                            <div class="col-4 fs-4 fw-bold">
+                                px
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+
+        <div class="row" *ngIf="loading">
+            <div class="col-12">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="errorShow">
+            <div class="col-12 text-danger">
+                Failed to Data
+            </div>
+        </div>
+
+    </form>
+
+
+</div>

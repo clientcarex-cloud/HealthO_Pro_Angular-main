@@ -1,0 +1,199 @@
+:host ::ng-deep .st-area {
+  background-color: #000000;
+  /* Set your desired background color */
+}
+
+blockquote {
+  margin: 0 0 1rem;
+  background-color: #000000 !important;
+}
+
+.unselectable {
+  /* Prevent selection for all browsers */
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently supported by most modern browsers */
+}
+
+
+.break_page::after{
+  content: 'Page Break'
+}
+
+.st-toolbar-item select:last-child {
+  display: none;
+}
+
+#total_number {
+  font-weight: 900;
+}
+
+#page_number {
+  font-weight: 900;
+}
+
+
+
+.typePlace:focus {
+  outline: 2.5px solid #0d6efd42 !important;
+  // border: 2px solid red; /* Replace #yourColor with the color you prefer */
+  box-shadow: none;
+  /* Remove any shadow if exists */
+}
+
+:host ::ng-deep .st-toolbar[_ngcontent-ng-c3040375463] {
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border: 1px solid #bdbdbd;
+  padding: 0px;
+  background-color: #fff;
+}
+
+:host ::ng-deep .st-toolbar-item[_ngcontent-ng-c3663704024] {
+  border: 0;
+  padding: 5px 8px;
+  background-color: #fff;
+  border-radius: 5px;
+  margin-right: 1px;
+  cursor: pointer;
+}
+
+:host ::ng-deep .st-editor-container .st-area {
+  /* Your styles */
+  overflow: auto;
+  border: 1px solid #bdbdbd;
+
+  font-family: "Trebuchet MS", sans-serif;
+  resize: none;
+  outline: none;
+  height: 70vh;
+  width: 815px;
+
+  box-shadow: 4px 4px 5px #80808030;
+  border-radius: 5px;
+  transform-origin: top;
+}
+
+
+
+
+
+/* width */
+:host ::ng-deep .st-editor-container .st-area::-webkit-scrollbar {
+  width: 20px;
+  border-radius: 50px;
+}
+
+/* Track */
+:host ::ng-deep .st-editor-container .st-area::-webkit-scrollbar-track {
+  border: 5px solid #fcfcfc;
+  border-radius: 50px;
+}
+
+/* Handle */
+:host ::ng-deep .st-editor-container .st-area::-webkit-scrollbar-thumb {
+  background: rgb(216, 216, 216);
+  border-radius: 50px;
+  border: 5px solid white;
+  border-radius: 50px !important;
+  cursor: pointer;
+}
+
+/* Handle on hover */
+:host ::ng-deep .st-editor-container .st-area::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  border-radius: 50px !important;
+
+}
+
+/* Arrow buttons */
+:host ::ng-deep .st-editor-container .st-area::-webkit-scrollbar-button {
+  height: 20px;
+  background: #fcfcfc;
+  border: 0px solid #888;
+  cursor: pointer;
+}
+
+/* Up arrow */
+:host ::ng-deep .st-editor-container .st-area::-webkit-scrollbar-button:vertical:decrement {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 8L18 14H6L12 8Z'%3E%3C/path%3E%3C/svg%3E") no-repeat center center;
+}
+
+/* Down arrow */
+:host ::ng-deep .st-editor-container .st-area::-webkit-scrollbar-button:vertical:increment {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 16L6 10H18L12 16Z'%3E%3C/path%3E%3C/svg%3E") no-repeat center center;
+}
+
+:host ::ng-deep .st-toolbar {
+  position: sticky;
+  top: 37px;
+  border-top: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  z-index: 102
+}
+
+.wordreportcontent {
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+.st-custom-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 105
+}
+
+
+.outer-container {
+  overflow: scroll;
+  width: 100%;
+  /* Adjust as needed */
+  height: 90vh;
+  /* Adjust as needed */
+}
+
+.inner-container {
+  transform-origin: 0 0;
+}
+
+.previewofreport {
+  position: absolute;
+  top: 75px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  z-index: 10;
+  width: 75mm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* Hide scrollbars in the content of the iframe */
+#preview_iframe::-webkit-scrollbar {
+  display: none;
+}
+
+#preview_iframe {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  min-height: 100%;
+  padding: 10px 0 0 18px;
+  width: 100%;
+}

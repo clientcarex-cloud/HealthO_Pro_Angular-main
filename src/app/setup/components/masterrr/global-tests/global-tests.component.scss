@@ -1,0 +1,129 @@
+
+.cke_top .cke_reset_all {
+    font-family: 'Open Sans', Sans-Serif  !important;
+    font-size: 200px !important; /* You can adjust the font size as needed */
+}
+
+// textarea[autoGrow] {
+//   width: 100%;
+//   resize: none; /* Disable manual resizing */
+//   box-sizing: border-box;
+// }
+
+// .expandRow td{
+//   min-width: 200px;
+// }
+
+.card-animate{
+  transition: all 0.1s !important;
+
+  // &:hover{
+  //     transform: translateY(calc(#{-$grid-gutter-width} / 5));
+  //     box-shadow: $box-shadow-lg;
+  // }
+}
+
+
+td, th{
+    white-space: nowrap;
+}
+
+.sticky-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Adjust z-index as needed */
+    background-color: white; /* Set the background color of the toolbar */
+  }
+  
+  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    // transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); // smooth animation
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, ); // no animation
+  }
+  
+
+  .hidden-element {
+    visibility: hidden;
+}
+
+td .edit-btn {
+  visibility: hidden;
+}
+
+td:hover .edit-btn {
+  visibility: visible;
+}
+
+.editor{
+  height: 10px;
+}
+
+.NgxEditor {
+  background: #fff;
+  color: #000;
+  // background-clip: padding-box;
+  border-radius: 7px;
+  border: 0px solid rgba(0, 0, 0, .2);
+  position: relative;
+}
+
+
+
+
+.previewofreport {
+  user-select: none; 
+  display: block; 
+  justify-content: center; 
+  padding: 10px 0 0 15px; 
+  position: absolute; 
+  top: 75px; 
+  height: 70vh;
+}
+
+
+.previewofreport-full{
+-webkit-user-select: none;
+user-select: none;
+display: flex;
+justify-content: center;
+padding: 0px 0 0 0px;
+position: absolute;
+top: 75px;
+transform: scale(1.5);
+transition: transform 0.3s ease-in-out;
+background-color: rgb(0 0 0 / 54%);
+z-index: 1000;
+margin: 0 auto;
+width: 100%;
+height: 100%;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  // box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  //             0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  //             0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  // opacity: 100;
+  // background-color: #dae4ff;
+  color: white;
+  opacity: 0.5;
+  // border: 5px dashed black ;
+  // box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+  // 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+  // 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-animating {
+  // transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); // smooth animation
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, ); // no animation
+}
+
+
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  // transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); // smooth animation
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, ); // no animation
+}

@@ -1,0 +1,91 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@11.6.2
+2 info using node@v24.12.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/fahadahmed/Django/HealthO_Pro_Angular-main/.npmrc
+5 silly config load:file:/Users/fahadahmed/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install @popperjs/core
+8 verbose argv "install" "@popperjs/core"
+9 verbose logfile logs-max:10 dir:/Users/fahadahmed/Django/HealthO_Pro_Angular-main/.npm-cache/_logs/2026-01-03T07_26_29_234Z-
+10 verbose logfile /Users/fahadahmed/Django/HealthO_Pro_Angular-main/.npm-cache/_logs/2026-01-03T07_26_29_234Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 silly fetch manifest @popperjs/core@*
+15 silly packumentCache full:https://registry.npmjs.org/@popperjs%2fcore cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/@popperjs%2fcore 624ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/@popperjs%2fcore set size:undefined disposed:false
+18 silly placeDep ROOT @popperjs/core@2.11.8 OK for: velzon@0.0.0 want: *
+19 silly fetch manifest @angular/common@^6.0.0 || ^7.0.0 || ^8.0.0
+20 silly packumentCache full:https://registry.npmjs.org/@angular%2fcommon cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/@angular%2fcommon 935ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/@angular%2fcommon set size:undefined disposed:false
+23 silly fetch manifest @angular/core@^6.0.0 || ^7.0.0 || ^8.0.0
+24 silly packumentCache full:https://registry.npmjs.org/@angular%2fcore cache-miss
+25 http fetch GET 200 https://registry.npmjs.org/@angular%2fcore 1110ms (cache miss)
+26 silly packumentCache full:https://registry.npmjs.org/@angular%2fcore set size:undefined disposed:false
+27 silly fetch manifest rxjs@^6.4.0
+28 silly packumentCache full:https://registry.npmjs.org/rxjs cache-miss
+29 http fetch GET 200 https://registry.npmjs.org/rxjs 500ms (cache miss)
+30 silly packumentCache full:https://registry.npmjs.org/rxjs set size:undefined disposed:false
+31 silly fetch manifest zone.js@~0.9.1
+32 silly packumentCache full:https://registry.npmjs.org/zone.js cache-miss
+33 http fetch GET 200 https://registry.npmjs.org/zone.js 374ms (cache miss)
+34 silly packumentCache full:https://registry.npmjs.org/zone.js set size:undefined disposed:false
+35 verbose stack Error: could not resolve
+35 verbose stack     at PlaceDep.failPeerConflict (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/place-dep.js:503:25)
+35 verbose stack     at new PlaceDep (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/place-dep.js:157:21)
+35 verbose stack     at #buildDepStep (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:945:18)
+35 verbose stack     at async Arborist.buildIdealTree (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/build-ideal-tree.js:182:7)
+35 verbose stack     at async Promise.all (index 1)
+35 verbose stack     at async Arborist.reify (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:114:5)
+35 verbose stack     at async Install.exec (/usr/local/lib/node_modules/npm/lib/commands/install.js:150:5)
+35 verbose stack     at async Npm.exec (/usr/local/lib/node_modules/npm/lib/npm.js:208:9)
+35 verbose stack     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli/entry.js:67:5)
+36 error code ERESOLVE
+37 error ERESOLVE could not resolve
+38 error
+39 error While resolving: @agm/core@1.1.0
+39 error Found: @angular/common@17.3.1[2m[22m
+39 error [2mnode_modules/@angular/common[22m
+39 error   [95mpeer[39m @angular/common@"^17.1.1" from @angular-slider/ngx-slider@17.0.2[2m[22m
+39 error   [2mnode_modules/@angular-slider/ngx-slider[22m
+39 error     @angular-slider/ngx-slider@"^17.0.2" from the root project
+39 error   [95mpeer[39m @angular/common@"^17.0.0 || ^18.0.0" from @angular/cdk@17.3.1[2m[22m
+39 error   [2mnode_modules/@angular/cdk[22m
+39 error     [95mpeer[39m @angular/cdk@">=17.0.0" from ng2-charts@6.0.0[2m[22m
+39 error     [2mnode_modules/ng2-charts[22m
+39 error       ng2-charts@"^6.0.0" from the root project
+39 error     @angular/cdk@"^17.3.1" from the root project
+39 error   31 more (@angular/forms, @angular/platform-browser, ...)
+39 error
+39 error Could not resolve dependency:
+39 error [95mpeer[39m @angular/common@"^6.0.0 || ^7.0.0 || ^8.0.0" from @agm/core@1.1.0[2m[22m
+39 error [2mnode_modules/@agm/core[22m
+39 error   @agm/core@"^1.1.0" from the root project
+39 error
+39 error Conflicting peer dependency: @angular/common@8.2.14[2m[22m
+39 error [2mnode_modules/@angular/common[22m
+39 error   [95mpeer[39m @angular/common@"^6.0.0 || ^7.0.0 || ^8.0.0" from @agm/core@1.1.0[2m[22m
+39 error   [2mnode_modules/@agm/core[22m
+39 error     @agm/core@"^1.1.0" from the root project
+39 error
+39 error Fix the upstream dependency conflict, or retry
+39 error this command with --force or --legacy-peer-deps
+39 error to accept an incorrect (and potentially broken) dependency resolution.
+40 error
+40 error
+40 error For a full report see:
+40 error /Users/fahadahmed/Django/HealthO_Pro_Angular-main/.npm-cache/_logs/2026-01-03T07_26_29_234Z-eresolve-report.txt
+41 silly unfinished npm timer reify 1767425189442
+42 silly unfinished npm timer reify:loadTrees 1767425189444
+43 silly unfinished npm timer idealTree:buildDeps 1767425189683
+44 silly unfinished npm timer idealTree:node_modules/@agm/core 1767425190313
+45 verbose cwd /Users/fahadahmed/Django/HealthO_Pro_Angular-main
+46 verbose os Darwin 25.1.0
+47 verbose node v24.12.0
+48 verbose npm  v11.6.2
+49 verbose exit 1
+50 verbose code 1
+51 error A complete log of this run can be found in: /Users/fahadahmed/Django/HealthO_Pro_Angular-main/.npm-cache/_logs/2026-01-03T07_26_29_234Z-debug-0.log

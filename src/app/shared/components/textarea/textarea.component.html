@@ -1,0 +1,7 @@
+<label *ngIf="LabelShow" for="textarea1">{{labelText}}</label>
+<textarea name="textarea1" [class]="classVal" 
+[placeholder]="placeholderText" [value]="Value" 
+[disabled]="input_disabled"
+[style.height]="defHeight + 'vh'" [style.cursor]="input_disabled ? 'not-allowed' : ''">
+
+</textarea>

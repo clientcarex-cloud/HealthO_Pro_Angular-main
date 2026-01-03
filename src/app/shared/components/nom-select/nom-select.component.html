@@ -1,0 +1,8 @@
+<select class="{{classVal}}" aria-label="Text input with select button"
+    placeholder="Select" (change)="emitValue($event)" [disabled]="inputDisabled">
+    <option value="" *ngIf="showDisabled" disabled>Select</option>
+    <ng-container *ngFor="let item of selectItems">
+        <option [value]="item[bindValue]" [selected]="item[bindValue] == selectedValue">
+            {{item[bindLabel]}}</option>
+    </ng-container>
+</select>

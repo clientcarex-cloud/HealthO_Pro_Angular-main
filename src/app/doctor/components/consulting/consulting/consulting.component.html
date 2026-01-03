@@ -1,0 +1,137 @@
+<app-layout [showNav]="false" [showPageTitle]="false" [showMap]="false" [displayInformation]="true" 
+[labPackage]="false">
+    
+    <!-- <ng-container class="optTitle">
+        Consulting Doctor
+    </ng-container> -->
+
+    <ng-container class="displayInformation">
+        <app-display-data [data]="dataDoctor"></app-display-data>
+    </ng-container>
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+          (searchTermChange)="searchQuery($event)"></app-searchbox>
+      </ng-container>
+
+      <ng-container class="datepicker">
+        <app-datepicker #datePicker datePickerFormat="Y-m-d" dateMode="range" placeHolder="All Time (Active)" 
+         (dateValueChange)="getRangeValue($event)" 
+       ></app-datepicker>
+    </ng-container>
+
+    <ng-container class="selectPrint">
+        <app-select-print></app-select-print>
+    </ng-container>
+
+    <!-- <ng-container class="selectComp">
+        <app-select placeHolder="Select Doctor"></app-select>
+    </ng-container> -->
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+          name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option [value]="all_count">All</option>
+        </select>
+      </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-black">#</th>
+                <th (click)="changeSorting()" class="cursor-pointer">
+                    <div class="d-flex text-nowrap gap-5 align-items-center justify-content-start">
+                      <div>Dr Name</div>
+                      <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="doctors && doctors.length != 0">
+                        <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                            class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                        <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                            class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                      </div>
+                    </div>
+                  </th>
+                <th><span>Specialization</span></th>
+                <th><span>Area</span></th>
+                <th><span>Department</span></th>
+                <th class="text-center text-nowrap"><span>Reports Signed</span></th>
+                <th>Action</th>
+            </ng-container>
+            <ng-container class="tablebody" *ngFor="let item of doctors; let i=index">
+                <tr class="font-Readex td-color text-nowrap">
+                    <td class="text-black fs-6"  (click)="showDoc(item.id)">
+                        {{(page_number * page_size) - page_size + i + 1}} 
+                    </td>
+
+                    <td (click)="showDoc(item.id)">
+                        <app-patient-details name="{{item.name.toUpperCase()}}" time="{{item?.mobile_number}}" [query]="query"></app-patient-details>
+                    </td>
+
+                    <td (click)="showDoc(item.id)">
+                        <small>
+                            <ngb-highlight [result]="item?.specialization" [term]="query"></ngb-highlight>
+                        </small>
+                    </td>
+
+                    <td (click)="showDoc(item.id)">
+                        <div class="d-flex flex-column text-black">
+                            <small class="td-color">
+                                {{item.geo_area ? item.geo_area : "-"}}
+                            </small>
+                        </div>
+                    </td>
+
+                    <td (click)="showDoc(item.id)">
+                         <div class="d-flex flex-column">
+                            <small class="text-black">{{item.department ? item.department.toUpperCase() : ""}}</small> 
+                            <!-- <small *ngIf="item?.is_department_default" class="text-success">
+                                Default
+                            </small> -->
+                         </div>
+                    </td>
+                    <!-- <td class="text-center">
+                        {{item.patients_paid ? item.patients_paid : "-"}}
+                    </td> -->
+                    <td (click)="showDoc(item.id)" class="text-center fw-semibold text-black">
+                        {{item.reports_signed_count ? item.reports_signed_count : ""}}
+                    </td>
+
+                    <td>
+                        <div class="d-flex gap-2">
+                            <button class="btn p-0 fs-4" ngbTooltip="Edit {{item.name.toUpperCase()}} Doctor" (click)="showDoc(item.id)">
+                                <i class="ri-edit-2-line"></i>
+                            </button>
+
+                            <button ngbTooltip="Manage {{item.name.toUpperCase()}} Consulting Amount" class="btn p-0 fs-4" (click)="manageAmount(item)">
+                                <i class="bi bi-currency-rupee"></i>
+                            </button>
+                        </div>
+                        
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+</ng-container>
+
+</app-layout>

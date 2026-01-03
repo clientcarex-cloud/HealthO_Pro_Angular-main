@@ -1,0 +1,132 @@
+<app-master pageTitle="SMS CONFIGS">
+    <ng-container class="searchbox">
+        <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)">
+        </app-searchbox>
+    </ng-container>
+    <ng-container class="addnew">
+        <app-addnewbutton buttonText="Add New SMS Config" content="content"
+            (onAddNewClick)="addItem(content, { size: 'xl', centered: true })">
+        </app-addnewbutton>
+    </ng-container>
+    <ng-container class="datacontent">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="sort1 fullWidthColumn" data-sort="smsTransType">Transaction</th>
+                <th class="sort1 fullWidthColumn" data-sort="smsCategory">Category</th>
+                <th class="sort1" data-sort="templateId">Template Id</th>
+                <th class="sort1" data-sort="smsStatus">SMS Status</th>
+                <th class="sort1" data-sort="wapStatus">WAP Status</th>
+                <th class="sort1">Action</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let data of dataList$ | async">
+                    <td>
+                        <ngb-highlight [result]="data.smsTransType!.description" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.smsCategory!.description" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.templateId" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td class="status">
+                        <app-checkbox labelText="SMS Status" [showLabel]="false" [checkboxValue]="data.smsStatus"
+                            [(ngModel)]="data.smsStatus"
+                            (onCheckboxValueChanged)="updateSMSSendStatus(data)"></app-checkbox>
+                    </td>
+                    <td class="status">
+                        <app-checkbox labelText="WAP Status" [showLabel]="false" [checkboxValue]="data.wapStatus"
+                            [(ngModel)]="data.wapStatus"
+                            (onCheckboxValueChanged)="updateWAPSendStatus(data)"></app-checkbox>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <app-editbutton content="content"
+                                (onEditClick)="updateItem(content, data, '', { size: 'xl', centered: true })">
+                            </app-editbutton>
+                            <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)">
+                            </app-deletebutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+    <ng-container class="paginationcontent">
+        <app-pager>
+            <ng-container class="pager">
+                <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                    (pageChange)="service.page = $event">
+                </app-pagination>
+            </ng-container>
+        </app-pager>
+    </ng-container>
+</app-master>
+
+<!-- Add SMS Config -->
+<ng-template #content role="document">
+    <app-newmodel [modelTitle]="modalTitle" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="row">
+                    <div class="col-8 mb-3 mb-md-0">
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col mb-3 mb-md-0">
+                                    <app-select labelText="Trans. Type" placeHolder="Select Trans. Type"
+                                        formControlName="smsTransType" selectBindLabel="description" selectBindId="id"
+                                        [selectItems]="smsTransTypes" [formSubmitted]="submitted"
+                                        requiredMessage="Trans. Type is required" [applyAutoFocus]="true"></app-select>
+                                </div>
+                                <!-- End of Column -->
+                                <div class="col mb-3 mb-md-0">
+                                    <app-select labelText="Category" placeHolder="Select Category"
+                                        formControlName="smsCategory" selectBindLabel="description" selectBindId="id"
+                                        [selectItems]="smsCategories" [formSubmitted]="submitted"
+                                        requiredMessage="Category is required"></app-select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of Row -->
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col mb-3 mb-md-0">
+                                    <app-input labelText="Message" placeHolder="Enter Message" formControlName="smsBody"
+                                        [formSubmitted]="submitted" requiredMessage="Message is required"
+                                        maxLengthMessage="Message should not exceed 500 chars"></app-input>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of Row -->
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-6 mb-3 mb-md-0">
+                                    <app-input labelText="Template ID" placeHolder="Enter Template ID"
+                                        formControlName="templateId" [formSubmitted]="submitted"
+                                        requiredMessage="Template ID is required"
+                                        maxLengthMessage="Template ID should not exceed 50 chars"></app-input>
+                                </div>
+                                <!-- End of Column -->
+                                <div class="col mb-3 mb-md-0">
+                                    <app-input labelText="Characters" placeHolder=""
+                                    [inputValue]="charactersCount" [isReadOnly]="true"></app-input>
+                                </div>
+                                <!-- End of Column -->
+                                <div class="col mb-3 mb-md-0">
+                                    <app-input labelText="Msg. Count" placeHolder=""
+                                    [inputValue]="messageCount" [isReadOnly]="true"></app-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 mb-3 mb-md-0">
+                        Parameters
+                    </div>
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

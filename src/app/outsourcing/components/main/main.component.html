@@ -1,0 +1,74 @@
+<div class="container-full">
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row g-lg-2 g-2  align-items-center justify-content-between">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="tabsNavigation d-flex">
+                <ul ngbNav #nav="ngbNav"
+                    class="nav nav-section-custom mb-2 font-inter" [activeId]="activeTab">
+                    <li [ngbNavItem]="1" (click)="activeTab = 1" *ngIf="!ref_lab">
+                        <a ngbNavLink>Send</a>
+                        <ng-template ngbNavContent>
+                            <app-outsourcings [to_send]="true"></app-outsourcings>
+                        </ng-template>
+                    </li>
+                    <li [ngbNavItem]="2" (click)="activeTab = 2" *ngIf="!ref_lab">
+                        <a ngbNavLink>Receive</a>
+                        <ng-template ngbNavContent >
+                            <app-outsourcings [to_send]="false"></app-outsourcings>
+                        </ng-template>
+                    </li>
+                    <li  [ngbNavItem]="3"  (click)="activeTab = 3">
+                        <a ngbNavLink>Track Patient</a>
+                        <ng-template ngbNavContent >
+                           <app-sourcing-patients [ref_lab]="ref_lab"></app-sourcing-patients>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-12 col-lg-4 col-sm-12">
+            <div class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+                <app-addnewbutton *ngIf="ref_lab" buttonText="Letterhead Settings" (click)="openModal(letterhead, {size: 'xl', centered: true})"></app-addnewbutton>
+                <app-info-btn></app-info-btn>
+            </div>
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<ng-template #collaboration let-modal>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Collaboration</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <app-lab-partner></app-lab-partner>
+    </div>
+</ng-template>
+
+
+<ng-template #letterhead let-modal>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Letterhead Settings</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <app-letterhead-setting [hideExtra]="true" [ref_lab]="ref_lab"></app-letterhead-setting>
+    </div>
+</ng-template>
+
+

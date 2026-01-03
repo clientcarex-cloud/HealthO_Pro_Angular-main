@@ -1,0 +1,13 @@
+<!-- Nav tabs -->
+<!-- <ul ngbNav #BorderTop="ngbNav [activeId]="activeTabIdx" -->
+<!-- <ul ngbNav
+    class="nav nav-tabs custom-hover-nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3"> -->
+<ul ngbNav #nav="ngbNav" class="nav nav-section-custom mb-3 font-inter d-flex flex-column">
+<!-- <ul ngbNav #nav="ngbNav"  class="nav nav-section-custom mb-2 font-inter d-flex flex-sm-wrap flex-md-nowrap flex-sm-nowrap flex-lg-nowrap justify-content-sm-start justify-content-md-center justify-content-lg-center justify-content-xl-center justify-content-center align-items-center"> -->
+    <ng-content select=".tabitems"></ng-content>
+</ul>
+<div *ngIf="contentDisplay">
+    <ng-container *ngTemplateOutlet="contentTemplate" ></ng-container>
+</div>
+<!-- <div class="tab-content text-muted">    
+</div> -->

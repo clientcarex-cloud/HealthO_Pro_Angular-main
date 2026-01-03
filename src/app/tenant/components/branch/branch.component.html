@@ -1,0 +1,276 @@
+<app-master pageTitle="BRANCHES">
+    <ng-container class="searchbox">
+        <div class="ms-2 mb-1">
+            <app-select labelText="Tenant" placeHolder="Select Tenant" selectBindLabel="name" selectBindId="id"
+                [selectItems]="tenants" [formSubmitted]="submitted" requiredMessage="Tenant is required"
+                [applyAutoFocus]="true" [selectValue]="undefined"
+                (onSelectionChanged)="tenantChange($event)"></app-select>
+        </div>
+        <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)"
+        [applyAutoFocus]="false">
+        </app-searchbox>
+    </ng-container>
+    <ng-container class="addnew">
+        <app-addnewbutton buttonText="Add Branch" content="content"
+            (onAddNewClick)="addItem(content, { size: 'xl', centered: true })" [buttonDisabled]="!this.tenant.length">
+        </app-addnewbutton>
+    </ng-container>
+    <ng-container class="datacontent">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="sort1" data-sort="shortname">Short Name</th>
+                <th class="sort1 fullWidthColumn" data-sort="identifier">Name</th>
+                <th class="sort1 fullWidthColumn" data-sort="address">Address</th>
+                <th class="sort1" data-sort="area">Area</th>
+                <th class="sort1" data-sort="pinCode">PinCode</th>
+                <th class="sort1 fullWidthColumn" data-sort="city">City</th>
+                <th class="sort1" data-sort="status">Status</th>
+                <th class="sort1">Action</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let data of dataList$ | async">
+                    <td>
+                        <ngb-highlight [result]="data.shortName" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.name" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.address" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.area" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.pinCode" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.city?.name" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td class="status">
+                        <app-checkbox labelText="Branch Status" [showLabel]="false"
+                        [checkboxValue]="data.status"
+                        [(ngModel)]="data.status"
+                        (onCheckboxValueChanged)="updateBranchStatus(data)"></app-checkbox>                        
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <app-settingsbutton content="settings"
+                                (onSettingsClick)="openSettings(settings, data, { size: 'xl', centered: true })">
+                            </app-settingsbutton>
+                            <app-editbutton content="content"
+                                (onEditClick)="updateItem(content, data, data.name, { size: 'xl', centered: true })">
+                            </app-editbutton>
+                            <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)">
+                            </app-deletebutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+    <ng-container class="paginationcontent">
+        <app-pager>
+            <ng-container class="pager">
+                <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                    (pageChange)="service.page = $event">
+                </app-pagination>
+            </ng-container>
+        </app-pager>
+    </ng-container>
+</app-master>
+
+<!-- Add New Branch -->
+<ng-template #content role="document">
+    <app-newmodel [modelTitle]="modalTitle" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-8 mb-3 mb-md-0">
+                            <app-input labelText="Name" placeHolder="Enter Name" formControlName="name"
+                                [formSubmitted]="submitted" requiredMessage="Name is required"
+                                maxLengthMessage="Name should not exceed 50 chars" [applyAutoFocus]="true"></app-input>
+                        </div>
+                        <div class="col-md-4">
+                            <app-input labelText="Short Name" placeHolder="Enter Short Name" formControlName="shortName"
+                                [formSubmitted]="submitted" requiredMessage="Short Name is required"
+                                maxLengthMessage="Short Name should not exceed 10 chars"></app-input>
+                        </div>
+                    </div>
+                </div>
+                <!-- row end -->
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-8 mb-3 mb-md-0">
+                            <app-input labelText="Address" placeHolder="Enter Address" formControlName="address"
+                                [formSubmitted]="submitted" requiredMessage="Address is required"
+                                maxLengthMessage="Address should not exceed 500 chars"></app-input>
+                        </div>
+                        <div class="col-md-4">
+                            <app-input labelText="Area" placeHolder="Enter Address" formControlName="area"
+                                [formSubmitted]="submitted" requiredMessage="Area is required"
+                                maxLengthMessage="Area should not exceed 50 chars"></app-input>
+                        </div>
+                    </div>
+                </div>
+                <!-- row end -->
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-8 mb-3 mb-md-0">
+                                    <app-select labelText="City" placeHolder="Select City" formControlName="city"
+                                        selectBindLabel="name" selectBindId="id" [selectItems]="cities"
+                                        [formSubmitted]="submitted" requiredMessage="City is required"></app-select>
+                                </div>
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <app-input labelText="PinCode" placeHolder="Enter PinCode" formControlName="pinCode"
+                                        [formSubmitted]="submitted" requiredMessage="PinCode is required"
+                                        maxLengthMessage="PinCode should not exceed 15 chars"
+                                        [applyAllowNumbersOnly]="true"></app-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <app-input labelText="Email ID" placeHolder="Enter Email ID" formControlName="emailId"
+                                [formSubmitted]="submitted" requiredMessage="Email ID is required"
+                                maxLengthMessage="Email ID should not exceed 50 chars"
+                                emailMessage="Enter valid Email ID"></app-input>
+                        </div>
+                    </div>
+                </div>
+                <!-- row end -->
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-8 mb-3 mb-md-0">
+                            <app-input labelText="Managing Director" placeHolder="Enter Managing Director"
+                                formControlName="cPersonName1" [formSubmitted]="submitted"
+                                requiredMessage="Managing Director is required" maxLengthMessage="Managing Director should not
+                                exceed 100 chars"></app-input>
+                        </div>
+                        <div class="col-md-4">
+                            <app-input labelText="Mobile No." placeHolder="Enter Mobile No."
+                                formControlName="cPersonMobileNo1" [formSubmitted]="submitted"
+                                requiredMessage="Mobile No. is required"
+                                minLengthMessage="Mobile No. should be of 10 digits"
+                                maxLengthMessage="Mobile No. should be of 10 digits"
+                                [applyAllowNumbersOnly]="true"></app-input>
+                        </div>
+                    </div>
+                </div>
+                <!-- row end -->
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-8 mb-3 mb-md-0">
+                            <app-input labelText="Contact Person" placeHolder="Enter Contact Person"
+                                formControlName="cPersonName2" [formSubmitted]="submitted"
+                                requiredMessage="Contact Person is required" maxLengthMessage="Contact Person should not
+                                exceed 100 chars"></app-input>
+                        </div>
+                        <div class="col-md-4">
+                            <app-input labelText="Mobile No." placeHolder="Enter Mobile No."
+                                formControlName="cPersonMobileNo2" [formSubmitted]="submitted"
+                                requiredMessage="Mobile No. is required"
+                                minLengthMessage="Mobile No. should be of 10 digits"
+                                maxLengthMessage="Mobile No. should be of 10 digits"
+                                [applyAllowNumbersOnly]="true"></app-input>
+                        </div>
+                    </div>
+                </div>
+                <!-- row end -->
+                <div class="mb-3 mb-md-0">
+                    <div class="col-12">
+                        <app-input labelText="Website Url" placeHolder="Enter Website Url" formControlName="websiteUrl"
+                            [formSubmitted]="submitted" requiredMessage="Website Url is required is required"
+                            maxLengthMessage="Website Url should not exceed 100 digits"></app-input>
+                    </div>
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>
+
+<!-- Branch Settings -->
+<ng-template #settings role="document">
+    <app-newmodel [modelTitle]="settingsTitle" [modal]="settingsModalRef" [formId]="settingsFormId"
+        [showSaveButton]="false">
+        <ng-container class="modalBody">
+            <app-tabs ngbNav [selectedTabIdx]="1">
+                <ng-container class="tabitems">
+                    <app-tabcontent [contentTemplate]="logins">
+                        <ng-container class="tabitemheader">
+                            <h5><i class="ri-login-circle-line align-middle me-1"></i> Logins</h5>
+                        </ng-container>
+                    </app-tabcontent>
+                    <app-tabcontent [contentTemplate]="configs">
+                        <ng-container class="tabitemheader">
+                            <h5><i class="ri-mail-settings-line align-middle me-1"></i> Configurations</h5>
+                        </ng-container>
+                    </app-tabcontent>
+                    <app-tabcontent [contentTemplate]="sms">
+                        <ng-container class="tabitemheader">
+                            <h5><i class="ri-message-line align-middle me-1"></i> SMS</h5>
+                        </ng-container>
+                    </app-tabcontent>
+                    <app-tabcontent [contentTemplate]="accessrights">
+                        <ng-container class="tabitemheader">
+                            <h5><i class="ri-stack-line align-middle me-1"></i> Access Rights</h5>
+                        </ng-container>
+                    </app-tabcontent>
+                    <app-tabcontent [contentTemplate]="renewals">
+                        <ng-container class="tabitemheader">
+                            <h5><i class="ri-window-line align-middle me-1"></i> Renewals</h5>
+                        </ng-container>
+                    </app-tabcontent>
+                    <app-tabcontent [contentTemplate]="whatsapp">
+                        <ng-container class="tabitemheader">
+                            <h5><i class="ri-whatsapp-line align-middle me-1"></i> Whatsapp</h5>
+                        </ng-container>
+                    </app-tabcontent>
+                </ng-container>
+            </app-tabs>
+        </ng-container>
+    </app-newmodel>
+</ng-template>
+
+<!-- Logins -->
+<ng-template #logins>
+    <app-logins [branchId]="branchId" [dbName]="dbName">
+    </app-logins>
+</ng-template>
+
+<!-- Configurations -->
+<ng-template #configs>
+    <app-config [branchId]="branchId" [dbName]="dbName">
+    </app-config>
+</ng-template>
+
+<!-- SMS -->
+<ng-template #sms>
+    <app-smsconfig [branchId]="branchId" [dbName]="dbName">
+    </app-smsconfig>
+</ng-template>
+
+<!-- Access Rights -->
+<ng-template #accessrights>
+    Tab Content 4
+</ng-template>
+
+<!-- Renewals -->
+<ng-template #renewals>
+    <app-renewal [branchId]="branchId" [dbName]="dbName">
+    </app-renewal>
+</ng-template>
+
+<!-- Whatsapp -->
+<ng-template #whatsapp>
+    <app-wapconfig [branchId]="branchId" [dbName]="dbName">
+    </app-wapconfig>
+</ng-template>

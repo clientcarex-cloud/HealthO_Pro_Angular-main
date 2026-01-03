@@ -1,0 +1,234 @@
+<form [formGroup]="baseForm">
+    <div class="row mb-3">
+        <div class="col-12 pb-1">
+            Search and Select Lab<span class="text-danger ps-2">*</span>
+        </div>
+
+        <div class="col-9">
+
+            <div class="ng-autocomplete fw-light ">
+
+                <ng-template #itemTemplate let-item>
+                    <div class="d-flex flex-column border-bottom">
+                        <a [innerHTML]="item.organization_name" class="py-1 px-2 fs-5 fw-light"></a>
+                        <small class="px-2 fw-light">
+                            <small [innerHTML]="item.address"></small>
+                        </small>
+                    </div>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                </ng-template>
+
+                <ng-autocomplete historyHeading="" [isLoading]="is_loading" [historyListMaxNumber]="0"
+                    [data]="organizations" searchKeyword='organization_name' placeholder="Search Lab" (selected)="acceptorSelected($event)"
+                    [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate" (inputCleared)="acceptorSelected(null)"
+                    (inputChanged)="showOrgs($event)" (keydown.enter)="$event.preventDefault()">
+                </ng-autocomplete>
+
+            </div>
+
+        </div>
+
+        <div class="col-3">
+            <button type="button" *ngIf="baseForm.get('acceptor')?.value && baseForm.get('acceptor')?.value!= ''" 
+            class="btn btn-primary rounded-3" (click)="openModal(sourcingTests, {size: 'lg'});getData();getDepartment()">View Test</button>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 mb-1">
+            Select Payment Policy <span class="text-danger">*</span>
+        </div>
+        <div class="col-4">
+            <!-- <app-checkbox formControlName="credit_payment" activeText="Credit Payment" inactiveText="Credit Payment" [showLabel]="false"
+            classVal="" (onCheckboxValueChanged)="creditPaymentChange($event)"></app-checkbox> -->
+            <select (change)="creditPaymentChange($event)" 
+            class="form-select rounded-3 fw-medium fs-5" formControlName="credit_payment">
+                <option [value]="true">Credit</option>
+                <option [value]="false">Cash</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row mb-3" *ngIf="!baseForm.value?.credit_payment">
+        <div class="col-4">
+            <div class="row">
+                <div class="col-12">Min. Print Amount(%) <span class="text-danger">*</span></div>
+                <div class="col-12">
+                    <div class="row g-1">
+                        <div class="col-10">
+                            <app-num-input formControlName="min_print_amount"></app-num-input>
+                        </div>
+                        <div class="col-2 fw-bold fs-4 d-flex align-items-center justify-content-start">
+                            %
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="row">
+                <div class="col-12">Min. Paid Amount(%) <span class="text-danger">*</span></div>
+
+                <div class="col-12">
+                    <div class="row g-1">
+                        <div class="col-10">
+                            <app-num-input formControlName="min_paid_amount"></app-num-input> 
+                        </div>
+                        <div class="col-2 fw-bold fs-4 d-flex align-items-center justify-content-start">
+                            %
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12 pb-1">
+            Description
+        </div>
+        <div class="col-12">
+            <textarea formControlName="description" placeholder="Type Here" class="form-control"></textarea>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12">
+            <button type="button" (click)="saveApiCall()" class="btn btn-success rounded-3 fs-5 px-2 shadow">Save</button>
+        </div>
+    </div>
+</form>
+
+
+<ng-template #sourcingTests let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom ">
+        <span class="modal-title fs-5" id="modal-basic-title">{{baseForm.get('acceptor')?.value.organization_name}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="container-full">
+
+            <!-- search box  -->
+            <div class="row g-2 mb-3 justify-content-between">
+                <div class="col-lg-8 col-12">
+                    <div class="row g-2">
+                        <div class="col-5">
+                            <app-searchbox placeholder="Search Tests" [spellcheck]="false" [applyAutoFocus]="false"
+                                (searchTermChange)="searchQuery($event)" [searchTerm]="query"></app-searchbox>
+                        </div>
+                        <div class="col-5">
+                            <app-select [selectItems]="departments" selectBindLabel="name" placeHolder="Select Department"
+                                (onSelectionChanged)="selectDepartment($event)" ></app-select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-12 d-flex justify-content-lg-end justify-content-start align-items-center">
+                    <div class="row">
+                        <div class="col-4">
+                            <span class="fw-light">Showing</span>
+                        </div>
+                    </div>
+                    <div class="col-4 px-1">
+                        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans"
+                            style="width: auto" name="pageSize" placeholder="Select"
+                            (change)="changePageNumber($event)">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option [value]="all_count">All</option>
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <span class="fw-light">Entries</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Global Tests Table  -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>Name</th>
+                            <th>Code</th>
+                            <th>Department</th>
+                            <!-- <th >Price</th> -->
+                        </ng-container>
+                        <ng-container class="tablebody">
+                            <tr *ngFor="let test of global_tests" class="td-color">
+                                <td class="text-black fw-medium fs-5">
+                                    <ngb-highlight [result]="test.name" [term]="query"></ngb-highlight>
+                                </td>
+                                <td>
+                                    <small>
+                                        <ngb-highlight [result]="test.short_code" [term]="query"></ngb-highlight>
+                                    </small>
+                                </td>
+                                <td class="text-black">
+                                    <small>
+                                        <ngb-highlight [result]="test.department" [term]="query"></ngb-highlight>
+                                    </small>
+                                </td>
+                                <!-- <td class="text-black fs-6 text-end">
+                                    <ng-container *ngIf="!isBulkEditing; else editPrice">
+                                        {{ test.price }}
+                                    </ng-container>
+                                    <ng-template #editPrice>
+                                        <input type="text" class="form-control rounded-3 " style="min-width: 100px;"
+                                            [(ngModel)]="test.price" (ngModelChange)="updatePrice($event, test)" />
+                                    </ng-template>
+                                </td> -->
+
+                            </tr>
+                        </ng-container>
+        
+                        <ng-container class="tablebody" *ngIf="!global_tests || global_tests.length === 0">
+                            <tr>
+                                <td colspan="8">
+                                    <div class="text-black fs-6 font-monsterract d-flex flex-row gap-3 py-5 align-items-center justify-content-center "
+                                        style="vertical-align: middle;min-height: 100px;">
+                                        <!-- No data found -->
+                                        <!--
+                                            <small class="inactive">NO DATA FOUND</small>
+                                            <img src="/assets/images/empty-box.png" style="width:50px"> 
+                                        -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+
+
+            <div class="row g-3 justify-content-between align-items-center">
+                <div class="col-lg-6 col-12 font-DMSans">
+                    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number *
+                        page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }}
+                            Entries</span>
+                </div>
+        
+                <div class="col-lg-6 col-12">
+                    <div class="d-flex justify-content-end font-DMSans">
+                        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+                            (pageChange)="onPageChange($event)" [paginationSize]="'sm'" >
+                        </app-pagination>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</ng-template>

@@ -1,0 +1,27 @@
+<div class="container-full">
+    <div class="row g-2">
+      <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3 rounded-3">
+        <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-section-vertical-custom border rounded-3"
+        orientation="vertical" size="sm">
+
+        <li [ngbNavItem]="1">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>suppliers</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-supplier></app-supplier>
+          </ng-template>
+        </li>
+    
+      </ul>
+      </div>
+      <div class="col-xl-10 col-lg-10 col-md-8 col-sm-12 ">
+        <div [ngbNavOutlet]="nav" class="border rounded-3 bg-white"></div>
+      </div>
+    </div>
+  
+
+  </div>
+    
+    

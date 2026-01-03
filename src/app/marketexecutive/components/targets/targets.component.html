@@ -1,0 +1,388 @@
+<app-layout [showMap]="false" [showNav]="false" [showPageTitle]="false" [displayInformation]="false"
+    [labPackage]="false">
+
+    <ng-container class="addNewoptions">
+        <app-addnewbutton buttonText="Add Employee"></app-addnewbutton>
+        <app-info-btn></app-info-btn>
+    </ng-container>
+
+    <!-- <ng-container class="displayInformation">
+        <app-display-data [data]="dataEmployee"></app-display-data>
+    </ng-container> -->
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker">
+        <app-datepicker-section (dateRangeSelected)="getRangeValue($event)"
+            [selectToday]="true" [setMax]="false"></app-datepicker-section>
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+
+                <th>S.no</th>
+                <th class="text-nowrap">Executive Name & Ph No.</th>
+                <th class="text-nowrap">Revenue (₹)</th>
+                <th class="text-nowrap">Referrals</th>
+                <th>From</th>
+                <th>To</th>
+                <th class="text-nowrap">Assigned Area</th>
+                <th class="text-nowrap" *ngIf="is_sa">Edit</th>
+                <th class="text-nowrap">Visit Details</th>
+
+            </ng-container>
+
+            <ng-container class="tablebody">
+                <ng-container *ngFor="let staff of staffs; let i = index">
+                    <tr>
+                        <td><span class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1}}.</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <img class="me-2 rounded-circle"
+                                        style="width:27px; height: 27px; object-fit: contain;"
+                                        [src]="staff?.profile_pic && staff?.profile_pic != '' ? staff?.profile_pic : '/assets/images/no-profile-picture-icon.svg'">
+                                </div>
+                                <app-patient-details name="{{staff.labstaff}}"
+                                    time="{{staff?.mobile_number}}"></app-patient-details>
+                            </div>
+                        </td>
+                        <td>
+                            
+                            <div class="d-flex flex-column td-color cursor-pointer"
+                             [ngbTooltip]="staff?.revenue_achieved && staff?.revenue_achieved != 0 ? 'Click to open referrals of ' + staff?.labstaff : ''"
+                             (click)="openRefDoc(referralDoctor, staff, 'referrals_achieved')">
+                                <div class="text-nowrap">
+                                    <small>Target - ₹ {{ staff?.target_revenue || 0}}</small>
+                                </div>
+                                <div class="d-flex flex-row gap-2 text-black fw-medium text-nowrap">
+                                    <div
+                                        class="rounded-pill d-flex justify-content-center align-items-center">
+                                        <span>Achieved :  <span class="text-success fw-medium fs-6">{{'₹ ' + staff?.revenue_achieved}}</span></span>
+                                    </div>
+                                    <div *ngIf="staff?.target_revenue"
+                                        class="rounded-pill d-flex justify-content-center align-items-center">
+                                        <span>Pending : <span class="text-danger fw-medium fs-6">{{returnPendingRev(staff)}}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                             <div class="d-flex flex-column text-nowrap td-color cursor-pointer" 
+                             [ngbTooltip]="staff?.referrals_achieved && staff?.referrals_achieved != 0 ? 'Click to open referrals of ' + staff?.labstaff : ''"
+                             (click)="openRefDoc(referralDoctor, staff, 'referrals_achieved')">
+                                <div>
+                                    <small>Target - <span class="">{{ staff?.no_of_referrals || 0 }} Refs</span></small>
+                                </div>
+                                <div class="d-flex flex-row gap-2 text-black fw-medium text-nowrap">
+                                    <div class="rounded-pill d-flex justify-content-center align-items-center">
+                                        <span>Achieved : <span class="text-success fw-medium fs-6">{{staff.referrals_achieved}}</span></span>
+                                    </div>
+                                    <div *ngIf="staff?.no_of_referrals"
+                                        class="rounded-pill d-flex justify-content-center align-items-center">
+                                        <span>Pending : <span class="text-danger fw-medium fs-6">{{returnPendingRefs(staff)}}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-medium text-black text-nowrap">{{timeSrvc.dateAsString(staff?.from_date, false, true)}}</span>
+                        </td>
+                        <td>
+                            <span class="fw-medium text-black text-nowrap">{{timeSrvc.dateAsString(staff?.to_date,false,true)}}</span>
+                        </td>
+                        <td>
+                            <app-patient-details trnc_word="{{staff?.assigned_areas}}"></app-patient-details>
+                        </td>
+                        <td *ngIf="is_sa">
+                            <button class="border-0 bg-transparent" (click)="editTarget(addTarget, staff)">
+                                <i class="ri-edit-2-line fs-5"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <!-- (click)="toggleAccordionnn(staff.id)" -->
+                            <div class="div d-flex justify-content-center align-items-center cursor-pointer"
+                                (click)="toggleAccordionnn(staff.id)">
+                                <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === staff.id}"
+                                    class="fas fa-chevron-down text-black"></i>
+                            </div>
+                        </td>
+
+
+
+                    </tr>
+
+                    <tr *ngIf="activeId === staff.id" class="cursor-pointer">
+                        <td colspan="10" class="bg-light-blue">
+                            <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === staff.id}"
+                                class="testsTable table-dropdown bg-white border border-black mx-1 mb-5 rounded-3">
+                                <app-datatable tableHeaderClass="text-white bg-dark" tableClass="table table-striped">
+                                    <ng-container class="tableheader">
+                        <th class="text-nowrap">#</th>
+                        <th class="text-nowrap"><span>Name & Visit Type</span></th>
+                        <th class="text-nowrap"><span>Ph. Number & Address</span></th>
+                        <th class="text-nowrap">Start Visit & Location</th>
+                        <th class="text-nowrap">End Visit & Location</th>
+                        <th class="text-nowrap">Total Dis. & Time</th>
+                        <th class="text-nowrap">Status</th>
+                        <th class="text-nowrap">Remark</th>
+                        <th class="text-nowrap">Images</th>
+                </ng-container>
+                <ng-container class="tablebody" *ngFor="let item of staff.visits; let j = index">
+
+                    <tr class="td-color">
+                        <td>
+                            <span class="fw-semibold text-black">{{ j+1 }}.</span>
+                        </td>
+                        <td>
+                            <app-patient-details [name]="item.name"
+                                [time]="item?.visit_type?.name"></app-patient-details>
+                        </td>
+                        <td class="text-nowrap">
+                            <app-patient-details name="{{item?.mobile_number ? '+91 ' + item?.mobile_number : ''}}"
+                                [trnc_word]="item.address" trnc_class="text-nowrap td-color text-truncate"
+                                [trnc_length]="150"></app-patient-details>
+                        </td>
+
+                        <td>
+                            <div class="d-flex align-items-center ">
+                                <ng-container *ngIf="item?.start_time">
+                                    <app-patient-details (dblclick)="openMap(lefleatMap, item, true)" name="{{timeSrvc.decodeTimestamp(item?.start_time)}}"
+                                        [nameClass]="'text-success text-nowrap fs-6 fw-medium'" [trnc_length]="150"
+                                        trnc_word="{{item?.address_at_start}}"
+                                        trnc_class="text-nowrap td-color text-truncate"></app-patient-details>
+                                </ng-container>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center" *ngIf="item?.start_time">
+                                <ng-container *ngIf="item?.end_time">
+                                    <app-patient-details (dblclick)="openMap(lefleatMap, item, false)" name="{{timeSrvc.decodeTimestamp(item?.end_time)}}"
+                                        [nameClass]="'text-danger text-nowrap fs-6 fw-medium'" [trnc_length]="150"
+                                        trnc_word="{{item?.address_at_end}}"
+                                        trnc_class="text-nowrap td-color text-truncate"></app-patient-details>
+                                </ng-container>
+                            </div>
+                        </td>
+                        <td>
+                            <app-patient-details [time]="item?.total_time_taken || null"
+                                [name]="item?.total_distance_travelled && item?.total_distance_travelled != '0.00' ? '~ '+ item?.total_distance_travelled + ' Kms' : null"></app-patient-details>
+                        </td>
+
+                        <td>
+                            <div [class.text-success]="item?.status?.id == 3"
+                                [class.text-danger]="item?.status?.id == 4"
+                                [class.text-warning]="item?.status?.id == 2">
+                                {{item?.status?.name}}
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="d-flex flex-nowrap gap-2">
+                                <button *ngIf="item?.remarks" ngbPopover="{{item?.remarks}}"
+                                    triggers="mouseenter:mouseleave" popoverTitle="{{item?.name}}"
+                                    class="btn p-0 text-black">
+                                    <i class="ri-eye-line p-0 fs-4"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            <div *ngIf="item?.visit_img" class="d-flex flex-row flex-nowrap">
+
+                                <button ngbTooltip="View Attached Image" class="btn btn-primary btn-sm rounded-3"
+                                    (click)="openImage(imagePreview, item)">
+                                    View
+                                </button>
+
+                                <button ngbTooltip="Delete Image" class="btn btn-sm rounded-3 text-danger p-0"
+                                    (click)="removeImage(item)">
+                                    <i class="ri-close-line fs-4 p-0"></i>
+                                </button>
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                </ng-container>
+        </app-datatable>
+        </div>
+        </td>
+        </tr>
+    </ng-container>
+
+    <tr *ngIf="!staffs || staffs.length === 0">
+        <td colspan="9">
+            <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                style="vertical-align: middle;min-height: 100px;">
+
+                <span *ngIf="query!==''">
+                    No Data Found with Search Query " <span class="fw-bold text-black">{{query}}</span> "
+                </span>
+
+                <span *ngIf="query==='' && !pageLoading">
+                    No targets registered on this day.
+                </span>
+
+                <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="text-black pt-2 fw-light">Loading</div>
+                </span>
+            </div>
+        </td>
+    </tr>
+    </ng-container>
+
+
+    </app-datatable>
+    </ng-container>
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+            (pageChange)="onPageChange($event)">
+        </app-pagination>
+    </ng-container>
+</app-layout>
+
+<ng-template #remarks let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom fs-5">
+        <span class="modal-title" id="modal-basic-title">Remark | {{selectedItem?.name}} |
+            {{selectedItem?.mobile_number}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <app-textarea-input [rows]="3" classVal="form-control fs-5 rounded-3 shadow"
+                        labelText="Write Remarks" placeHolder="Type Here.." [imp]="true" [removeCloseIcon]="true"
+                        [inputValue]="selectedItem?.remarks"
+                        (onValueChanged)="writeRemark($event)"></app-textarea-input>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end fs-5 px-2">
+                    <button (click)="saveRemark()" class="btn btn-success fs-5 rounded-3 shadow">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #lefleatMap let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom fs-5">
+        <span class="modal-title" id="modal-basic-title">{{selectedItem?.is_start ? 'Start Location Address' : 'End Location Address' }} | {{selectedItem?.name}} |
+            {{selectedItem?.mobile_number}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body p-2">
+        <div class="container-full ">
+            <div class="row ">
+                <div class="col-12">
+                    <app-gmap [showRoute]="true" [locations]="selectedItem?.locations" popUpText="{{selectedItem?.lab_staff?.name}} | {{timeSrvc.decodeTimestamp(selectedItem?.is_start ? selectedItem?.start_time : selectedItem?.end_time)}}"></app-gmap>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #webCam let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom fs-5">
+        <span class="modal-title" id="modal-basic-title">Add Image | {{selectedItem?.name}} |
+            {{selectedItem?.mobile_number}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12">
+                    <app-webcam (pictureTaken)="addCameraImage($event)"></app-webcam>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #imagePreview let-modal>
+    <div class="modal-header py-1 px-3 bg-soft-primary border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Attached Image | {{selectedItem?.name}} |
+            {{selectedItem?.mobile_number}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center">
+                    <img [src]="selectedItem?.visit_img ? selectedItem?.visit_img : ''"
+                        style="height: 400px; width: 400px; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #addTarget let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">{{selectedItem?.labstaff}} |
+            {{selectedItem?.mobile_number}}</span>
+        <div>
+
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <app-add-target [updateModel]="selectedItem || null" (saved)="getData()"></app-add-target>
+    </div>
+</ng-template>
+
+<ng-template #referralDoctor let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">Achieved Referrals | {{selectedItem?.labstaff}} |
+            {{selectedItem?.mobile_number}}</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC; min-height: 50vh">
+        <app-referral [from_target]="true" [analyticShow]="false" [from_date]="this.selectedItem?.from_date" [to_date]="selectedItem?.to_date" executiveQuery="&marketing_executive={{selectedItem?.labstaff_id}}"></app-referral>
+    </div>
+</ng-template>

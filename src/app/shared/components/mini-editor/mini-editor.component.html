@@ -1,0 +1,17 @@
+<!-- <p>mini-editor works!</p> -->
+<!-- <div class="NgxEditor__Wrapper">
+    <ngx-editor-menu [editor]="editor"  [toolbar]="toolbar"> </ngx-editor-menu>
+    <ngx-editor
+    id="ngx-editor-field"
+      [editor]="editor"
+      [(ngModel)]="html"
+      [disabled]="false"
+      [placeholder]="'Type here...'"
+      (ngModelChange)="exportHTML($event)"
+    ></ngx-editor>
+  </div> -->
+
+  <jodit-editor #joditValue [config]="config" (onChange)="showChanges($event)"></jodit-editor>
+
+  <!-- (onChange)="showChanges($event)" (keyup)="saveCursorPosition($event)"
+  (onFocus)="setMargins()" -->

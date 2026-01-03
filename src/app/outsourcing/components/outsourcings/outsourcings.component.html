@@ -1,0 +1,223 @@
+<app-layout [showMap]="false" [showNav]="true" [showPageTitle]="false" [displayInformation]="false" [labPackage]="false"
+  [showNav]="false" [extraFilter]="false" [showSelectPrint]="false">
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event); selectALLCheckBox.checkboxValue = false"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event);selectALLCheckBox.checkboxValue = false" [selectToday]="true"></app-datepicker-section>
+  </ng-container>
+
+  <ng-container class="selectComp">
+    <button class="btn btn-success rounded-3 w-75" (click)="send_for_sourcing(); selectALLCheckBox.checkboxValue = false">
+     {{to_send ? "Send" : "Receive"}} {{patients_query.length != 0 ? "(" + patients_query.length + ")" : ""}}
+    </button>
+  </ng-container>
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event); selectALLCheckBox.checkboxValue = false">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="text-black">
+          <app-checkbox #selectALLCheckBox [showLabel]="false" activeText="" inactiveText=""  [classVal]="patients && patients.length != 0 ? '' : 'd-none'"
+          (onCheckboxValueChanged)="selectAll($event)" ></app-checkbox>
+        </th>
+        <th>
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Patient </div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="patients && patients.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th><span>Age & Gender</span></th>
+        <th><span>Patient IDs</span></th>
+        <th>Test & {{to_send ? "Out-Sourcing Lab" : "Referring Lab"}}</th>
+        <th><span>Accession No</span></th>
+
+        <th><span>Send</span></th>
+        <th><span>Receive</span></th>
+        <th><span>Status</span></th>
+      </ng-container>
+      <ng-container class="tablebody">
+        <tr *ngFor="let item of patients;let i = index" class="font-Readex td-color">
+
+          <td class="fw-semibold text-black">
+
+            <!-- {{ (page_number * page_size) - page_size + i + 1 }}. -->
+
+            <app-checkbox [showLabel]="false" activeText="" inactiveText="" *ngIf="to_send ? !item?.is_sent : !item?.is_received" classVal=""
+              (onCheckboxValueChanged)="add_or_remove($event,item)" [checkboxValue]="checkObjExist(item)"></app-checkbox>
+
+          </td>
+
+          <td>
+            <div class="d-flex flex-column">
+              <div class="d-flex flex-row gap-1">
+                <span class="text-black text-nowrap fs-6 fw-medium"
+                  *ngIf="item.title!== null">{{item.patient.title}}</span>
+                <span class="text-black text-nowrap fs-6 fw-medium">
+                  <ngb-highlight [result]="item.patient.name" [term]="query"></ngb-highlight>
+                </span>
+              </div>
+              <small class="text-nowrap">
+                {{timeSrvc.decodeTimestamp(item.added_on)}}
+              </small>
+            </div>
+          </td>
+
+          <td>
+            <div class="d-flex flex-column">
+              <small class="text-nowrap">
+                {{item?.patient?.ULabPatientAge == 'DOB' ?
+                item?.LabPatientTestID?.patient.dob + " " +
+                item?.patient?.ULabPatientAge : item?.patient.age +
+                " " + item?.patient?.ULabPatientAge }}
+              </small>
+              <small class="td-color text-nowrap">{{item?.patient?.gender}}</small>
+            </div>
+          </td>
+
+          <td>
+            <div class="container-full flex-column IDs" style=" min-width: 130px">
+              <div class="row IDs g-0 d-flex flex-nowrap align-items-end justify-content-between">
+                <div class="col-4 px-0 d-flex flex-row flex-nowrap" style="vertical-align: bottom;">
+                  <small style="vertical-align: bottom;">
+                    <small class="d-flex flex-row text-nowrap" style="vertical-align: bottom;">
+                      MR NO :
+                    </small>
+                  </small>
+                </div>
+                <div class="col-8 ps-0 d-flex flex-row">
+                  <ngb-highlight [result]="item?.patient?.mr_no" [term]="query"></ngb-highlight>
+                </div>
+              </div>
+              <div class="row IDs g-0 d-flex flex-nowrap align-items-center">
+                <div class="col-4 px-0">
+                  <small>
+                    <small class="d-flex flex-row text-nowrap">
+                      VISIT ID :
+                    </small>
+                  </small>
+                </div>
+                <div class="col-8 ps-0">
+                  <ngb-highlight [result]="item?.patient?.visit_id" [term]="query"></ngb-highlight>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <div class="d-flex flex-column">
+              <small class="text-black">{{item?.patient?.test}}</small>
+              <small class="fw-semibold text-black">{{item?.sourcing_lab?.partner.organization_name}}</small>
+            </div>
+
+          </td>
+
+          <td>{{item?.patient?.assession_number}}</td>
+
+          <!-- <td class="text-black">
+            <small>{{item?.sourcing_lab?.partner.organization_name}}</small>
+          </td> -->
+
+          <td>
+            <ng-container *ngIf="!item?.is_sent && to_send">
+              <button (click)="makeSend(item)" class="btn btn-success rounded-3">Send</button>
+            </ng-container>
+            <ng-container *ngIf="item?.is_sent">
+              <app-info-div [MainText]="'Sent !'" [timeText]="timeSrvc.decodeTimestamp(item.sent_at)"></app-info-div>
+            </ng-container>
+          </td>
+
+
+          <td>
+            <ng-container *ngIf="item?.is_sent">
+
+              <ng-container *ngIf="!item?.is_received && !to_send">
+                <button (click)="makeReceive(item)" class="btn btn-success rounded-3">Receive</button>
+              </ng-container>
+
+              <ng-container *ngIf="item?.is_received">
+                <app-info-div [MainText]="'Received !'"
+                  [timeText]="timeSrvc.decodeTimestamp(item.received_at)"></app-info-div>
+              </ng-container>
+
+            </ng-container>
+          </td>
+
+          <td>
+            <ng-container *ngIf="item?.is_sent && item?.is_received">
+              <span class="text-black">{{item?.test_status ? item?.test_status : ""}}</span>
+            </ng-container>
+          </td>
+
+
+        </tr>
+      </ng-container>
+
+      <ng-container class="tablebody" *ngIf="!patients || patients.length === 0">
+        <tr>
+          <td colspan="10">
+            <div class="text-black fs-6  d-flex align-items-center justify-content-center "
+              style="vertical-align: middle;min-height: 100px;">
+              <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5 font-monsterract">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-black pt-2 fw-light">Loading</div>
+              </span>
+
+              <span *ngIf="to_send && !pageLoading" class="text-wrap text-center fw-light td-color" style="max-width: 470px">
+                This page shows patients whose samples were sent to outsourcing labs using HealthO Pro's automated and manual collaboration features.
+              </span>
+
+              <span *ngIf="!to_send && !pageLoading" class="text-wrap text-center fw-light td-color" style="max-width: 470px">
+                This page displays patients whose samples were received from referral lab using HealthO Pro's automated collaboration feature.
+              </span>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <div class="d-flex">
+      <ngb-pagination [collectionSize]="all_count ? all_count : 0" [(page)]="page_number" [maxSize]="3"
+        (pageChange)="onPageChange($event);selectALLCheckBox.checkboxValue = false" [pageSize]="page_size" [rotate]="true" [boundaryLinks]="true"
+        class="custom-pagination">
+        <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+        <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+      </ngb-pagination>
+    </div>
+  </ng-container>
+</app-layout>

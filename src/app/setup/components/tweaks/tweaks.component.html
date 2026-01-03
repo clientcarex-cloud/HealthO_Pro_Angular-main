@@ -1,0 +1,243 @@
+
+<div class="container-full">
+  <div class="row g-2">
+    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3">
+      <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-section-vertical-custom border rounded-3"
+      orientation="vertical" size="sm">
+
+      <li ngbNavItem="Dashboard">
+        <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+          <span>Dashboard</span>
+          <span><i class="bi bi-chevron-right"></i></span>
+        </a>
+        <ng-template ngbNavContent>
+          <app-business-permissions></app-business-permissions>
+        </ng-template>
+      </li>
+
+
+      <li ngbNavItem="staffRole">
+        <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+          <span>Staff Role</span>
+          <span><i class="bi bi-chevron-right"></i></span>
+        </a>
+        <ng-template ngbNavContent>
+          <app-staff-role></app-staff-role>
+        </ng-template>
+      </li>
+
+      
+      <li ngbNavItem="letterHeadSetting" *ngIf="false">
+        <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+          <span>Letterhead Settings</span>
+          <span><i class="bi bi-chevron-right"></i></span>
+        </a>
+        <ng-template ngbNavContent>
+          <app-letterhead-setting></app-letterhead-setting>
+        </ng-template>
+      </li>
+
+
+      <li ngbNavItem="businessSetting">
+        <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+          <span>Import Data</span>
+          <span><i class="bi bi-chevron-right"></i></span>
+        </a>
+        <ng-template ngbNavContent>
+          <!-- <app-letterhead-setting></app-letterhead-setting> -->
+          <app-import-data></app-import-data>
+        </ng-template>
+      </li>
+
+
+
+      </ul>
+    </div>
+    <div class="col-xl-10 col-lg-10 col-md-8 col-sm-12 ">
+      <div [ngbNavOutlet]="nav" class="border rounded-3 bg-white"></div>
+    </div>
+  </div>
+
+  <ng-template #patientRegistration>
+    <div class="container-fluid px-3 py-2">
+      <div class="row border-5 border-start border-primary rounded-2 ps-2 mb-3">
+        <div class="col-12">
+          <span class="fw-medium fs-5">Patient Registration</span>
+        </div>
+        <div class="col-12">
+          <span class="text-wrap td-color">Turn on/off essential features required for Patient Registration</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div *ngFor="let item of options" class="mb-3">
+          <app-checkbox [checkboxValue]="true" [labelText]="item.label" [activeText]="item.text"
+            [inactiveText]="item.text"></app-checkbox>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #reportDelivery>
+    <div class="container-fluid mx-2">
+      <div class="row my-2 border-5 border-start border-primary rounded-2 ps-2">
+        <div class="col-12">
+          <span class="fw-medium fs-5">Report Delivery</span>
+        </div>
+        <div class="col-12">
+          <span class="text-wrap td-color">Turn on/off essential features required for Report Delivery</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div *ngFor="let item of options" class="mb-3">
+          <app-checkbox [checkboxValue]="true" [labelText]="item.label" [activeText]="item.text"
+            [inactiveText]="item.text"></app-checkbox>
+        </div>
+      </div>
+
+      <div class="row">
+        <app-checkbox [checkboxValue]="true" labelText="Auto Report Print"
+          activeText="Print report automatically on final Lab Test Report Submission update by Lab Technician (if payment 100% done)."
+          inactiveText="Print report automatically on final Lab Test Report Submission update by Lab Technician (if payment 100% done)."></app-checkbox>
+      </div>
+
+      <div class="row">
+        <app-checkbox [checkboxValue]="false" labelText="Report Print Limit" activeText="Set report print limit "
+          inactiveText="Set report print limit "></app-checkbox>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <app-checkbox [checkboxValue]="true" labelText="Report Print Limit" activeText="Set report print limit "
+            inactiveText="Set report print limit "></app-checkbox>
+        </div>
+        <div class="col-12">
+          <div class="row ps-3">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-nowrap">
+              <app-radio labelText="On full payment" [checkValue]="true"></app-radio>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-nowrap">
+              <app-radio labelText="On 50%" [checkValue]="false"></app-radio>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-nowrap">
+              <app-radio labelText="On 70%" [checkValue]="false"></app-radio>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-nowrap">
+              <app-radio labelText="On any" [checkValue]="false"></app-radio>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-nowrap">
+              <app-radio labelText="Ask to user" [checkValue]="false"></app-radio>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <app-checkbox [checkboxValue]="false" labelText="Multi-Report Format Print"
+          activeText="Let user to print reports with different templates formats or letter heads"
+          inactiveText="Let user to print reports with different templates formats or letter heads"></app-checkbox>
+      </div>
+
+      <div class="row">
+        <app-checkbox [checkboxValue]="true" labelText="Final Report verification"
+          activeText="set final report verification user by departments settings "
+          inactiveText="set final report verification user by departments settings "></app-checkbox>
+      </div>
+
+      <div class="row">
+        <app-checkbox [checkboxValue]="true" labelText="Guardian Report Delivery "
+          activeText="Enable to enter details of Report Receiver i.e., Guardian"
+          inactiveText="Enable to enter details of Report Receiver i.e., Guardian"></app-checkbox>
+      </div>
+
+    </div>
+
+  </ng-template>
+
+  <ng-template #payments>
+    <div class="container-fluid mx-2">
+      <div class="row my-2 border-5 border-start border-primary rounded-2 ps-2">
+        <span class="fw-medium fs-5">Payments</span>
+        <span class="text-nowrap td-color">manage your all payments settings </span>
+      </div>
+
+      <div class="d-flex flex-column gap-3">
+        <div>
+          <app-checkbox [checkboxValue]="true" labelText="Patient Payment Refund"
+            activeText="Payment refund on patient cancellation by conditions"
+            inactiveText="Payment refund on patient cancellation by conditions"></app-checkbox>
+        </div>
+        <div class="ms-3 ps-3 ">
+          <!-- <app-tabs>
+                        <div class="tabitems d-flex">
+                            <app-tabcontent [contentTemplate]="google" [tabIndex]="8">
+                                <div class="tabitemheader">
+                                    Master
+                                </div>
+                            </app-tabcontent>
+                            <app-tabcontent [contentTemplate]="smartLogic" [tabIndex]="9">
+                                <div class="tabitemheader">
+                                    Tweaks
+                                </div>
+                            </app-tabcontent>
+                            
+                        </div>
+                    </app-tabs> -->
+          <!-- inter nav tab  -->
+          <ul ngbNav #nav="ngbNav" class="nav nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3">
+            <li ngbNavItem>
+              <a ngbNavLink class="fw-light">Google</a>
+              <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="google"></ng-container>
+              </ng-template>
+            </li>
+            <li ngbNavItem>
+              <a ngbNavLink class="fw-light">Smart Logic</a>
+              <ng-template ngbNavContent>
+                <ng-container *ngTemplateOutlet="smartLogic"></ng-container>
+              </ng-template>
+            </li>
+          </ul>
+
+          <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+          <ng-template ngbNavContent #google>
+            <p>These navs will always stay in DOM and have no roles</p>
+          </ng-template>
+
+
+          <ng-template ngbNavContent #smartLogic>
+            <app-select labelText="Refund Conditions" [selectItems]="['Before Sample Collection']"></app-select>
+          </ng-template>
+
+        </div>
+        <div>
+          <app-checkbox [checkboxValue]="false" labelText="Guardian Report Delivery "
+            activeText="Enable to enter details of Report Receiver i.e., Guardian"
+            inactiveText="Enable to enter details of Report Receiver i.e., Guardian"></app-checkbox>
+        </div>
+        <div>
+          <app-checkbox [checkboxValue]="false" labelText="Multi-Report Format Print"
+            activeText="Let user to print reports with different templates formats or letter heads"
+            inactiveText="Let user to print reports with different templates formats or letter heads"></app-checkbox>
+        </div>
+        <div>
+          <app-checkbox [checkboxValue]="true" labelText="Final Report verification"
+            activeText="set final report verification user by departments settings "
+            inactiveText="set final report verification user by departments settings "></app-checkbox>
+        </div>
+        <div>
+          <app-checkbox [checkboxValue]="true" labelText="Guardian Report Delivery "
+            activeText="Enable to enter details of Report Receiver i.e., Guardian"
+            inactiveText="Enable to enter details of Report Receiver i.e., Guardian"></app-checkbox>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #dummy>
+    <div class="p-3">
+      <p>Insert options here</p>
+    </div>
+  </ng-template>
+</div>

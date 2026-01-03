@@ -1,0 +1,696 @@
+<!-- PATIENT COMPONENT  -->
+<app-layout [showMap]="false" [showPageTitle]="false" [displayInformation]="false" [labPackage]="false"
+  [extraFilter]="true" [showSelectPrint]="false" [extraFilterSecond]="true" [showNav]="showNavBar">
+
+  <ng-container class="tabsNavigation">
+    <div class="btn-group rounded-pill font-inter pe-1">
+      <button *ngIf="orderStatus.all" type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'all' }" (click)="setStatus('all')">
+        {{allName}}
+      </button>
+      <button *ngIf="orderStatus.pending" type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'pending' }"
+        (click)="setStatus('pending')">
+        Pending
+      </button>
+      <button *ngIf="orderStatus.processing" type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'processing' }"
+        (click)="setStatus('processing')">
+        Processing
+      </button>
+      <button *ngIf="orderStatus.emergency" type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'emergency' }"
+        (click)="setStatus('emergency')">
+        Emergency <span class="bg-danger rounded-pill btn-sm border-0 text-white"
+          *ngIf="emergencyCount && emergencyCount !==0">{{emergencyCount}}</span>
+      </button>
+      <button *ngIf="orderStatus.completed" type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'completed' }"
+        (click)="setStatus('completed')">
+        Completed
+      </button>
+      <button *ngIf="orderStatus.cancelled" type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'cancelled' }"
+        (click)="setStatus('cancelled')">
+        Cancelled
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container class="addNewoptions">
+
+    <button class="btn bg-white border rounded-3 text-nowrap font-Readex" *ngIf="viewAppointmentsOption"
+      (click)="openXl(viewAppointments, 'xl')">
+      View Appointments
+    </button>
+
+    <button class="btn bg-white border rounded-3 text-nowrap font-Readex" *ngIf="shiftReportOption"
+      (click)="openModal(ShiftReportModal, { size: '', scrollable: true })">
+      Shift Report
+    </button>
+
+    <button class="btn bg-white border rounded-3 text-nowrap font-Readex" *ngIf="estimatePrice"
+      (click)="openXl(estimate, 'xl')">
+      Estimate
+    </button>
+
+    <ng-container *ngIf="(user_permissions.sa || user_permissions.permissions.includes(1)) && addPatientOption">
+      <app-addnewbutton buttonText="{{addText}}" (onAddNewClick)="addPatient()" 
+      classVal="btn bg-primary text-white rounded-3 text-nowrap"></app-addnewbutton>
+    </ng-container>
+    <app-info-btn></app-info-btn>
+  </ng-container>
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)" [selectToday]="true"></app-datepicker-section>
+  </ng-container>
+
+  <ng-container class="extraFilter" *ngIf="showDeptFilter">
+    <app-select [selectItems]="departments" [labelText]="''" selectBindLabel="name" [multipleSelect]="true"
+      placeHolder='Select Department' (onSelectionChanged)="selectDepartment($event)"></app-select>
+  </ng-container>
+
+  <ng-container class="extraFilterSecond" *ngIf="user_permissions.sa && showDeptFilter">
+    <app-select [selectItems]="staffs" [labelText]="''" selectBindLabel="name" [multipleSelect]="false"
+      [inputDisable]="user_permissions.loading" [isLoading]="user_permissions.loading"
+      (onSelectionChanged)="selectStaff($event)" placeHolder='Select User'></app-select>
+  </ng-container>
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" [(ngModel)]="page_size" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader ">
+        <th class="text-nowrap text-black serialNumber">Sno.</th>
+        <th>
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Patients</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+              *ngIf="patients && patients.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th *ngIf="showDocCons">Consultation</th>
+        <th *ngIf="showServices">Services</th>
+        <th class="text-nowrap" *ngIf="showTests">Lab Test</th>
+        <th class="text-nowrap" *ngIf="showRooms">Rooms</th>
+        <th class="text-nowrap" *ngIf="showMeds">Medicines</th>
+        <th class="text-nowrap">Patient IDs</th>
+        <td class="text-nowrap" *ngIf="showAppointmentColumn">Appointment</td>
+
+        <th class="text-nowrap">Amount Due</th>
+        <th> User </th>
+        <!-- <th *ngIf="addPrescription">Action</th> -->
+
+      </ng-container>
+
+      <ng-container class="tablebody" *ngFor="let item of patients; let i = index">
+        <tr class=" td-color cursor-pointer">
+          <td class="fw-semibold text-black serialNumber">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+          <td (dblclick)="showPatient(item)">
+            <app-patient-details [name]="item.name" [time]="timeSrvc.decodeTimestamp(item.added_on)" [query]="query"
+              [title]="item.title.name"></app-patient-details>
+          </td>
+
+          <td (dblclick)="showPatient(item)" *ngIf="showDocCons">
+            <div (click)="toggleAccordionnn(item.visit_id, 2)"
+              *ngIf="item?.doctor_consultation?.consultations?.length > 0"
+              class="d-flex flex-row justify-content-between align-items-center" style="max-width: 200px;">
+              <div class="d-flex flex-column">
+                <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                  <ngb-highlight [result]="concatDoctors(item)" [term]="query"></ngb-highlight>
+                </small>
+                <small>Total:
+                  {{ item?.doctor_consultation?.consultations?.length }}
+                </small>
+              </div>
+              <div class="div">
+                <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === item.mr_no}"
+                  class="fas fa-chevron-down text-black"></i>
+              </div>
+            </div>
+          </td>
+
+          <td (dblclick)="showPatient(item)" *ngIf="showServices">
+            <div (click)="toggleAccordionnn(item.visit_id,3)" *ngIf="item?.services?.services.length > 0"
+              class="d-flex flex-row justify-content-between align-items-center" style="max-width: 200px;">
+              <div class="d-flex flex-column">
+                <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                  <ngb-highlight [result]="concatServices(item)" [term]="query"></ngb-highlight>
+                </small>
+                <small>Total:
+                  {{ item?.services?.services?.length }}
+                </small>
+              </div>
+              <div class="div">
+                <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === item.mr_no}"
+                  class="fas fa-chevron-down text-black"></i>
+              </div>
+            </div>
+          </td>
+
+          <td (dblclick)="showPatient(item)" *ngIf="showTests">
+            <div (click)="toggleAccordionnn(item.visit_id, 1)"
+              *ngIf="item.lab_tests.lab_tests.length > 0 || item.lab_packages.length > 0"
+              class="d-flex flex-row justify-content-between align-items-center" style="max-width: 200px;">
+              <div class="d-flex flex-column">
+                <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                  <ngb-highlight [result]="concatenateShortCodes(item)" [term]="query"></ngb-highlight>
+                </small>
+                <small>Total:
+                  {{ item?.lab_tests?.lab_tests.length + getPackagesLength(item.lab_packages) }}
+                </small>
+              </div>
+              <div class="div">
+                <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === item.mr_no}"
+                  class="fas fa-chevron-down text-black"></i>
+              </div>
+            </div>
+          </td>
+
+          <td (dblclick)="showPatient(item)" *ngIf="showRooms">
+            <div (click)="toggleAccordionnn(item.visit_id, 5)" *ngIf="item?.booked_rooms?.rooms.length > 0"
+              class="d-flex flex-row justify-content-between align-items-center" style="max-width: 200px;">
+              <div class="d-flex flex-column">
+                <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                  <ngb-highlight [result]="concatenateRooms(item)" [term]="query"></ngb-highlight>
+                </small>
+                <small>Total:
+                  {{ item?.booked_rooms?.rooms.length}}
+                </small>
+              </div>
+              <div class="div">
+                <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === item.mr_no}"
+                  class="fas fa-chevron-down text-black"></i>
+              </div>
+            </div>
+          </td>
+
+          <td (dblclick)="showPatient(item)" *ngIf="showMeds">
+            <div (click)="toggleAccordionnn(item.visit_id, 4)" *ngIf="item?.medicines?.medicines.length > 0"
+              class="d-flex flex-row justify-content-between align-items-center" style="max-width: 200px;">
+              <div class="d-flex flex-column">
+                <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                  <ngb-highlight [result]="concatenateMedicines(item)" [term]="query"></ngb-highlight>
+                </small>
+                <small>Total:
+                  {{ item?.medicines.medicines.length}}
+                </small>
+              </div>
+              <div class="div">
+                <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === item.mr_no}"
+                  class="fas fa-chevron-down text-black"></i>
+              </div>
+            </div>
+          </td>
+
+          <td (dblclick)="showPatient(item)">
+            <app-patient-ids mr_no="{{item.mr_no}}" visit_id="{{item.visit_id}}" [query]="query"></app-patient-ids>
+          </td>
+
+          <td *ngIf="showAppointmentColumn"
+            (click)="item.appointment && item.appointment.length != 0 ? showPatient(item) : ''">
+            <div class="d-flex flex-column" *ngIf="item?.appointment && item.appointment.length!=0">
+              <div class="d-flex flex-row gap-1">
+                <span class="text-black text-nowrap fs-6 fw-medium">
+                  <ngb-highlight
+                    result="{{timeSrvc.dateAsString(item.appointment[0].appointment_date, false)}} , {{item.appointment[0].appointment_time.replace(':00', '')}}"
+                    [term]="query"></ngb-highlight>
+                </span>
+              </div>
+              <small class="text-nowrap">
+                {{item?.appointment[0]?.consulting_doctor?.name}}
+              </small>
+            </div>
+          </td>
+
+          <td (dblclick)="showPatient(item)" class="text-black fw-medium text-nowrap">
+            <ng-container *ngIf="item.invoice; else noInvoice">
+              <ng-container *ngIf="item.invoice.total_due === 0 || item.invoice.total_due == '0.00'; else notFullyPaid">
+                <span class="td-color">Fully paid</span>
+              </ng-container>
+              <ng-template #notFullyPaid>
+                {{ 'Rs. ' + item.invoice.total_due }}
+              </ng-template>
+            </ng-container>
+            <ng-template #noInvoice>Rs. ---</ng-template>
+          </td>
+
+
+          <td (dblclick)="showPatient(item)" class="text-nowrap">
+            <!-- {{item.created_by}} -->
+            <div class="d-flex align-items-center" *ngIf="item?.is_sourcing_lab">
+              <small class="bg-dark text-white d-flex align-items-center px-1 rounded">{{ item.created_by }}</small>
+            </div>
+
+            <span *ngIf="!item?.is_sourcing_lab"> {{ item.created_by }}</span>
+          </td>
+<!-- 
+          <td *ngIf="addPrescription">
+            
+          </td> -->
+        </tr>
+
+        <!-- lab tests and packages row 1 -->
+        <tr (dblclick)="showPatient(item)" *ngIf="activeId === item.visit_id && typeId == 1" class="cursor-pointer">
+          <td colspan="10" class="bg-light-blue">
+            <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === item.visit_id}"
+              class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+              <table class="table">
+                <thead class="fw-medium">
+                  <tr class=" fs-6 text-white bg-black">
+                    <!-- <th style="width: 10px">#</th> -->
+                    <th class="text-nowrap">Lab Test</th>
+                    <th>Sourcing</th>
+                    <th class="text-center">Status</th>
+
+                    <th class="text-center">User</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let test of item.lab_tests.lab_tests; let i = index">
+                    <tr>
+                      <td class="text-nowrap fw-semibold">
+                        <div class="d-flex gap-2">
+                          <span>{{ test.name }}</span>
+                          <!-- <span *ngIf="test.sourcing_lab?.partner?.organization_name" [ngbTooltip]="test.sourcing_lab?.partner?.organization_name"
+                          class="bg-dark text-white rounded px-1">OS</span> -->
+                        </div>
+                      </td>
+
+                      <td>
+                        <ng-container *ngIf="test?.sourcing_lab && !item?.referral_lab">
+                          <div class="d-flex flex-column">
+                            <small style="line-height: 10px;">
+                              {{test.sourcing_lab?.initiator?.toString() == b_id ? "Process By" : "Received From "}}
+                            </small>
+                            <small class="fw-semibold">{{test.sourcing_lab?.partner?.organization_name}}</small>
+                          </div>
+                        </ng-container>
+                        <ng-container>
+                          <ng-container *ngIf="item?.referral_lab">
+                            <div class="d-flex flex-column">
+                              <small style="line-height: 10px;">
+                                Received From
+                              </small>
+                              <small class="fw-semibold">{{item?.referral_lab?.organization_name ||
+                                item?.referral_lab?.partner?.organization_name}}</small>
+                            </div>
+                          </ng-container>
+                        </ng-container>
+                        <!-- <ng-container *ngIf="!test?.sourcing_lab">
+                        <span>-</span>
+                      </ng-container> -->
+
+                      </td>
+
+                      <td class="text-center">
+                        <span [class.text-danger]="checkEmergency(test.status_id)">{{test.status_id}}</span>
+                      </td>
+
+                      <td class="text-nowrap text-center">{{ item.created_by }}</td>
+                    </tr>
+
+                  </ng-container>
+
+                  <ng-container *ngIf="item.lab_packages && item.lab_packages.length !== 0">
+                    <ng-container *ngFor="let package of item.lab_packages; let j = index">
+                      <tr>
+                        <td colspan="3" class="py-2 fw-normal fs-6 td-color">{{package.name}}</td>
+                      </tr>
+                      <ng-container *ngFor="let pkg of package.lab_tests; let k = index">
+                        <tr>
+                          <td class="text-nowrap fw-semibold py-1 ps-5">- {{ pkg.name }}</td>
+                          <td>
+                            <ng-container *ngIf="pkg?.sourcing_lab">
+                              <div class="d-flex flex-column">
+                                <small style="line-height: 10px;">
+                                  {{pkg.sourcing_lab?.initiator?.toString() == b_id ? "Process By" : "Received From "}}
+                                </small>
+                                <small class="fw-semibold">{{pkg.sourcing_lab?.partner?.organization_name}}</small>
+                              </div>
+                            </ng-container>
+                            <ng-container *ngIf="!pkg?.sourcing_lab">
+                              <span></span>
+                            </ng-container>
+
+                          </td>
+                          <td class="text-center">
+                            <span [class.text-danger]="checkEmergency(pkg.status_id)">{{pkg.status_id}}</span>
+                          </td>
+                          <td class="text-nowrap text-center">{{ package.created_by }}</td>
+                        </tr>
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                </tbody>
+
+              </table>
+            </div>
+          </td>
+        </tr>
+
+        <!-- doctor consultations row 2 -->
+        <tr (dblclick)="showPatient(item)" *ngIf="activeId === item.visit_id && typeId == 2" class="cursor-pointer">
+          <td colspan="10" class="bg-light-blue">
+            <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === item.visit_id}"
+              class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+              <table class="table">
+                <thead class="fw-medium">
+                  <tr class=" fs-6 text-white bg-black">
+
+                    <th class="text-nowrap">Doctor</th>
+                    <th cass="text-nowrap">Case Type</th>
+                    <td *ngIf="addPrescription">Precsription</td>
+                    <th class="text-center">User</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let doc of item?.doctor_consultation?.consultations; let i = index">
+                    <tr>
+                      <td class="text-nowrap fw-semibold">
+                        <div class="d-flex gap-2">
+                          <span>{{ doc.consultation.labdoctors.name }}</span>
+                        </div>
+                      </td>
+
+                      <td class="text-nowrap">
+                        <span>{{doc.case_type.name}}</span>
+                      </td>
+
+                      <td *ngIf="addPrescription">
+                        <div class="d-flex flex-row gap-2">
+                          <button
+                            (click)="selectedPatient = item; selectedConsultation = doc; openModal(Prescription, { size: 'xl', scrollable: true })"
+                            class="btn btn-sm btn-primary rounded-3 ">
+                            {{doc.prescription ? "View" : "Add" }}
+                          </button>
+
+                          <button *ngIf="doc?.prescription" (click)="printPrescription({ patient_id : item.id, doctor_consultation: doc.id }, false)"
+                            class="btn btn-sm btn-success rounded-3 ">
+                            Print
+                          </button>
+
+                          <button (click)="printPrescription({ patient_id : item.id, doctor_consultation: doc.id }, true)"
+                          class="btn btn-sm btn-primary rounded-3 ">
+                          Print Details
+                        </button>
+
+                        </div>
+                      </td>
+
+                      <td class="text-nowrap text-center">{{ doc.created_by.name }}</td>
+                    </tr>
+
+                  </ng-container>
+                </tbody>
+
+              </table>
+            </div>
+          </td>
+        </tr>
+
+        <!-- services 3 -->
+        <tr (dblclick)="showPatient(item)" *ngIf="activeId === item.visit_id && typeId == 3" class="cursor-pointer">
+          <td colspan="10" class="bg-light-blue">
+            <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === item.visit_id}"
+              class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+              <table class="table">
+                <thead class="fw-medium">
+                  <tr class=" fs-6 text-white bg-black">
+                    <!-- <th style="width: 10px">#</th> -->
+                    <th class="text-nowrap">Services</th>
+                    <th cass="text-nowrap">Department</th>
+                    <!-- <th class="text-center">Status</th> -->
+                    <th class="text-center">User</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let srvc of item?.services?.services; let i = index">
+                    <tr>
+                      <td class="text-nowrap fw-semibold">
+                        <div class="d-flex gap-2">
+                          <span>{{ srvc.name }}</span>
+                        </div>
+                      </td>
+
+                      <td class="text-nowrap">
+                        <span>{{srvc?.department}}</span>
+                      </td>
+
+                      <td class="text-nowrap text-center">{{ srvc.created_by.name }}</td>
+                    </tr>
+
+                  </ng-container>
+                </tbody>
+
+              </table>
+            </div>
+          </td>
+        </tr>
+
+        <!-- rooms 5 -->
+        <tr (dblclick)="showPatient(item)" *ngIf="activeId === item.visit_id && typeId == 5" class="cursor-pointer">
+          <td colspan="10" class="bg-light-blue">
+            <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === item.visit_id}"
+              class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+              <table class="table">
+                <thead class="fw-medium">
+                  <tr class=" fs-6 text-white bg-black">
+
+                    <th class="text-nowrap">Name</th>
+                    <th cass="text-nowrap">Room Number</th>
+                    <th cass="text-nowrap">Room Type</th>
+                    <!-- <th>Quantity</th>
+                    <th>Price</th> -->
+                    <th>User</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let room of item?.booked_rooms.rooms; let i = index">
+                    <tr>
+                      <td class="text-nowrap fw-semibold">
+                        <div class="d-flex gap-2">
+                          <span>{{ room.name }}</span>
+                        </div>
+                      </td>
+                      <td class="text-nowrap fw-semibold">
+                        <span>{{ room.room_number }}</span>
+                      </td>
+                      <td class="text-nowrap fw-semibold">
+                        <span>{{ room?.room_type?.name }}</span>
+                      </td>
+                      <!-- <td class="text-nowrap fw-semibold">
+                        <span>{{ med.quanity }}</span>
+                      </td>
+                      <td class="text-nowrap fw-semibold">
+                        <span>{{ med?.price }}</span>
+                      </td> -->
+
+                      <td class="text-nowrap text-center">{{ room?.created_by?.name }}</td>
+                    </tr>
+
+                  </ng-container>
+                </tbody>
+
+              </table>
+            </div>
+          </td>
+        </tr>
+
+        <!-- medicines 5 -->
+        <tr (dblclick)="showPatient(item)" *ngIf="activeId === item.visit_id && typeId == 4" class="cursor-pointer">
+          <td colspan="10" class="bg-light-blue">
+            <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === item.visit_id}"
+              class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+              <table class="table">
+                <thead class="fw-medium">
+                  <tr class=" fs-6 text-white bg-black">
+
+                    <th class="text-nowrap">Name</th>
+                    <th cass="text-nowrap">Batch Number</th>
+                    <th cass="text-nowrap">Expiry Date</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>User</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let med of item?.medicines.medicines; let i = index">
+                    <tr>
+                      <td class="text-nowrap fw-semibold">
+                        <div class="d-flex gap-2">
+                          <span>{{ med.name }}</span>
+                        </div>
+                      </td>
+                      <td class="text-nowrap fw-semibold">
+                        <span>{{ med.batch_number }}</span>
+                      </td>
+                      <td class="text-nowrap fw-semibold">
+                        <span>{{ med.expiry_date }}</span>
+                      </td>
+                      <td class="text-nowrap fw-semibold">
+                        <span>{{ med.quanity }}</span>
+                      </td>
+                      <td class="text-nowrap fw-semibold">
+                        <span>{{ med?.price }}</span>
+                      </td>
+
+                      <td class="text-nowrap text-center">{{ med?.created_by?.name }}</td>
+                    </tr>
+
+                  </ng-container>
+                </tbody>
+
+              </table>
+            </div>
+          </td>
+        </tr>
+
+      </ng-container>
+
+      <ng-container class="tablebody">
+        <tr *ngIf="!patients || patients.length === 0">
+          <td colspan="10">
+            <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+              style="vertical-align: middle;min-height: 100px;">
+
+              <span *ngIf="query!==''">
+                No Data Found with Search Query " <span class="fw-bold text-black">{{query}}</span> "
+              </span>
+
+              <span *ngIf="query==='' && !pageLoading">
+                No patients registered on this day.
+              </span>
+
+              <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-black pt-2 fw-light">Loading</div>
+              </span>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </ng-container>
+
+</app-layout>
+
+
+
+<!-- SHIFT REPORT  -->
+<ng-template #ShiftReport>
+  <app-shift-report></app-shift-report>
+</ng-template>
+
+
+<ng-template #ShiftReportModal let-modal>
+  <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-4 " id="modal-basic-title">Shift Report</span>
+    <div>
+
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+    <app-shift-report [showDropdownContainer]="false"></app-shift-report>
+  </div>
+</ng-template>
+
+<ng-template #viewAppointments let-modal>
+  <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-4 " id="modal-basic-title">Appointments</span>
+    <div>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+    <app-appointments [fromPatientsPage]="true"></app-appointments>
+  </div>
+</ng-template>
+
+
+<ng-template #estimate let-modal>
+  <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-4 " id="modal-basic-title">Estimate Price</span>
+    <div>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+    <app-addpatient [is_estimation]="true"></app-addpatient>
+  </div>
+</ng-template>
+
+<ng-template #Prescription let-modal>
+  <div class="modal-header  border-bottom py-1 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-5" id="modal-basic-title">Prescription -
+      {{selectedPatient.title.name}}{{selectedPatient.name}}</span>
+    <div>
+
+      <div class="d-flex flex-row gap-2 align-items-center">
+        <button class="btn btn-primary rounded-3"
+        (click)="prescriptionComponent.printPrescription(false, true)">
+        Print Details
+      </button>
+
+      <button *ngIf="prescriptionComponent?.prescription" class="btn btn-success rounded-3"
+        (click)="prescriptionComponent.printPrescription(false)">
+        Print
+      </button>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+    <app-add-prescription #prescriptionComponent [patient]="selectedPatient"
+      [consultation]="selectedConsultation"></app-add-prescription>
+  </div>
+  <div class="modal-footer py-1 d-flex justify-content-end border-top bg-light-blue">
+    <button (click)="prescriptionComponent.saveApiCall()" class="btn btn-success fs-5 rounded-3 ">
+      {{prescriptionComponent.prescription ? "Update" : "Save"}}
+    </button>
+  </div>
+</ng-template>

@@ -1,0 +1,300 @@
+<!-- <p>view-visit works!</p> -->
+<div class="container-full">
+    <div class="row">
+        <div class="col-12 bg-soft-primary rounded-3 py-3 fs-5 logoColor fw-semibold px-3 d-flex justify-content-between align-items-center">
+            <span>{{title}}</span>
+            <button class="btn bg-white text-primary px-3 rounded-3 shadow" (click)="showPatient()">Add Visit</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 px-0">
+            <div class="container-full p-0" *ngFor="let item of patiendData">
+                <ul class="timeline">
+                    <li>
+                        <!-- begin timeline-time -->
+                        <div class="timeline-time">
+                            <!-- <span class="date">{{timeSrvc.decodeTimestamp(item.added_on)}}</span> -->
+                            <span class="time pt-3">{{timeSrvc.decodeTimestamp(item.added_on)}}</span>
+                        </div>
+                        <!-- end timeline-time -->
+                        <!-- begin timeline-icon -->
+                        <div class="timeline-icon">
+                            <a href="javascript:;">
+                                <i class="ri-check-line"></i>
+                            </a>
+                        </div>
+                        <!-- end timeline-icon -->
+                        <!-- begin timeline-body -->
+                        <div class="timeline-body p-0 rounded-3  pt-3">
+                            <div class="timeline-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex flex-row text-nowrap">
+                                        <div>Visit ID : <span class="fw-semibold fs-5 logoColor">{{item.visit_id}}</span></div>
+                                    </div>
+
+                                    <app-patient-details *ngIf="item?.referral_doctor && item?.doctor_name" time="Ref. Dr :- {{item?.doctor_name}}"></app-patient-details>
+                                </div>
+
+                                
+                                <div class="d-flex flex-row gap-2">
+
+                                    <button (click)="goToStandardView(item)"
+                                    class="btn btn-info rounded-3 shadow">View Details</button>
+
+                                    <button class="btn btn-primary rounded-3 shadow" (click)="getPayments(paymentHistory,item)">
+                                        <span *ngIf="!item.loading">Payments</span>
+                                        <span *ngIf="item.loading" class="spinner-border spinner-border-sm mr-1 "></span>
+                                    </button>
+                                </div>
+                                
+                            </div>
+                            <div class="timeline-content rounded-3 py-0">
+
+                                <div aria-labelledby="tableDropdown"
+                                    class="testsTable table-dropdown bg-white border border-black rounded-3 overflow-hidden">
+                                    <table class="table rounded-3">
+                                        <thead class="fw-medium">
+                                            <tr class=" fs-6 text-white bg-black">
+                                                <th class="text-nowrap">Lab Test</th>
+                                                <th class="text-center">Status</th>
+                                                <th class="text-center">User</th>
+                                                <th class="text-end">Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let test of item.lab_tests.lab_tests; let i = index">
+                                                <tr>
+                                                    <td class="text-nowrap fw-semibold py-2">{{ test.name }}</td>
+                                                    <td class="text-center">{{ test.status_id }}</td>
+                                                    <td class="text-nowrap text-center">{{ item.created_by }}</td>
+                                                    <td class="text-nowrap text-end">{{ test.price}}</td>
+                                                </tr>
+
+                                            </ng-container>
+                                            <ng-container *ngIf="item.lab_packages && item.lab_packages.length !== 0">
+                                                <ng-container *ngFor="let package of item.lab_packages; let j = index">
+                                                    <tr>
+                                                        <td colspan="3" class="py-2 fw-bold fs-5 logoColor">{{package.name}}</td>
+                                                        <td colspan="1" class="text-end">{{package.offer_price}}</td>
+                                                    </tr>
+                                                <ng-container *ngFor="let pkg of package.lab_tests; let k = index">
+                                                    <tr>
+                                                        <td class="text-nowrap fw-semibold py-2 ps-5">{{ pkg.name }}</td>
+                                                        <td class="text-center">{{ pkg.status_id }}</td>
+                                                        <td class="text-nowrap text-center">{{ package.created_by }}</td>
+                                                        <td class="text-nowrap text-end">{{ "" }}</td>
+                                                    </tr>
+                                                </ng-container>
+                                                </ng-container>
+                                            </ng-container>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+
+                                <div class="d-flex justify-content-end pe-2">
+                                    <table class="billTable">
+                                        <tbody class=" text-black">
+                                            <tr>
+                                                <td class="td-color">
+                                                    Total Amount
+                                                </td>
+                                                <td class="text-end">
+                                                    {{item?.invoice?.total_cost}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td-color">
+                                                    Total Discount
+                                                </td>
+                                                <td class="text-end">
+                                                    {{item?.invoice?.total_discount}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td-color">
+                                                    Total Paid
+                                                </td>
+                                                <td class="text-end">
+                                                    {{item?.invoice?.total_paid}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold" style="color: rgb(225, 2, 2)">
+                                                    Total Due
+                                                </td>
+                                                <td class="fw-bold text-end" style="min-width: 150px; color: rgb(225, 2, 2)">
+                                                    {{item?.invoice?.total_due}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="td-color">
+                                                    Total Refund
+                                                </td>
+                                                <td class="text-end">
+                                                    {{item?.invoice?.total_refund}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table> 
+                                </div>
+
+                                
+                            </div>
+
+                            <div class="timeline-footer">
+                                
+                                <!-- <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-thumbs-up fa-fw fa-lg m-r-3"></i> Like</a>
+                            <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-comments fa-fw fa-lg m-r-3"></i> Comment</a> 
+                            <a href="javascript:;" class="m-r-15 text-inverse-lighter"><i class="fa fa-share fa-fw fa-lg m-r-3"></i> Share</a> -->
+                            </div>
+
+                        </div>
+                        <!-- end timeline-body -->
+                    </li>
+
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<ng-template #paymentHistory let-modal>
+    <div class="modal-header py-2 d-flex flex-lg-row flex-column px-3 border-bottom bg-light-blue">
+        <span class="modal-title fs-5" id="modal-basic-title">Payment History</span>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-primary rounded-3 shadow" (click)="print_patient_invoice()">
+                 <span *ngIf="!openId.loading">Print Invoice</span>
+                <span *ngIf="openId.loading" class="spinner-border spinner-border-sm mr-1"></span>
+            </button>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');">
+
+            </button>
+        </div>
+
+    </div>
+    <div class="modal-body bg-modal" style="background-color: #F8FAFC;">
+        <div class="container-full p-0" style="min-height: 300px !important; ">
+
+            <div class="row mb-3" style="min-height: 150px;">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>Date & Time</th>
+                            <th>Receipt Id</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Remarks</th>
+                            <th>Discount</th>
+                            <th>Paid</th>
+                            <th>Action</th>
+                        </ng-container>
+                        <ng-container class="tablebody">
+                            <tr *ngFor="let receipt of paymentHistoryTable">
+                                <td>{{timeSrvc.decodeTimestamp(receipt.added_on)}}</td>
+                                <td class="py-2">{{receipt.Receipt_id}}</td>
+                                <td class="td-color">{{receipt.created_by ? receipt.created_by : "--"}}</td>
+                                <td>
+                                    {{receipt.payments ? getMultiPaymodes(receipt.payments) : ""}}
+                                    <!-- <div class="d-flex flex-column" *ngFor="let item of receipt.payments">
+                                        <span>
+                                            {{item.pay_mode}}
+                                        </span>
+                                    </div> -->
+                                </td>
+                                <td>
+                                    <small>{{receipt.remarks ? receipt.remarks : ""}}</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column ">
+                                        <span class="fs-5 fw-medium">
+                                            {{receipt.discount_amt ? 'Rs. '+ receipt.discount_amt : '0.00'}}
+                                        </span>
+                                        <small *ngIf="receipt.discount_type" class="td-color">
+                                            {{getDiscountName(receipt.discount_type).name}}
+                                        </small>
+                                        <small *ngIf="receipt.discount_type" class="td-color">
+                                            {{getDiscountName(receipt.discount_type).is_percentage ? "" : "₹"}}
+                                            {{getFloatVal(getDiscountName(receipt.discount_type).number)}}
+                                            {{getDiscountName(receipt.discount_type).is_percentage ? "%" : ""}}
+                                        </small>
+                                    </div>
+
+                                </td>
+                                <td class="fs-5 fw-medium">
+                                    <!-- Rs.{{receipt.paid_amount}}  -->
+                                    {{receipt.payments ? 'Rs. '+ getMultiPaymodesAmount(receipt.payments) : ""}}
+                                    <!-- <div class="d-flex flex-column" *ngFor="let item of receipt.payments">
+                                        <span>
+                                            {{'Rs. ' + item.paid_amount}}
+                                        </span>
+                                    </div> -->
+                                </td>
+                                <td>
+                                    <button class="btn btn-success btn-sm px-3 rounded-3"
+                                        (click)="print_patient_report(receipt.id)">Print</button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="paymentHistoryTable.length === 0">
+                                <td colspan="8">
+                                    <div class="d-flex align-items-center justify-content-center td-color"
+                                        style="min-height: 150px">
+                                        No Payments
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+
+            <div class="row mb-1">
+                <div class="col-12 fw-semibold fs-5">
+                    Refund History
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>Date & Time</th>
+                            <th>Refund</th>
+                            <!-- <th class="text-center">Added to Due</th> -->
+                            <th>User</th>
+                            <th>Remarks</th>
+                        </ng-container>
+                        <ng-container class="tablebody">
+                            <tr *ngFor="let receipt of refundList">
+                                <td class="py-2">{{timeSrvc.decodeTimestamp(receipt.added_on)}}</td>
+                                <td class="fs-5 fw-medium">{{receipt.refund}}</td>
+                                <!-- <td class="text-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"
+                                        [checked]="receipt?.add_refund_to_due" disabled>
+                                </td> -->
+                                <td>{{receipt.created_by ? receipt.created_by : "--"}}</td>
+                                <td class="text-wrap">{{receipt.remarks ? receipt.remarks : ""}}</td>
+                            </tr>
+                            <tr *ngIf="refundList.length === 0">
+                                <td colspan="5">
+                                    <div class="d-flex flex-column align-items-center justify-content-center td-color"
+                                        style="min-height: 150px">
+                                        <img src="/assets/images/No-data-cuate.svg" style="width: 200px">
+                                        <span class="pb-2
+                                        ">No Refund History Found</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                    </app-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,93 @@
+<!-- <p>add-company works!</p> -->
+
+<form [formGroup]="baseForm">
+    <div class="container-full">
+        <div class="row mb-2">
+            <div class="col-12">
+                <app-input labelText="Company Name" labelClass="form-label mb-1" [imp]="true" placeHolder="Enter Name"
+                 [formSubmitted]="submitted" formControlName="name"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                <app-textarea-input labelText="Address" [imp]="true" [formSubmitted]="submitted" [removeCloseIcon]="true" 
+                formControlName="address"  placeHolder="Enter Address"></app-textarea-input>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-5 col-12">
+                <app-input labelText="Contact Person" labelClass="form-label mb-1" [imp]="true"
+                [camelCase]="true" [formSubmitted]="submitted" formControlName="contact_person" placeHolder="Enter Name"></app-input>
+            </div>
+
+            <div class="col-lg-5 col-12">
+                <app-input labelText="Contact No." labelClass="form-label mb-1" [imp]="true" [inputLength]="10"
+                [applyAllowNumbersOnly]="true" [formSubmitted]="submitted" formControlName="mobile_number"  placeHolder="+91"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-6 col-12">
+                <app-input labelText="Email Address" labelClass="form-label mb-1" [imp]="true"
+                [formSubmitted]="submitted" formControlName="email" placeHolder="Enter Email"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-5 col-12">
+                <app-input labelText="GSTIN" labelClass="form-label mb-1" placeHolder="Enter GST No."
+                 [formSubmitted]="submitted" formControlName="gstin"></app-input>
+            </div>
+
+            <div class="col-lg-5 col-12">
+                <app-input labelText="Pan Number" labelClass="form-label mb-1"
+                [formSubmitted]="submitted" formControlName="pan_number"  placeHolder="Enter Pan Number"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-5 col-12">
+                <app-input labelText="CIN" labelClass="form-label mb-1" placeHolder="Enter CIN No."
+                 [formSubmitted]="submitted" formControlName="cin_number"></app-input>
+            </div>
+
+            <div class="col-lg-5 col-12">
+                <app-input labelText="TIN" labelClass="form-label mb-1"
+                [formSubmitted]="submitted" formControlName="tin_number"  placeHolder="Enter TIN Number"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12 fs-5 border-bottom fw-light">
+                Additional Details
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+              Enter Partnership
+            </div>
+          </div>
+
+          <ng-container *ngFor="let item of collabsData ; let i = index ; ">
+            <div class="row mb-2">
+              <div class="col-10">
+                <app-input [removeCloseIcon]="true" [removeLabel]="true" placeHolder="Enter Name"
+                (onValueChanged)="writeName($event, item)" [inputValue]="item?.name"></app-input>     
+              </div>
+
+              <div class="col-1">
+                <button *ngIf="i == collabsData.length - 1"
+                  class="btn border-0 bg-transparent fs-3 p-0" (click)="addRow(i)" >
+                  <i class="ri-add-circle-line"></i>
+                </button>
+              </div>
+
+            </div>
+
+
+        </ng-container>
+    </div>
+</form>

@@ -1,0 +1,702 @@
+
+  <div class="container-full" *ngIf="false">
+
+    <div class="row mb-1">
+      <div class="col-12 fw-light fs-4 text-muted border-bottom pb-2">
+        Card Details
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Card Name</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <app-input [formSubmitted]="submitted" formControlName="name" [removeCloseIcon]="true" [removeLabel]="true"
+              placeHolder="" [applyAllowLettersOnly]="true" [applyEmptySpace]="true" [formatLetter]="true" [applyAutoFocus]="true"
+              [inputLength]="100" classVal="form-control fs-6 fw-semibold rounded-3"></app-input>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-6" >
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Period</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row g-0">
+              <div class="col-6">
+                <app-input [formSubmitted]="submitted"
+                    formControlName="duration" 
+                    classVal="form-control rounded-0 rounded-start fw-light"
+                    [applyAllowNumbersOnly]="true" [applyDot]="false"
+                    requiredMessage="Enter name" [spellcheck]="false"
+                    [removeLabel]="true" placeHolder="Enter Duration"
+                  ></app-input>
+            </div>
+
+
+            <div class="col-6">
+                <select formControlName="duration_type"
+                    aria-label="duration_type input with select button"
+                    class="form-select bg-soft-primary rounded-0 rounded-end">
+                    <ng-container *ngFor="let item of validityType">
+                        <option [value]="item.id" *ngIf="item.is_active">
+                            {{item.name}}
+                          </option>
+                    </ng-container>
+                </select>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-lg-3 col-6" *ngIf="false">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Valid From</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <app-datepicker [formSubmitted]="submitted" [selectToday]="true" formControlName="validity_starts_on"
+              datePickerFormat="Y-m-d" [setMin]="true" [setMax]="false" placeHolder="From Date"></app-datepicker>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-6" *ngIf="false">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Valid To</span>
+            <!-- <span class="text-danger">*</span> -->
+          </div>
+          <div class="col-12">
+            <app-datepicker [formSubmitted]="submitted" [setMin]="true" [setMax]="false"
+              formControlName="validity_ends_on" datePickerFormat="Y-m-d" placeHolder="To Date"></app-datepicker>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-3 col-6">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Card Price</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-1">
+                <span class="fw-bold fs-5">₹</span>
+              </div>
+              <div class="col-11">
+                <app-num-input [removeLabel]="false" [formSubmitted]="submitted" placeHolder="" [limit]="99999999" formControlName="card_cost"
+                  [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-6">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Card For </span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <app-select [formSubmitted]="submitted" [removeMessage]="true" [labelText]="''" formControlName="card_for" [selectBindLabel]="'name'" [selectItems]="cardForTypes"
+              placeHolder="Select Type"></app-select>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="row mb-1">
+      <div class="col-12 fw-light fs-4 text-muted border-bottom pb-2">
+        Benefits
+      </div>
+    </div>
+
+    <div class="row">
+      
+      <div class="col-lg-3 col-6">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Doctor Consultation </span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <app-select [formSubmitted]="submitted" [removeMessage]="true" [labelText]="''" [selectBindLabel]="'name'"
+              [selectItems]="consultaionType" placeHolder="Select Type"
+              formControlName="doctor_consultation_type"></app-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-12" *ngIf="baseForm && baseForm?.value?.doctor_consultation_type?.id == 2">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Discount on Consultation</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-12">
+                <app-num-input [removeLabel]="false" [limit]="100" [formSubmitted]="submitted" placeHolder=""
+                  formControlName="doctor_consultation_discount" placeHolder="%"
+                  [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+              <!-- <div class="col-1">
+                <span class="fw-bold fs-5">%</span>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-12" >
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>No.of free consultations</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <app-input [formSubmitted]="submitted" [applyAllowNumbersOnly]="true" [removeCloseIcon]="true"
+              [removeLabel]="true" placeHolder="" [inputLength]="7" formControlName="doctor_consultation_frequency"
+              [classVal]="'form-control fw-semibold rounded-3'"></app-input>
+            <!-- [inputDisable]="baseForm && baseForm.value.doctor_consultation?.id == 2" -->
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Ambulance Facility </span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <app-select [formSubmitted]="submitted" [removeMessage]="true" [labelText]="''" [selectBindLabel]="'name'"
+              [selectItems]="ambulanceType" placeHolder="Select Type" formControlName="ambulance_type"></app-select>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>No.of Ambulance Facilities</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-4">
+                <app-num-input [removeLabel]="false" [limit]="9999999" [formSubmitted]="submitted" placeHolder=""
+                  formControlName="ambulance_frequency"
+                  [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>Pharmacy Discount (%)</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-12">
+                <app-num-input [removeLabel]="false" [formSubmitted]="submitted" placeHolder="" placeHolder="%"
+                  formControlName="pharmacy_frequency"
+                  [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>No.of Pharmacy Billing Discounts</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-4">
+                <app-num-input [removeLabel]="false" [limit]="9999999" [formSubmitted]="submitted" placeHolder=""
+                  formControlName="pharmacy_discount" [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>In-Patient Discount (%)</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-12">
+                <app-num-input [removeLabel]="false" [formSubmitted]="submitted" placeHolder="%" formControlName="ip_billing_discount"
+                  [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>No.of IP Billing Discounts</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-4">
+                <app-num-input [removeLabel]="false" [limit]="9999999" [formSubmitted]="submitted" placeHolder=""
+                  formControlName="ip_billing_frequency"
+                  [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4 col-12">
+        <div class="row gap-1 mb-3">
+          <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+            <span>No.of Lab Test Discounts</span>
+            <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row align-items-center g-1">
+              <div class="col-9">
+                <app-num-input [removeLabel]="false" [limit]="9999999" [formSubmitted]="submitted" placeHolder=""
+                  formControlName="lab_test_frequency"
+                  [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+              </div>
+              <!-- <div class="col-1">
+                  <span class="fw-bold fs-5">%</span>
+                </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row g-1">
+      <div class="col-12">
+        Set discount for All departments (%)
+        <span class="text-danger">*</span>
+      </div>
+
+      <div class="col-12">
+        <div class="row align-items-center">
+          <div class="col-3">
+            <app-num-input [removeLabel]="false" formControlName="bulkEnter" [formSubmitted]="submitted" placeHolder="%" (inputValueChange)="writeBulk($event, 'price')"
+              [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+          </div>
+          <!-- <div class="col-1 text-center">
+            Or
+          </div> -->
+          <div class="col-8">
+            <div class="d-flex align-items-center gap-2" (click)="showDepartments = !showDepartments">
+              <div>
+                or Click here to Specify Discount for Department Individually (%)
+              </div>
+              <div>
+                <button [ngbTooltip]="!showDepartments ? 'Expand' : 'Close'" class="btn rounded-circle text-center fs-4 fw-semibold p-0">
+                  <i [class]="!showDepartments ? 'ri-arrow-down-s-line' : 'ri-arrow-up-s-line'"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="showDepartments">
+        <app-datatable tableHeaderClass="text-muted bg-soft-secondary">
+          <ng-container class="tableheader">
+
+            <td> Department Name</td>
+            <td *ngIf="false">
+              <div class="d-flex flex-column">
+                <div>Enter Frequency</div>
+                <div class="d-flex align-items-center gap-2">
+                  <div style="width: 75px">
+
+                    <app-input [inputType]="'number'" [formSubmitted]="submitted" [applyAllowNumbersOnly]="true"
+                      [removeLabel]="true" placeHolder="" (onValueChanged)="writeBulk($event, 'frequency' )"
+                      [applySpecialChars]="false" [removeCloseIcon]="true"
+                      [classVal]="'form-control fw-semibold rounded-3'"></app-input>
+                  </div>
+
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex flex-column">
+                <div>Enter Percentage</div>
+                <div class="d-flex align-items-center gap-2">
+                  <div style="width: 75px">
+                    <app-num-input [removeLabel]="false" formControlName="bulkEnter" [formSubmitted]="submitted" placeHolder=""
+                      (inputValueChange)="writeBulk($event, 'price')" 
+                      [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+                  </div>
+                  <div>
+                    <span class="fw-semibold fs-5">%</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+
+          </ng-container>
+          <ng-container class="tablebody">
+            <tr *ngFor="let department of departments">
+              <td>
+                <span class="fs-6 fw-semibold">{{department.name}}</span>
+              </td>
+              <td *ngIf="false">
+                <div class="d-flex align-items-center gap-2">
+                  <div style="width: 75px">
+                    <app-input [formSubmitted]="submitted" [applyAllowNumbersOnly]="true" [removeLabel]="true"
+                      placeHolder="" [inputValue]="department.frequency"
+                      (onValueChanged)="writePrice(department, $event, 'frequency')" [applySpecialChars]="false"
+                      [applyDot]="false" [removeCloseIcon]="true"
+                      [classVal]="'form-control fw-semibold rounded-3 shadow'"></app-input>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div style="width: 75px">
+                    <app-num-input [removeLabel]="false" [formSubmitted]="submitted" placeHolder="" [inputValue]="department.price"
+                      (inputValueChange)="writePrice(department, $event, 'price')" 
+                      [classVal]="'form-control fw-semibold rounded-3 shadow'"></app-num-input>
+                  </div>
+                  <div>
+                    <span class="fw-semibold fs-5">%</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </app-datatable>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12 py-2 px-0 d-flex justify-content-end">
+        <button type="button" class="btn btn-success rounded-3 fs-5" (click)="saveCard()">
+          {{updateForm ? 'Update Card' : 'Save Card'}}
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+<!-- new Loyalty card  -->
+<form [formGroup]="baseForm">
+  <div class="container-full">
+
+    <div class="row mb-2">
+      <div class="col-12 fw-light fs-4 text-muted border-bottom pb-2">
+        Card Details
+      </div>
+    </div>
+
+    <!-- card name , type, no of heads  -->
+    <div class="row g-3 mb-3">
+      <div class="col-lg-6 col-12">
+        <app-input labelText="Card Name" labelClass="form-label mb-1" [imp]="true" [removeCloseIcon]="true" formControlName="name"
+        placeHolder="" [applyAllowLettersOnly]="true" [applyEmptySpace]="true" [formatLetter]="true" [applyAutoFocus]="true"
+        [inputLength]="100" classVal="form-control fs-6 fw-semibold rounded-3" [formSubmitted]="submitted"></app-input>
+      </div>
+
+      <div class="col-lg-3 col-6">
+        <div class="row g-1">
+          <div class="col-10">
+              <app-select labelText="Cardholder Type" labelClass="form-label mb-1"  (onSelectionChanged)="setCardFor($event)"
+               [imp]="true" [formSubmitted]="submitted" [removeMessage]="true"[selectBindLabel]="'name'"
+              [selectItems]="cardForTypes" placeHolder="Select Type" formControlName="card_for" ></app-select>
+          </div>
+          <div class="col-2 d-flex flex-column">
+            <label for="addFor" class="form-label mb-1 visibility-none">i</label>
+              <button type="button" style="width: 22px; height: 22px" name="addFor"
+                  (click)="openModal(cardFor, { size: '', })"
+                  class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                  <i class="ri-add-line"></i>
+              </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-6">
+        <app-num-input [removeLabel]="false" labelClass="form-label mb-1" labelText="No.of Heads"
+         placeHolder="Enter Number" 
+        classVal="form-control fs-6 fw-light rounded-3" formControlName="no_of_members"></app-num-input>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-lg-4 col-6">
+        <app-select labelText="Card Payment Type" labelClass="form-label mb-1" 
+        [imp]="true" [formSubmitted]="submitted" formControlName="plan_period_type"
+        [removeMessage]="true" [selectBindLabel]="'name'" (onSelectionChanged)="updateDurationValidation()"
+        [selectItems]="cardPaymentTypes" placeHolder="Select Type"></app-select>
+      </div>
+
+      <div class="col-lg-4 col-6" *ngIf="baseForm.get('plan_period_type')?.value?.id == 1">
+        <div class="row gap-1">
+          <div class="col-12 d-flex gap-0 flex-row flex-nowrap">
+            <span>Duration</span>
+            <span class="text-danger" *ngIf="baseForm.get('plan_period_type')?.value?.id == 1">*</span>
+          </div>
+          <div class="col-12">
+            <div class="row g-0">
+              <div class="col-6">
+                <app-input [formSubmitted]="submitted"
+                    formControlName="duration" 
+                    classVal="form-control rounded-0 rounded-start fw-light"
+                    [applyAllowNumbersOnly]="true" [applyDot]="false"
+                    requiredMessage="Enter name" [spellcheck]="false"
+                    [removeLabel]="true" placeHolder="Enter Duration"
+                  ></app-input>
+            </div>
+
+
+            <div class="col-6">
+                <select formControlName="duration_type"
+                    aria-label="duration_type input with select button"
+                    class="form-select bg-soft-primary rounded-0 rounded-end">
+                    <ng-container *ngFor="let item of validityType">
+                        <option [value]="item.id" *ngIf="item.is_active">
+                            {{item.name}}
+                          </option>
+                    </ng-container>
+                </select>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-4">
+        <app-num-input [removeLabel]="false" labelText="Card Price" [imp]="true" labelClass="form-label mb-1" [formSubmitted]="submitted" placeHolder="₹" [limit]="99999999"
+          formControlName="card_cost" [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+      </div>
+
+    </div>
+
+    <div class="row g-3 mb-3">
+      
+      <div class="col-lg-5 col-12">
+        <div class="row g-2">
+          <div class="col-lg-9 col-4">
+            <app-num-input [removeLabel]="false" labelText="Eligible count(Free)" labelClass="form-label mb-1" 
+            [formSubmitted]="submitted" placeHolder="" [limit]="99999999" formControlName="free_usages"
+            [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+          </div>
+          <div class="col-lg-3 col-6">
+            <app-checkbox labelText="inp" mainLabel="visibility-none" labelClass="form-check-label fw-light ps-0" formControlName="free_usages_check"
+            classVal="form-check" activeText="Limitless" (onCheckboxValueChanged)="setEligibleValue($event, true, 'free_usages')" inactiveText="Limitless"></app-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-12">
+        <div class="row g-2">
+          <div class="col-lg-6 col-4">
+            <app-num-input [removeLabel]="false" labelText="Eligible count(Discount)" labelClass="form-label mb-1"
+            [formSubmitted]="submitted" placeHolder="" [limit]="99999999" formControlName="discount_usages"
+            [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+          </div>
+          <div class="col-lg-3 col-6">
+            <app-checkbox mainLabel="visibility-none" labelClass="form-check-label fw-light ps-0" formControlName="discount_usages_check"
+            classVal="form-check" activeText="Limitless" inactiveText="Limitless" (onCheckboxValueChanged)="setEligibleValue($event, true, 'discount_usages')"></app-checkbox>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="row mb-2">
+      <div class="col-12 fw-light fs-4 text-muted border-bottom pb-2">
+        Card Benefits
+      </div>
+    </div>
+
+
+    <div class="row mb-3">
+
+      <div class="col-3">
+        <app-select labelText="Discount Based On" labelClass="form-label mb-1" 
+        [imp]="true" [formSubmitted]="submitted" formControlName="discount_on" [inputDisable]="cardData" ngbTooltip="Can't Change Value Once Issued."
+        [removeMessage]="true" [selectBindLabel]="'name'" dropPosition="top" (onSelectionChanged)="resetCardDiscountOn()"
+        [selectItems]="banefitsTypes" placeHolder="Select Type"></app-select>
+      </div>
+
+      <div class="col-lg-4" *ngIf="baseForm.get('discount_on')?.value?.id == 1">
+        <app-num-input [removeLabel]="false" labelText="Discount(%)" [imp]="true" labelClass="form-label mb-1" [formSubmitted]="submitted" placeHolder="%" [limit]="99999999"
+        formControlName="discount" [classVal]="'form-control fw-semibold rounded-3'"></app-num-input>
+      </div>
+
+    </div>
+
+    <ng-container *ngIf="baseForm.get('discount_on')?.value?.id == 2">
+      <div class="row">
+        <div class="col-6">
+          Search & Select Department
+        </div>
+
+        <div class="col-3">
+          Discount(%)
+        </div>
+      </div>
+
+      <ng-container *ngFor="let item of deptTestData; let i = index">
+        <div class="row mb-2">
+          <div class="col-6">
+            <app-select [selectItems]="departments" [labelText]="''" selectBindLabel="name"  
+            placeHolder="Select Department" dropPosition="top"  [selectValue]="item?.id"
+            labelClass="form-label mb-1"  (onSelectionChanged)="selectDeptOrTest($event, item, i)"></app-select>
+          </div>
+
+          <div class="col-3">
+            <app-num-input [removeLabel]="true" [formSubmitted]="submitted" placeHolder="%" 
+            [limit]="100" [disableInput]="!item?.id"
+            [classVal]="'form-control fw-semibold rounded-3'" labelClass="form-label mb-1" 
+            [inputValue]="item?.discount" (inputValueChange)="writeDiscount($event, item)"></app-num-input>
+
+          </div>
+
+          <div class="col-1">
+            <button *ngIf="i == deptTestData.length - 1"
+              class="btn border-0 bg-transparent fs-3 p-0" (click)="addRow(i)" >
+              <i class="ri-add-circle-line"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="baseForm.get('discount_on')?.value?.id == 3">
+      <div class="row">
+        <div class="col-6">
+          Search & Select Test
+        </div>
+
+        <div class="col-2">
+          Test Price(₹)
+        </div>
+
+        <div class="col-2">
+          Discount(%)
+        </div>
+      </div>
+
+      <ng-container *ngFor="let item of deptTestData ; let i = index ; ">
+        <div class="row mb-2">
+          <div class="col-6">
+            <app-select [selectItems]="searchData" (onCustomSearch)="getSearches($event)" [labelText]="''" 
+            selectBindLabel="name"  placeHolder="Search Test" [isLoading]="searchLoading" [selectValue]="item?.id"
+            labelClass="form-label mb-1" dropPosition="top" (onSelectionChanged)="selectDeptOrTest($event, item, i)"></app-select>
+          </div>
+
+          <div class="col-2">
+            <app-num-input [removeLabel]="true" [disableInput]="true" [inputValue]="item?.id ? item?.id?.price : ''" placeHolder="%" [limit]="100"
+            [classVal]="'form-control fw-semibold rounded-3'" labelClass="form-label mb-1"></app-num-input>
+          </div>
+
+          <div class="col-2">
+            <app-num-input [removeLabel]="true" [formSubmitted]="submitted" 
+            placeHolder="%" [limit]="100" [disableInput]="!item?.id"
+            [classVal]="'form-control fw-semibold rounded-3'" 
+            (inputValueChange)="writeDiscount($event, item)" labelClass="form-label mb-1" 
+            [inputValue]="item?.discount"></app-num-input>
+          </div>
+
+          <div class="col-1">
+            <button *ngIf="i == deptTestData.length - 1"
+              class="btn border-0 bg-transparent fs-3 p-0" (click)="addRow(i)" >
+              <i class="ri-add-circle-line"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+
+
+  </div>
+</form>
+
+
+
+
+
+<ng-template #cardFor let-modal>
+
+  <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+    <span class="modal-title fs-5" id="modal-basic-title">Add Cardholder Type</span>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+  </div>
+  <div class="modal-body " style="background-color: #F8FAFC; ">
+    <form [formGroup]="cardHolderForm">
+      <div class="container-full">
+        <div class="row">
+          <div class="col-12">
+            <app-input labelText="Card Name" labelClass="form-label mb-1" [imp]="true" [removeCloseIcon]="true" formControlName="name"
+            placeHolder="" [applyAllowLettersOnly]="true" [applyEmptySpace]="true" [formatLetter]="true" [applyAutoFocus]="true"
+            [inputLength]="100" classVal="form-control fs-6 fw-semibold rounded-3" [formSubmitted]="submitted"></app-input>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer bg-light-blue py-1 px-3 border-top">
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-success rounded-3 fs-5" (click)="saveCardHolder(cardFor); modal.dismiss('Cross click');">Save</button>
+    </div>
+  </div>
+
+</ng-template>

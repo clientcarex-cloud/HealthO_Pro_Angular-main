@@ -1,0 +1,21 @@
+.td-color{
+    color: var(--Palette-Blue-Gray-600, #475569);
+    letter-spacing: 0.492px;
+}
+
+.discount-lh{
+    line-height: 0px;
+}
+
+td,th,ngb-highlight{
+    white-space: nowrap;
+    vertical-align: center;
+}
+
+.vertical-align-bottom{
+    vertical-align: bottom
+}
+
+// .settingNumber{
+//     translate: -10px 0px;
+// }

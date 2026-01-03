@@ -1,0 +1,71 @@
+<!-- <p>addtask works!</p> -->
+<div class="container-full">
+
+    <div class="row mb-3" *ngIf="this.assign">
+        <div class="col-lg-8 col-12">
+            <app-select selectBindLabel="displayName" placeHolder="Search Doctor"
+            [selectItems]="refDoctors" (onCustomSearch)="getDoctorSearches($event)" 
+            (onSelectionChanged)="doctorSelected($event)" [isLoading]="docLoading"
+            [autoClear]="true"></app-select>
+        </div>
+    </div>
+
+
+    <form [formGroup]="baseForm">
+
+
+        <div class="row">
+            <div class="col-3  mb-3">
+                <app-datepicker labelText="Date" [imp]="true" datePickerFormat="Y-m-d" formControlName="date"
+                [selectToday]="true" [setMin]="true" [setMax]="false"></app-datepicker>
+            </div>
+
+            <div class="col-9 mb-3" *ngIf="assign">
+                <app-select labelText="Select Executive" labelClass="form-label mb-0" placeHolder="Select Executive" formControlName="lab_staff"
+                [imp]="true" [selectItems]="staffs" selectBindLabel="name" [isLoading]="pageLoading" ></app-select>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-6 col-8  mb-3">
+                <app-input formControlName="name" labelText="Name" [formatLetter]="true"
+                placeHolder="Enter Name" [imp]="true" [formSubmitted]="submitted"></app-input>
+            </div>
+
+            <div class="col-lg-3 col-4  mb-3">
+                <app-select formControlName="visit_type" selectBindLabel="name" placeHolder="Select Type"
+                labelText="Visit Type" [selectItems]="visitTypes" [imp]="true" [formSubmitted]="submitted"></app-select>
+            </div>
+
+            <div class="col-lg-3 col-12  mb-3">
+                <app-input formControlName="mobile_number" labelText="Mobile Number" [formatLetter]="true"
+                placeHolder="Enter Ph no." [inputLength]="10" [applyAllowNumbersOnly]="true"  [formSubmitted]="submitted"
+                ></app-input>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-5 col-12  mb-3">
+                <app-textarea-input formControlName="address" labelText="Address" [imp]="true" placeHolder="Enter Address"
+                [formSubmitted]="submitted" [removeCloseIcon]="true"></app-textarea-input>
+            </div>
+
+            <div class="col-lg-3 col-12  mb-3">
+                <app-select formControlName="status" selectBindLabel="name" placeHolder="Select Status" [inputDisable]="true"
+                labelText="Status" [selectItems]="visitStatuses" [imp]="true" [formSubmitted]="submitted"></app-select>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-12 d-flex justify-content-end gap-3">
+                <button (click)="saveTask(false)" class="btn btn-success rounded-3 fs-5 px-3">Save</button>
+                <!-- <button (click)="saveTask(true)" class="btn btn-success rounded-3 fs-5 px-3">Save & Close</button> -->
+            </div>
+        </div>
+    </form>
+</div>

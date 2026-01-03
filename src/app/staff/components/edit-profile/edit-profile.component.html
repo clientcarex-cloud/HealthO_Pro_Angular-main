@@ -1,0 +1,383 @@
+<div class="container-full">
+    <form [formGroup]="baseForm" class="">
+        <div class="row px-2 align-item-center pt-2">
+            <div class="col-lg-9 col-12 d-flex flex-lg-row flex-column justify-content-sm-start">
+                <div class="d-flex align-item-lg-center align-item-start justify-content-start"
+                    style="align-items: center;">
+                    <span>
+                        <button class="border-0 bg-transparent p-0" routerLink="/staff/main">
+                            <i class="ri-arrow-left-line fs-4 td-color"></i>
+                        </button>
+                    </span>
+                    <span class="fs-4 ps-2">{{staff?.name || ""}}</span>
+                    <span class="td-color fw-light ps-2">( Joined {{calculateDaysBack(staff.added_on)}} )</span>
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-12 d-flex justify-content-end">
+                <div class="row">
+                    <div class="col-12">
+                        <button class="btn btn-success rounded-3 px-lg-5" (click)="saveApiCall()">
+                            Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-2 justify-content-between">
+
+            <!-- STAFF DETAILS SECTION  -->
+            <div class="col-lg-6 col-12 p-3">
+                <div class="row border rounded-3 bg-white">
+                    <div class="col-12 pt-2 tabsNavigation d-flex">
+                        <form [formGroup]="baseForm" class="">
+                            <div class="container-full pt-2 pb-3 px-3">
+
+                                <div class="row">
+                                    <div class="col-12">
+
+                                        <div class="row mb-3 ">
+                                            <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                                                Personal & Contact Details
+                                            </div>
+                                        </div>
+
+
+                                        <!-- staff name , gender, title  -->
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <span>Staff Name & Gender <span
+                                                                style="color:red">*</span></span>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="row g-0">
+
+                                                            <!-- TITLE SELECT -->
+                                                            <!-- <div class="col-2">
+                                                                <select formControlName="title" id="title"
+                                                                    name="patientName" (change)="changeTitle($event)"
+                                                                    [class.border-danger]="submitted && !baseForm.value.title"
+                                                                    class="form-select  rounded-0 rounded-start bg-soft-primary rounded-start"
+                                                                    aria-label="Text input with select button"
+                                                                    placeholder="Select Title">
+                                                                    <option value="" disabled>Select Title
+                                                                    </option>
+                                                                    <ng-container *ngFor="let title of titles">
+                                                                        <option [value]="title.id">
+                                                                            {{title.name}}</option>
+                                                                    </ng-container>
+                                                                </select>
+
+                                                            </div> -->
+
+                                                            <!-- PATIENT NAME INPUT  -->
+                                                            <div class="col-8">
+                                                                <app-input [formSubmitted]="submitted"
+                                                                    formControlName="name" [applyAutoFocus]="true"
+                                                                    classVal="form-control rounded-0 rounded-start fw-light"
+                                                                    requiredMessage="Enter name" [spellcheck]="false"
+                                                                    (onValueChanged)="formatString($event, 'name')"
+                                                                    [removeLabel]="true" placeHolder="Enter name"
+                                                                    [inputValue]="baseForm.value.name"></app-input>
+                                                            </div>
+
+                                                            <!-- GENDER SELECT  -->
+                                                            <div class="col-2">
+                                                                <select formControlName="gender"
+                                                                    aria-label="gender input with select button"
+                                                                    id="gender"
+                                                                    class="form-select bg-soft-primary rounded-0 rounded-end"
+                                                                    (change)="changeGender($event)"
+                                                                    aria-label="Text input with select button">
+                                                                    <option disabled>
+                                                                        <small> Select gender</small>
+                                                                    </option>
+                                                                    <ng-container *ngFor="let gender of genders">
+                                                                        <option [value]="gender.id"
+                                                                            *ngIf="gender.is_active"
+                                                                            [selected]="baseForm.value.gender === gender.name">
+                                                                            {{gender.name}}</option>
+                                                                    </ng-container>
+                                                                </select>
+                                                                <!-- <div *ngIf="baseForm.get('gender')!.invalid" class="text-danger">
+                                                    Gender is required
+                                                </div> -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <!-- mobile number and email address  -->
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <div class="row">
+                                                    <div class="col-12">Date of Birth </div>
+                                                    <div class="col-12">
+                                                        <app-datepicker formControlName="date_of_birth"
+                                                            datePickerFormat="Y-m-d"
+                                                            placeHolder="Select DOB"></app-datepicker>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <!-- MOBILE NUMBER  -->
+                                                <div class="row mb-3">
+                                                    <div class="col-12">Mobile Number <span class="text-danger">*</span>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <app-input [inputLength]="10" [formSubmitted]="submitted"
+                                                            formControlName="mobile_number" [removeLabel]="true"
+                                                            placeHolder="Enter Number"
+                                                            [applyAllowNumbersOnly]="true"></app-input>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- email  -->
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="col-6">
+                                                    <!-- EMAIL  -->
+                                                    <div class="row">
+                                                        <div class="col-12">Email </div>
+                                                        <div class="col-12">
+                                                            <app-input [formSubmitted]="submitted"
+                                                                formControlName="email" [removeLabel]="true"
+                                                                placeHolder="Enter Email Address"></app-input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                                                                                                    <!-- profile pciture -->
+                                    <div class="row align-items-end mb-3">
+                                        <div class="col-12">
+                                            Profile Picture
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row g-2">
+                                                <div class="col-8 fw-light" *ngIf="!baseForm.value.profile_pic">
+                                                    <input name="logo" type="file" class="form-control"
+                                                        accept="image/png, image/gif, image/jpeg"
+                                                        (change)="ProfileChanged($event)">
+                                                    <small>Maximum Width 5000px, Maxium Height 5000px</small>
+                                                </div>
+                                                <div class="col-2">
+                                                    <button name="removeBtn" *ngIf="baseForm.value.profile_pic"
+                                                        (click)="openXl(viewImage, 'xl', baseForm.value.profile_pic)"
+                                                        class="btn btn-soft-primary w-100 border-primary rounded-3">View</button>
+                                                </div>
+                                                <div class="col-2">
+                                                    <button name="removeBtn" *ngIf="baseForm.value.profile_pic"
+                                                        (click)="clearLogo(false)"
+                                                        class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- signature -->
+                                    <div class="row align-items-end mb-3">
+                                        <div class="col-12">
+                                            Signature
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row g-2">
+                                                <div class="col-8 fw-light" *ngIf="!baseForm.value.signature">
+                                                    <input name="logo" type="file" class="form-control"
+                                                        accept="image/png, image/gif, image/jpeg"
+                                                        (change)="onFileChanged($event)">
+                                                    <small>Maximum Width 500px, Maxium Height 500px</small>
+                                                </div>
+                                                <div class="col-2">
+                                                    <button name="removeBtn" *ngIf="baseForm.value.signature"
+                                                        (click)="openXl(viewImage, 'lg',baseForm.value.signature)"
+                                                        class="btn btn-soft-primary w-100 border-primary rounded-3">View</button>
+                                                </div>
+                                                <div class="col-2">
+                                                    <button name="removeBtn" *ngIf="baseForm.value.signature"
+                                                        (click)="clearLogo(true)"
+                                                        class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <ng-container *ngIf="false">
+                                        <div class="row mb-3">
+                                            <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                                                Job Details
+                                            </div>
+                                        </div>
+
+                                        <!-- role, department  -->
+                                        <div class="row g-2">
+                                            <div class="col-7">
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        Role
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <app-select [selectItems]="roles" [selectBindLabel]="'name'"
+                                                            formControlName="role"
+                                                            placeHolder="Select Role"></app-select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-5">
+                                                <div class="col-12">Department </div>
+                                                <div class="col-12">
+                                                    <app-select formControlName="department" [selectItems]="departments"
+                                                        [selectBindLabel]="'name'"
+                                                        placeHolder="Select Department"></app-select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- employment type, branch  -->
+                                        <div class="row mb-3 g-2">
+                                            <div class="col-6">
+                                                <div class="col-12">Employment type </div>
+                                                <div class="col-12">
+                                                    <app-select formControlName="employement_type"
+                                                        [selectItems]="employmentTypes" [selectBindLabel]="'name'"
+                                                        placeHolder="Select Employment type"></app-select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-6">
+                                                <div class="col-12">Branch </div>
+                                                <div class="col-12">
+                                                    <app-select formControlName="branch" [selectItems]="branches"
+                                                        [selectBindLabel]="'name'"
+                                                        placeHolder="Select Branch"></app-select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-5">
+                                                <div class="col-12">Shift </div>
+                                                <div class="col-12">
+                                                    <app-select formControlName="shift" [selectItems]="shifts"
+                                                        [selectBindLabel]="'name'"
+                                                        placeHolder="Select Shift"></app-select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </ng-container>
+
+                                        <!-- HOURLY RATE  -->
+                                        <!-- <div class="row mb-3">
+                                <div class="col-12">Hourly Rate <span class="text-danger">*</span></div>
+                                <div class="col-12">
+                                    <app-input [formSubmitted]="submitted" [removeLabel]="true" placeHolder="Enter Hourly rate" [applyAllowNumbersOnly]="true"></app-input>
+                                </div>
+                                
+                            </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- NOTES OF THE STAFF  -->
+            <div class="col-lg-6 col-12 p-3" *ngIf="false">
+                <div class="row p-2 mb-3 border rounded-3 bg-white">
+                    <div class="col-12 mb-2 pt-2 fs-4 fw-light td-color border-bottom pb-2">
+                        <!-- <div class="col-12 fs-4 fw-light td-color border-bottom pb-2"> -->
+                        Recent Activity
+                    </div>
+                    <div class="col-12 mt-2">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="row">
+                                    <!-- SEARCH BOX  -->
+                                    <div class="col-6">
+                                        <app-searchbox [applyAutoFocus]="false" placeHolder="Search.."></app-searchbox>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="row justify-content-end">
+                                            <div class="col-4  justify-content-end">
+                                                <select class="form-select rounded-3 form-select-sm">
+                                                    <option>10</option>
+                                                    <option>20</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-3  justify-content-end">
+                                                <button class="btn btn-success btn-sm rounded-3">
+                                                    Export
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mb-3" style="min-height: 350px;">
+                                <app-datatable>
+                                    <ng-container class="tableheader">
+                                        <th>Notes</th>
+                                        <th>Added From</th>
+                                        <th>Data Added</th>
+                                        <th>Options</th>
+                                    </ng-container>
+                                    <ng-container>
+                                        <td colspan="4">No Entries Found</td>
+                                    </ng-container>
+                                </app-datatable>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<ng-template #viewImage let-modal>
+    <div class="modal-header py-3 px-3 bg-soft-primary border-bottom d-flex justify-content-between align-items-center">
+        <!-- <span class="modal-title fs-5" id="modal-basic-title">Prescription</span> -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <!-- <img style="height: 400px; width: 400px; object-fit: contain;" 
+         [src]="baseForm.value.prescription_attach ? baseForm.value.prescription_attach : ''"> -->
+
+            <div class="row justify-content-center">
+                <div class="col-12 d-flex justify-content-center"
+                    style="height: 500px; width: 500px; object-fit: cover;">
+                    <img [src]="picture">
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,138 @@
+<div class="container-full">
+    <div class="row g-2">
+      <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 mb-3 rounded-3">
+        <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-section-vertical-custom border rounded-3"
+        orientation="vertical" size="sm">
+
+        <li [ngbNavItem]="1">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Lab Tests</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-global-tests></app-global-tests>
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="2">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Services</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-services-hims></app-services-hims>
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="3">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Packages</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-packages></app-packages>
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="4">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Rooms</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-rooms></app-rooms>
+          </ng-template>
+        </li>
+
+
+        <li [ngbNavItem]="5">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Item Master</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-medicines></app-medicines>
+          </ng-template>
+        </li>
+
+        
+        <li [ngbNavItem]="6">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Department</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <ng-container *ngTemplateOutlet="departmentsTmpt"></ng-container>
+          </ng-template>
+        </li>
+        
+
+
+        <li [ngbNavItem]="7">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Discounts</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-discount-type></app-discount-type>
+          </ng-template>
+        </li>
+        
+        <li [ngbNavItem]="8">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Mgmt Settings</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-business-setting [showPharmacyDiscount]="true"></app-business-setting>
+          </ng-template>
+        </li>
+        
+        <li [ngbNavItem]="9">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Staff Role</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-staff-role></app-staff-role>
+          </ng-template>
+        </li>
+
+        <li [ngbNavItem]="10">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Print Templates</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+            <app-print-templates></app-print-templates>
+          </ng-template>
+        </li>
+
+        
+      </ul>
+      </div>
+      <div class="col-xl-10 col-lg-10 col-md-8 col-sm-12 ">
+        <div [ngbNavOutlet]="nav" class="border rounded-3 bg-white"></div>
+      </div>
+    </div>
+  
+    <ng-template #departmentsTmpt>
+      <div class="container-fluid">
+        <app-department-type></app-department-type>
+      </div>
+  
+    </ng-template>
+
+  
+    <ng-template #businessTemplate>
+
+    </ng-template>
+  
+    <ng-template #dummy>
+      <div class="p-3">
+        <p>Insert options here</p>
+      </div>
+    </ng-template>
+  </div>
+    
+    

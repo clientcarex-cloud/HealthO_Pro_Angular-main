@@ -1,0 +1,132 @@
+<!-- <p>datepicker-section works!</p> -->
+<div ngbDropdown #myDrop="ngbDropdown" container="body" class="w-100">
+    <button style="padding: 5px 10px;"
+    class="btn text-muted fw-light dropdown-menu-end bg-white form-control rounded-3 gap-2 w-100 d-flex align-items-center justify-content-between" ngbDropdownToggle>
+      {{buttonText}}
+      <!-- <i class="ri-arrow-down-s-line"></i> -->
+      <i class="ri-calendar-line"></i>
+    </button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="container-full p-3" style="width:350px">
+
+      <div class="container-full">
+
+        <div class="row g-0 mb-3">
+          <div class="col-12 mb-3">
+            Select Date
+          </div>
+
+          <div class="col-12 ">
+            <div class="row g-2">
+              <div class="col-4">
+                <button class="rounded-pill w-100 btn-sm text-center" (click)="todayDate();$event.stopPropagation(); myDrop.close()"
+                [class.bg-white]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date))"
+                [class.border]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date))"
+                [class.border-0]="timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date)">Today</button>
+        
+              </div>
+
+              <div class="col-4">
+                <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="yesterday();$event.stopPropagation(); myDrop.close()"
+                [class.bg-white]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date))"
+                [class.border]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date))"
+                [class.border-0]="timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date)"
+                >Yesterday</button>
+              </div>
+
+              <div class="col-4">
+                <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="getLast7Days();$event.stopPropagation(); myDrop.close()"
+                [class.bg-white]="!(timeSrvc.getLast7Days().startDate === SR_start_date && timeSrvc.getLast7Days().endDate === SR_end_date)"
+
+                >Last 7 Days</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="row align-items-center">
+              <div class="col-3">
+                <hr>
+              </div>
+              <div class="col-6 text-center text-muted fw-light">
+                <small>or By Start Date & End Date</small>
+              </div>
+              <div class="col-3">
+                <hr>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="row">
+              <div class="col-6">
+                <!-- <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                  (input)="set_shiftReport_start_date($event)" dateFormat="Y-m-d" placeholder="Start Date"
+                  [ngModel]="SR_start_date" [maxDate]="datePickerMaxDate"
+                  [altInput]="true" [convertModelValue]="true" /> -->
+                  
+                  <div class="input-group border rounded-3 shadow-sm">
+                    <input
+                    class="form-control fw-light border-0 bg-white" 
+                    placeholder="Start Date"
+                    name="dp"
+                    (click)="ds.toggle()"
+                    [(ngModel)]="startDate"
+                    [maxDate]="maxDate"
+                    ngbDatepicker
+                    (dateSelect)="selectStartDate($event)"
+                    #ds="ngbDatepicker"
+                    readonly
+                />
+                <button *ngIf="startDate" class="btn btn-soft-danger border-muted border-0 bi bi-x-lg" (click)="clearStartDate()" type="button"></button>
+                <button *ngIf="!startDate" class="btn btn-soft-primary border-muted border-0 bi bi-calendar3" (click)="ds.toggle()" type="button"></button>
+                </div>
+              </div>
+              <!-- <div class="col-1 p-0 d-flex justify-content-center align-items-center ">
+             -
+            </div> -->
+              <div class="col-6">
+                <!-- <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                  (input)="set_shiftReport_end_date($event)" dateFormat="Y-m-d" placeholder="End Date"
+                  [ngModel]="SR_end_date" [disabled]="SR_start_date == '' || !SR_start_date"
+                  [minDate]="SR_start_date ? SR_start_date : ''" [maxDate]="datePickerMaxDate" [altInput]="true"
+                  [convertModelValue]="true" /> -->
+
+                  <div class="input-group border rounded-3 shadow-sm">
+                    <input
+                        class="form-control fw-light border-0 bg-white" 
+                        placeholder="End Date"
+                        name="dp"
+                        (click)="de.toggle()"
+                        [(ngModel)]="endDate"
+                        [minDate]="startDate"
+                        [maxDate]="maxDate"
+                        ngbDatepicker
+                        (dateSelect)="selectEndDate($event)"
+                        #de="ngbDatepicker"
+                        readonly
+                    />
+                    <button *ngIf="endDate" class="btn btn-soft-danger border-muted border-0 bi bi-x-lg" (click)="clearEndDate()" type="button"></button>
+                    <button *ngIf="!endDate" class="btn btn-soft-primary border-muted border-0 bi bi-calendar3" (click)="de.toggle()" type="button"></button>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="false">
+          <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary rounded-3" >View & Print Report
+              <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="viewPrintLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+            <button class="btn btn-success rounded-3" >Print Report
+              <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="printLoading">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,9 @@
+.fullWidthColumn {
+    width: 60%;
+}
+
+@media screen and (max-width: 540px) {
+    .fullWidthColumn {
+        width: auto;
+    }
+}

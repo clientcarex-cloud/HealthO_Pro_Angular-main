@@ -1,0 +1,50 @@
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs *ngIf="pageTitle" [title]="pageTitle" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    
+
+                    
+                    <div class="row g-4 mb-3">
+                        <div class="col-sm-5">
+                            <!-- search-box -->
+                            <div>
+                                <ng-content select=".searchbox"></ng-content>
+                            </div>
+                        </div>
+                        <div class="col-sm d-flex justify-content-sm-end justify-content-end gap-1">
+                           
+                                <!-- add new button -->
+                                <ng-content select=".report"></ng-content>
+                         
+                     
+                                <!-- add new button -->
+                                <ng-content select=".addnew"></ng-content>
+                    
+                                <!-- add new button -->
+                                <ng-content select=".info"></ng-content>
+      
+                        </div>
+                    </div>
+
+                    <!-- table -->
+                    <ng-content select=".datacontent"></ng-content>
+                    <!-- end table -->
+
+                    <!-- Pagination -->
+                    <ng-content select=".paginationcontent"></ng-content>
+                    <!-- end Pagination -->
+                </div>
+            </div>
+            <!-- end card-body -->
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->

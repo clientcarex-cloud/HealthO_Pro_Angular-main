@@ -1,0 +1,289 @@
+<div class="container-full" *ngIf="settings">
+
+    <div class="row my-2 fw-semibold text-black">
+        <div class="col-2"></div>
+        <div class="col-2">Font Size</div>
+        <div class="col-2">Font Weight</div>
+        <div class="col-2">Display Name</div>
+        <div class="col-2">Alignment</div>
+        
+    </div>
+
+
+    <!-- department  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Department
+        </div>
+        
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'dept_name_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.dept_name_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'dept_name_weight')">
+                <ng-container *ngFor="let item of fontWeights">
+                    <option [style]="'font-weight: ' + item.value " [value]="item.value" [selected]="item.value == settings?.dept_name_weight">{{item.label}}</option>
+                </ng-container>
+            </select>              
+        </div>
+
+        <div class="col-2"></div>
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'dept_name_alignment')">
+                <ng-container *ngFor="let item of alignments">
+                    <option [value]="item.value" [selected]="item.value == settings?.dept_name_alignment">{{item.label}}</option>
+                </ng-container>
+            </select>  
+        </div>
+        <div class="col-2">
+            <!-- <select class="form-select rounded-3" (change)="changeValue($event.target, 'dept_name_alignment')">
+                <ng-container *ngFor="let item of alignments">
+                    <option [value]="item.value" [selected]="item.value == settings?.dept_name_alignment">{{item.label}}</option>
+                </ng-container>
+            </select>   -->
+        </div>
+    
+    </div>
+
+    <!-- test name  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Test Name
+        </div>
+        
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'test_name_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.test_name_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'test_name_weight')">
+                <ng-container *ngFor="let item of fontWeights">
+                    <option [style]="'font-weight: ' + item.value " [value]="item.value" [selected]="item.value == settings?.test_name_weight">{{item.label}}</option>
+                </ng-container>
+            </select>              
+        </div>
+
+        <div class="col-2"></div>
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'test_name_alignment')">
+                <ng-container *ngFor="let item of alignments">
+                    <option [value]="item.value" [selected]="item.value == settings?.test_name_alignment">{{item.label}}</option>
+                </ng-container>
+            </select>  
+        </div>
+    
+    </div>
+
+    <!-- report header  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Report Header
+        </div>
+        
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'report_head_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.report_head_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'report_head_weight')">
+                <ng-container *ngFor="let item of fontWeights">
+                    <option [style]="'font-weight: ' + item.value " [value]="item.value" [selected]="item.value == settings?.report_head_weight">{{item.label}}</option>
+                </ng-container>
+            </select>              
+        </div>
+    
+    </div>
+
+    <!-- group name  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Group Name
+        </div>
+        
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'group_name_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.group_name_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+    
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'group_name_weight')">
+                <ng-container *ngFor="let item of fontWeights">
+                    <option [style]="'font-weight: ' + item.value " [value]="item.value" [selected]="item.value == settings?.group_name_weight">{{item.label}}</option>
+                </ng-container>
+            </select>              
+        </div>
+    </div>
+
+    <!-- parameter  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Parameter
+        </div>
+        
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'parameter_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.parameter_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'parameter_weight')">
+                <ng-container *ngFor="let item of fontWeights">
+                    <option [style]="'font-weight: ' + item.value " [value]="item.value" [selected]="item.value == settings?.parameter_weight">{{item.label}}</option>
+                </ng-container>
+            </select>              
+        </div>
+
+        <div class="col-2">
+            <app-input [removeCloseIcon]="true" [removeLabel]="true" placeHolder="Enter Display Name" [inputValue]="settings?.test_display_name"
+            (onValueChanged)="changeDisplayName($event, 'test_display_name')"></app-input>
+        </div>
+
+        <!-- <div class="col-2 d-flex justify-content-center align-items-center"  [style]="'font-weight: ' + settings?.parameter_weight+ '; font-size: ' + settings.parameter_size + 'px'">
+            {{settings?.test_display_name}}
+        </div> -->
+    </div>
+
+    <!-- result  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Result
+        </div>
+
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'result_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.result_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        <div class="col-2"></div>
+
+        <div class="col-2">
+            <app-input [removeCloseIcon]="true" [removeLabel]="true" placeHolder="Enter Display Name" [inputValue]="settings?.result_display_name"
+            (onValueChanged)="changeDisplayName($event, 'result_display_name')"></app-input>
+        </div>
+
+        <!-- <div class="col-2 d-flex justify-content-center align-items-center"  [style]="'font-size: ' + settings?.result_size + 'px'">
+            {{settings?.result_display_name}}
+        </div> -->
+    </div>
+
+    <!-- units  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Unit
+        </div>
+
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'unit_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.unit_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'unit_weight')">
+                <ng-container *ngFor="let item of fontWeights">
+                    <option [style]="'font-weight: ' + item.value " [value]="item.value" [selected]="item.value == settings?.unit_weight">{{item.label}}</option>
+                </ng-container>
+            </select>    
+        </div>
+
+        <div class="col-2">
+            <app-input [removeCloseIcon]="true" [removeLabel]="true" placeHolder="Enter Display Name" [inputValue]="settings?.unit_display_name"
+            (onValueChanged)="changeDisplayName($event, 'unit_display_name')"></app-input>
+        </div>
+
+        <!-- <div class="col-2 d-flex justify-content-center align-items-center"  [style]="'font-size: ' + settings?.unit_size + 'px'">
+            {{settings?.unit_display_name}}
+        </div> -->
+    </div>
+
+
+    <!-- refferal ranges  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Ref. Ranges
+        </div>
+
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'ref_range_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.ref_range_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        <div class="col-2">
+            <select class="form-select rounded-3" (change)="changeValue($event.target, 'ref_range_weight')">
+                <ng-container *ngFor="let item of fontWeights">
+                    <option [style]="'font-weight: ' + item.value " [value]="item.value" [selected]="item.value == settings?.ref_range_weight">{{item.label}}</option>
+                </ng-container>
+            </select>    
+        </div>
+
+        <div class="col-2">
+            <app-input [removeCloseIcon]="true" [removeLabel]="true" placeHolder="Enter Display Name" [inputValue]="settings?.ref_ranges_display_name"
+            (onValueChanged)="changeDisplayName($event, 'ref_ranges_display_name')"></app-input>
+        </div>
+
+        <!-- <div class="col-2 d-flex justify-content-center align-items-center"  [style]="'font-size: ' + settings?.ref_range_size + 'px'">
+            {{settings?.ref_ranges_display_name}}
+        </div> -->
+    </div>
+
+    <!-- method  -->
+    <div class="row py-1">
+        <div class="col-2 fs-5">
+            Method
+        </div>
+
+        <div class="col-2">
+            <select id="fontSizeSelect" class="form-select rounded-3" (change)="changeValue($event.target, 'method_size')">
+                <ng-container *ngFor="let item of fontSizes">
+                    <option [style]="'font-size: '+ item.value + 'px'" [value]="item.value" [selected]="item.value == settings?.method_size">{{item.label}}</option>
+                </ng-container>
+            </select>
+        </div>
+
+        <div class="col-2"></div>
+
+        <div class="col-2">
+            <app-input [removeCloseIcon]="true" [removeLabel]="true" placeHolder="Enter Display Name" [inputValue]="settings?.method_display_name"
+            (onValueChanged)="changeDisplayName($event, 'method_display_name')"></app-input>
+        </div>
+
+        <!-- <div class="col-2 d-flex justify-content-center align-items-center"  [style]="'font-size: ' + settings?.method_size + 'px'">
+            {{settings?.method_display_name}}
+        </div> -->
+
+        <div class="col-2">
+            <app-checkbox [removeLabel]="true" [showLabel]="false" (onCheckboxValueChanged)="changeDisplayName($event, 'method_is_italic')"
+            activeText="Is Italic" inactiveText="Is Italic" [checkboxValue]="settings?.method_is_italic"></app-checkbox>
+        </div>
+    </div>
+
+</div>

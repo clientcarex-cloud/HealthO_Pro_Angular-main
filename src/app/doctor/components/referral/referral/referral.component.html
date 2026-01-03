@@ -1,0 +1,642 @@
+<app-layout [showMap]="false" [showNav]="true" [showPageTitle]="false" [displayInformation]="true" [labPackage]="false"
+    [showNav]="false" [extraFilter]="true" [extraFilterSecond]="true" [showSelectPrint]="false">
+
+  <ng-container class="optTitle" *ngIf="!analyticShow">
+    Referral Doctor
+  </ng-container>
+
+  <ng-container class="displayInformation">
+    <ng-container *ngIf="!from_target">
+      <app-display-data [data]="dataDoctor" *ngIf="!analyticShow"></app-display-data>
+    </ng-container>
+    
+    <ng-container>
+      <div class="container-full " *ngIf="analyticShow">
+        <div class="row mb-2  rounded-3 ">
+          <div class="col-lg-5 col-12  rounded-3">
+            <div class="row mb-2">
+              <div class="mb-1 col-12 text-muted fw-light">
+                Calculate Amount By
+              </div>
+
+              <div class="col-12 ps-3">
+                <div class="row">
+                  <div class="col-lg-3 col-6">
+                    <app-radio [checkValue]="refSettings.is_calculation_by_net_total" [labelText]="'Net Amount'"
+                      (checkValueChange)="changeRefDocValue($event, 'is_calculation_by_net_total', 'is_calculation_by_total')"></app-radio>
+                  </div>
+                  <div class="col-lg-4 col-6">
+                    <app-radio [checkValue]="refSettings.is_calculation_by_total" [labelText]="'Total Amount'"
+                      (checkValueChange)="changeRefDocValue($event, 'is_calculation_by_total', 'is_calculation_by_net_total')"></app-radio>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-12 mb-2">
+                <app-checkbox [showLabel]="false"
+                  (onCheckboxValueChanged)="changeDueNDisRefSettings($event, 'due_clear_patients')"
+                  [checkboxValue]="refSettings.due_clear_patients" activeText="Remove Due Patients"
+                  inactiveText="Remove Due Patients" classVal="form-check"></app-checkbox>
+              </div>
+              <div class="col-12">
+                <app-checkbox [showLabel]="false" [checkboxValue]="refSettings.discount_by_doctor"
+                  (onCheckboxValueChanged)="changeDueNDisRefSettings($event, 'discount_by_doctor')"
+                  activeText="Discount By Doctor" inactiveText="Discount By Doctor"
+                  classVal="form-check"></app-checkbox>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker" >
+    <app-datepicker-section [initDate]="true" (dateRangeSelected)="getDateVal($event)"
+      [selectToday]="true"></app-datepicker-section>
+  </ng-container>
+
+  <ng-container class="extraFilter" >
+    <app-select [labelText]="null" [selectItems]="staffs" (onSelectionChanged)="selectExecutive($event)"
+     selectBindLabel="name" placeHolder="Select Executive"></app-select>
+  </ng-container>
+
+  <ng-container class="extraFilterSecond" >
+      <div class="d-flex flex-row gap-1">
+        <ng-container *ngTemplateOutlet="previewPrint"></ng-container>
+      </div>
+  </ng-container>
+
+  <ng-template #previewPrint>
+    <button class="btn btn-primary rounded-3"  [disabled]="printLoading || viewPrintLoading" (click)="printReport(true)">
+      <span *ngIf="!printLoading">Preview</span>
+      <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="printLoading">
+        <span class="visually-hidden">Please wait...</span>
+      </div>
+    </button>
+
+    <button class="btn btn-success rounded-3" (click)="printReport(false)" [disabled]="printLoading || viewPrintLoading">
+      <span *ngIf="!viewPrintLoading">Export</span>
+      <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="viewPrintLoading">
+        <span class="visually-hidden">Please wait...</span>
+      </div>
+    </button>
+
+    <button *ngIf="!analyticShow" (click)="main_doctor_id = null ;openModal(mergeRefDoctors, { size: '' , centered: true })" class="btn btn-primary rounded-3">Merge</button>
+</ng-template>
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="fw-semibold text-black" *ngIf="!analyticShow">
+          Sno.
+        </th>
+        <th class="text-black fs-5" >
+          <app-checkbox ngbTooltip="Select All Doctor" placement="right" [removeActInc]="true" labelClass="d-none"
+            classVal="" [showLabel]="false" [removeLabel]="true" [inputDisabled]="printLoading"
+            [checkboxValue]="doctors.length === selected_docs_for_prints.length && doctors.length !== 0"
+            (onCheckboxValueChanged)="selectAllDocs($event)"></app-checkbox>
+        </th>
+        <th (click)="changeSorting()" class="cursor-pointer">
+          <div class="d-flex text-nowrap gap-5 align-items-center justify-content-start">
+            <div>Dr Name</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="doctors && doctors.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th><span>Area</span></th>
+        <th class="text-nowrap"><span>Contact Person</span></th>
+        <th class="text-nowrap"><span>Marketing Executive</span></th>
+        <th class="text-center text-nowrap"><span>Total Patients</span></th>
+
+        <th class="text-center" *ngIf="!analyticShow">Is Active</th>
+      </ng-container>
+      <ng-container class="tablebody"  *ngIf="!loading" >
+        <tr class="font-Readex td-color" *ngFor="let item of doctors; let i=index">
+          <td class="text-black fs-5"  *ngIf="!analyticShow">
+            {{(page_number * page_size) - page_size + i + 1}} 
+        </td>
+          <td class="text-black fs-5 " >
+            <app-checkbox *ngIf="!item.is_duplicate" [ngbTooltip]="'Select ' + item.name" placement="right"
+              [removeActInc]="true" labelClass="d-none" classVal="" [showLabel]="false" [removeLabel]="true"
+              [inputDisabled]="printLoading" [checkboxValue]="checkDoc(item.id)"
+              (onCheckboxValueChanged)="Handle_print_report($event,item)"></app-checkbox>
+          </td>
+          <td (click)="openDoctorModal(addRefDoc, item)">
+            <app-patient-details [name]="item.name.toUpperCase()" [query]="query" time="{{item.gender ? item.gender : '-'}}"></app-patient-details>
+          </td>
+
+          <td (click)="openDoctorModal(addRefDoc, item)">
+            <div class="d-flex flex-column text-black">
+              <span>{{item.geo_area ? item.geo_area : "-"}}</span>
+            </div>
+          </td>
+          <td (click)="openDoctorModal(addRefDoc, item)">
+            <div class="d-flex flex-column text-black">
+              <span class="td-color text-nowrap">
+                +91 {{item.mobile_number ? item.mobile_number : "-"}}
+              </span>
+            </div>
+          </td>
+
+          <td>
+            <span>{{item?.marketing_executive?.name}}</span>
+          </td>
+
+          <td class="text-center fw-semibold text-black" (click)="openDoctorModal(addRefDoc, item)">
+
+            <div class="d-flex flex-column">
+              <div>
+                {{item.total_patients ? formatNumber(item.total_patients) : '-'}}
+              </div>
+              <div ngbTooltip="Last Patient Received at {{timeSrvc.dateAsString(item?.last_patient_date, true, true)}}" class="text-nowrap fw-normal td-color" *ngIf="item?.last_patient_date && item?.last_patient_date != '' && !analyticShow">
+                <small>Last pt. recd. at {{timeSrvc.dateAsString(item?.last_patient_date, false, true)}}</small>
+              </div>
+            </div>
+          </td>
+
+          <td class="text-center" *ngIf="!analyticShow">
+
+            <div class="d-flex flex-row align-items-center ">
+
+              <app-checkbox classVal="form-switch" [checkboxValue]="item.is_active" [showLabel]="false"
+              *ngIf="!item.is_duplicate" activeText="" inactiveText=""
+              (onCheckboxValueChanged)="openDoctorModal(addRefDoc, item, false, $event)"></app-checkbox>
+
+              <div ngbDropdown container="body" *ngIf="!item.is_duplicate" >
+                <button class="bg-transparent border-0 rounded-circle pb-2" ngbDropdownToggle>
+                    <span class="dropdown-arrow fs-6"></span>
+                </button>
+
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                  <button (click)="openDoctorModal(addRefDoc, item)" class="btn btn-success btn-sm rounded-3 px-3" ngbDropdownItem>Edit Doctor</button>
+                  <button (click)="openModalBootstrap(referralModal, 'xl' )" class="btn btn-success btn-sm rounded-3 px-3" ngbDropdownItem>Manage Ref. Amt</button>
+                  <button (click)="addVisit(item)" class="btn btn-success btn-sm rounded-3 px-3" ngbDropdownItem>Add Visit</button>
+                </div>
+              </div>
+
+            </div>
+            <span class="text-danger" *ngIf="item.is_duplicate">Merged</span>
+          </td>
+
+        </tr>
+      </ng-container>
+      <ng-container class="tablebody"  *ngIf="loading">
+        <tr>
+          <td colspan="8">
+            <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+              style="vertical-align: middle;min-height: 100px;">
+
+              <span class="d-flex flex-column align-items-center py-5">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-black pt-2 fw-light">Loading</div>
+              </span>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </ng-container>
+
+</app-layout>
+
+<ng-template #ShiftReport let-modal>
+  <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-4 " id="modal-basic-title">Doctor Report</span>
+    <div>
+
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+    <div class="container-full">
+      <div class="row align-items-center mb-3">
+        <div class="col-3">
+          Doctor :
+        </div>
+
+        <div class="col-9">
+          <app-select placeHolder="Select Doctor" [selectItems]="refDoctors" selectBindLabel="name"
+            (onSelectionChanged)="selectShirtReportStaff($event)" [isLoading]="docLoading" [emptyFound]="true"
+            (onCustomSearch)="getDoctorSearches($event)"></app-select>
+        </div>
+      </div>
+
+
+
+      <div class="row g-0 mb-3">
+        <div class="col-12 mb-2">
+          Select Date
+        </div>
+
+        <div class="col-12 ">
+          <div class="row g-2 px-3">
+            <div class="col-4">
+              <button class="rounded-pill w-100 btn-sm text-center" (click)="setToday()"
+                [class.bg-white]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border-0]="timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == '')">Today</button>
+
+            </div>
+
+            <div class="col-4">
+              <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="setYesterday()"
+                [class.bg-white]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                [class.border-0]="timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == '')">Yesterday</button>
+            </div>
+
+            <div class="col-4">
+              <button class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect" (click)="setSevenDays()"
+                [class.bg-white]="!(timeSrvc.getLast7Days().startDate === SR_start_date && timeSrvc.getLast7Days().endDate === SR_end_date)">Last
+                7 Days</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="row align-items-center">
+            <div class="col-3">
+              <hr>
+            </div>
+            <div class="col-6 text-center text-muted fw-light">
+              <small>or By Start Date & End Date</small>
+            </div>
+            <div class="col-3">
+              <hr>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="row">
+            <div class="col-6">
+              <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                (input)="set_shiftReport_start_date($event)" dateFormat="Y-m-d" placeholder="Start Date"
+                [ngModel]="SR_start_date" [maxDate]="datePickerMaxDate" [altInput]="true" [convertModelValue]="true" />
+            </div>
+            <!-- <div class="col-1 p-0 d-flex justify-content-center align-items-center ">
+                 -
+                </div> -->
+            <div class="col-6">
+              <input type="text" mwlFlatpickr class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                (input)="set_shiftReport_end_date($event)" dateFormat="Y-m-d" placeholder="End Date"
+                [ngModel]="SR_end_date" [minDate]="SR_start_date ? SR_start_date : ''" [maxDate]="datePickerMaxDate"
+                [altInput]="true" [convertModelValue]="true" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 d-flex gap-2">
+          <button class="btn btn-primary rounded-3 shadow" (click)="getReferralDoctorReport(false)">Preview
+            <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="viewPrintLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+          <button class="btn btn-success rounded-3 shadow" (click)="getReferralDoctorReport(true)">Print
+            <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="printLoading">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #reportModal let-modal>
+  <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+    <div>
+      <button (click)="print()" class="btn shadow btn-success me-2 rounded-3">Print Report</button>
+      <button (click)="export()" class="btn shadow btn-success me-2 rounded-3">Export</button>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  </div>
+
+
+  <div class="modal-body p-0" style="background-color: #F8FAFC;">
+    <div class="container-full py-0 px-3">
+      <div class="row p-0 g-0 d-flex justify-content-center" id="report">
+      </div>
+    </div>
+  </div>
+
+</ng-template>
+
+<ng-template #addRefDoc let-modal>
+
+  <div class="modal-body pt-2 bg-white rounded-3 rounded-3">
+    <div class="container-full rounded-3">
+      <div class="row">
+        <div class="col-12">
+          <div class="container-full rounded-3">
+            <div class="row g-2 justify-content-between">
+              <div class="col-12 p-0">
+                <div class="row rounded-3 bg-white">
+                  <div class="col-12 pt-2">
+                    <form [formGroup]="baseForm" class="">
+                      <div class="container-full pt-2 pb-3 px-3 rounded-3">
+                        <div class="row">
+                          <div class="col-12">
+                            <div class="row mb-3 align-items-center border-bottom pb-2">
+                              <div class="col-6 fs-5 fw-light td-color ">
+                                {{titleName ? titleName.toUpperCase() : 'Referral Doctor'}}
+                              </div>
+
+                              <div class="col-6 fs-5 fw-light td-color d-flex justify-content-end"
+                                (click)="modalService.dismissAll()">
+                                <button class="btn-close"></button>
+                              </div>
+                            </div>
+                            <!-- staff name , gender, title  -->
+                            <div class="row mb-3">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                <div class="row">
+                                  <div class="col-12">
+                                    <span>Full Name & Gender <span style="color:red">*</span></span>
+                                  </div>
+                                  <div class="col-12">
+                                    <div class="row g-0">
+
+                                      <!-- PATIENT NAME INPUT  -->
+                                      <div class="col-9">
+                                        <app-input [removeLabel]="true" placeHolder="Enter full name "
+                                          [formSubmitted]="submitted" formControlName="name" [applyAutoFocus]="true"
+                                          [(ngModel)]="baseForm.value.name" [applyAllowLettersOnly]="true" [applySpecialChars]="false" [applyEmptySpace]="true" [applyUpperCase]="true"
+                                          classVal="form-control fw-light rounded-0 rounded-start"></app-input>
+                                      </div>
+
+                                      <!-- GENDER SELECT  -->
+                                      <div class="col-3">
+                                        <select formControlName="gender" aria-label="gender input with select button"
+                                          id="gender" class="form-select bg-soft-primary rounded-0 rounded-end"
+                                          aria-label="Text input with select button">
+                                          <option disabled>
+                                            <small> Select gender</small>
+                                          </option>
+                                          <ng-container *ngFor="let gender of genders">
+                                            <option [value]="gender.id" *ngIf="gender.is_active"
+                                              [selected]="baseForm.value.gender === gender.name">
+                                              {{gender.name}}</option>
+                                          </ng-container>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- mobile number and email address  -->
+                            <div class="row g-2">
+
+                              <div class="col-6">
+                                <!-- MOBILE NUMBER  -->
+                                <div class="row mb-3">
+                                  <div class="col-12">Mobile Number <span class="text-danger">*</span>
+                                  </div>
+                                  <div class="col-12">
+                                    <app-input [inputLength]="10" [formSubmitted]="submitted"
+                                      formControlName="mobile_number" [removeLabel]="true" placeHolder="Enter Number"
+                                      [applyAllowNumbersOnly]="true"></app-input>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="row mb-3">
+                              <div class="col-12">Location <span class="text-danger">*</span></div>
+                              <div class="col-12">
+                                <app-input [removeLabel]="true" placeHolder="Enter location" [formSubmitted]="submitted"
+                                  formControlName="geo_area" [inputValue]="baseForm.value.geo_area"
+                                  classVal="form-control fw-light rounded-3"
+                                  (onValueChanged)="capitalizeName('location')"></app-input>
+                              </div>
+                            </div>
+
+                            <div class="row mb-3">
+                              <div class="col-12">Executive</div>
+                              <div class="col-8">
+                                  <app-select [labelText]="null" [selectItems]="staffs" formControlName="marketing_executive"
+                                   selectBindLabel="name" placeHolder="Select Executive"></app-select>
+                              </div>
+                          </div>
+
+
+                            <div class="row mb-3" *ngIf="false">
+                              <div class="col-12">
+
+                                <div class="row">
+                                  <!-- <div class="col-12">Add Referral Amount <span class="text-danger">*</span></div> -->
+                                  <div class="col-12 input-group d-flex align-items-center flex-row gap-2">
+                                    <form [formGroup]="referralAmountForm"
+                                      class="d-flex align-items-center flex-row gap-2">
+                                      <input type="number" formControlName="referral_amount"
+                                        [class.border-danger]="submitted && !referralAmountForm.value.referral_amount  && referralAmountForm.value.referral_amount !==0"
+                                        [placeholder]="referralAmountForm.get('is_percentage')?.value ? '%' : '₹'"
+                                        class="form-control rounded-3 py-2 fs-5 fw-bold "
+                                        (input)="validateAmount($event)">
+
+                                      <app-checkbox (onCheckboxValueChanged)="resetAmount()"
+                                        labelClass="form-check-label fw-light ps-1 fw-bold" [showLabel]="false"
+                                        activeText="%" formControlName="is_percentage" inactiveText="%"
+                                        classVal="form-check fs-5 fw-bold"></app-checkbox>
+                                    </form>
+                                  </div>
+                                  <div class="col-12 text-danger">
+
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="row mt-5" *ngIf="!doc.is_duplicate">
+                              <div class="col-12 d-flex gap-2 justify-content-end">
+                                <button class="btn btn-primary fs-6 shadow rounded-3"
+                                (click)="addVisit(doc)">
+                                  Add Visit
+                                </button>
+                                <button class="btn btn-primary fs-6 shadow rounded-3 px-lg-3"
+                                  (click)="openModalBootstrap(referralModal, 'xl' )">
+                                  Manage Referral Amount
+                                </button>
+                                <button class="btn btn-success fs-6 shadow rounded-3 px-lg-3" (click)="saveApiCall()">
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #referralModal let-modal>
+  <div class="modal-header py-3 px-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+    <div class="d-flex align-items-center">
+      <button type="button" class="btn-close btn-sm" aria-label="Close"
+        (click)="modal.dismiss('Cross click');"></button>
+    </div>
+  </div>
+  <div class="modal-body">
+    <div class="container-full">
+      <div class="row mb-3">
+        <div class="col-4">
+          <app-searchbox (searchTermChange)="searchTestQuery($event)"></app-searchbox>
+        </div>
+        <div class="col-4">
+          <app-select [selectItems]="departments" [labelText]="''" selectBindLabel="name" [multipleSelect]="true"
+            placeHolder='Select Department' (onSelectionChanged)="selectDepartment($event)"></app-select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <app-datatable tableClass="table table-striped" tableHeaderClass="bg-dark text-white">
+            <ng-container class="tableheader">
+              <th>Test Name</th>
+              <th class="text-center">Department</th>
+              <th>Price</th>
+              <th>Amount</th>
+              <th>Percentage</th>
+            </ng-container>
+            <ng-container class="tablebody">
+              <tr class="bg-white font-Readex" *ngFor="let item of global_tests">
+
+                <td class="fs-5 fw-medium border-end">{{item.name}}</td>
+
+                <td class="fs-6 text-center border-end">{{item.department}}</td>
+                <td class="text-wrap border-end text-center">
+                  {{item?.price ? item?.price : ''}}
+                </td>
+                <td colspan="1" class="py-1 border-end text-center">
+                  <div>
+                    <app-input [inputValue]="0" placeHolder=""
+                      classVal="form-control fw-medium rounded-3 shadow border-1 py-1 "
+                      [removeLabel]="true"></app-input>
+                  </div>
+                  <!--    (onValueChanged)="onReportValueChange($event, item.id)" -->
+
+                </td>
+                <td class="text-center border-end">%</td>
+              </tr>
+            </ng-container>
+          </app-datatable>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #mergeRefDoctors let-modal>
+  <div class="modal-header py-2 px-3 bg-white d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-5" id="modal-basic-title">Merge Doctor</span>
+    <div class="d-flex align-items-center">
+        <button type="button" class="btn-close btn-sm" aria-label="Close"
+            (click)="modal.dismiss('Cross click');"></button>
+    </div>
+</div>
+<div class="modal-body">
+  <div class="container-full">
+      <div class="row mb-3">
+          <div class="col-12 fs-5 fw-light">
+              Correct Name <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+            
+              <app-select selectBindLabel="name" placeHolder="Search Doctor"
+              [selectItems]="refDoctors" (onCustomSearch)="getDoctorSearches($event)" 
+              (onSelectionChanged)="selectMainDoc($event)" [isLoading]="docLoading"
+               ></app-select>
+          </div>
+      </div>
+
+      <div class="row mb-5 mt-5">
+          <div class="col-12 fs-5 fw-light">
+              Duplicate Name <span class="text-danger">*</span>
+          </div>
+          <div class="col-12">
+              <app-select ngbTooltip="{{main_doctor_id == null ? 'Select Correct Name First' : ''}}"
+              [selectItems]="refDoctors" (onCustomSearch)="getDoctorSearches($event)" placeHolder="Search & select duplicate names"
+              [multipleSelect]="true" (onSelectionChanged)="selectMerged($event)"
+              selectBindLabel="name"  [isLoading]="docLoading"></app-select>
+          </div>
+      </div>
+
+      <div class="row">
+          <div class="col-12 d-flex justify-content-end">
+              <button class="btn btn-success fs-5 rounded-3" [disabled]="syncSave" (click)="mergeDoctorsPost()">
+              <ng-container *ngIf="!syncSave">
+                  Merge
+              </ng-container>
+              <ng-container *ngIf="syncSave">
+                  <div class="d-flex flex-row align-item-center gap-2">
+                      <span  class="spinner-border spinner-border-sm mr-1"></span> 
+                      <span>Merging ...</span>
+                  </div>
+              </ng-container>
+              </button>
+          </div>
+      </div>
+  </div>
+</div>
+</ng-template>

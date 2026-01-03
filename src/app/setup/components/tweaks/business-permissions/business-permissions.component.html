@@ -1,0 +1,124 @@
+<div class="container-full">
+    <div class="row my-2 mb-1 border-5 border-start border-primary rounded-2 ps-2 pe-3">
+        <div class="col-8 ">
+            <div class="row">
+                <div class="col-12">
+                    <span class="fw-medium fs-5">Dashboard Setup</span>
+                </div>
+                <div class="col-12">
+                    <span class="text-wrap td-color">Turn on/off essential features required for Dashboard</span>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="row my-2 " *ngIf="orderingChanged">
+        <div class="col-12">
+            <button (click)="saveOrderging()"
+            class="btn btn-success fs-5 px-3 rounded-3">Save</button>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <div class="row border-primary border bg-soft-primary" (cdkDropListDropped)="drop($event)" cdkDropList>
+                <ng-container *ngFor="let item of options;">
+                    <div  cdkDrag [class]="item?.graph_size + ' fw-medium font-monsterract bg-white border-black border border-2 text-center fs-5 p-2 card-animate shadow rounded-3'">
+                        
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <div class="text-nowrap">{{item.dash_board}}</div>
+                            <app-checkbox activeText="" inactiveText=""
+                            (onCheckboxValueChanged)="addRemoveCheck($event, item)" [checkboxValue]="item.is_active"
+                            [showLabel]="false"></app-checkbox>
+                            <div class="d-flex" style="width: 70px">
+                                <select class="form-select border fs-5 fw-semibold" (change)="updateSize($event, item)" >
+                                    <!-- <option [selected]="item.graph_size && item?.graph_size == 'col-lg-3 col-12'">Quarter</option> -->
+                                    <option value="col-lg-6 col-12" [selected]="item.graph_size && item?.graph_size == 'col-lg-6 col-12'">Half</option>
+                                    <option value="col-12" [selected]="item.graph_size && item?.graph_size == 'col-12'">Full</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row my-3" *ngIf="false">
+        <div class="col-12">
+            <app-datatable>
+                <ng-container class="tableheader">
+                    <th>Section</th>
+                    <th>Is Active</th>
+                    <th>Show</th>
+                </ng-container>
+
+                <ng-container class="tablebody">
+                    <tr *ngFor="let item of options">
+                        <td class="py-1 fs-5 fw-medium">
+                            <!-- {{captilizeService.AutoName(item.dash_board)}} -->
+                            {{item.dash_board}}
+                        </td>
+                        <td>
+                            <app-checkbox activeText="" inactiveText=""
+                                (onCheckboxValueChanged)="addRemoveCheck($event, item)" [checkboxValue]="item.is_active"
+                                [showLabel]="false"></app-checkbox>
+                        </td>
+                        <td>
+                            <select class="form-select">
+                                <option [selected]="item.graph_size && item?.graph_size == 'col-lg-3 col-12'">1/3</option>
+                                <option [selected]="item.graph_size && item?.graph_size == 'col-lg-6 col-12'">1/2</option>
+                                <option [selected]="item.graph_size && item?.graph_size == 'col-12'">Full</option>
+                            </select>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+    <div class="row my-3" *ngIf="false">
+        <div class="col-12">
+            <table class="table rounded-3 border">
+                <thead class="text-muted">
+                    <th>Sort</th>
+                    <th>Section</th>
+                    <th>Is Active</th>
+                    <th>Width</th>
+                </thead>
+                <tbody  (cdkDropListDropped)="drop($event)" cdkDropList class="tablebody example-list">
+                    <tr *ngFor="let item of options; let i = index" class="cursor-pointer py-2 example-box" cdkDrag>
+
+                        <td class="fs-4 cursor-move fw-bold" style="cursor: move;" cdkDragHandle>: :</td>
+                        <td class="py-1 fs-5 fw-medium">
+                            <!-- {{captilizeService.AutoName(item.dash_board)}} -->
+                            {{i + 1}}. {{item.dash_board}}
+                        </td>
+                        <td class="fs-4">
+                            <app-checkbox activeText="" inactiveText=""
+                                (onCheckboxValueChanged)="addRemoveCheck($event, item)" [checkboxValue]="item.is_active"
+                                [showLabel]="false"></app-checkbox>
+                        </td>
+                        <td>
+                            <select class="form-select border-0 fs-5 fw-semibold" (change)="updateSize($event, item)" >
+                                <!-- <option [selected]="item.graph_size && item?.graph_size == 'col-lg-3 col-12'">Quarter</option> -->
+                                <option value="col-lg-6 col-12" [selected]="item.graph_size && item?.graph_size == 'col-lg-6 col-12'">Half</option>
+                                <option value="col-12" [selected]="item.graph_size && item?.graph_size == 'col-12'">Full</option>
+                            </select>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>

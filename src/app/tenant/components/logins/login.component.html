@@ -1,0 +1,102 @@
+<app-master pageTitle="">
+    <ng-container class="searchbox">
+        <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)">
+        </app-searchbox>
+    </ng-container>
+    <ng-container class="addnew">
+        <app-addnewbutton buttonText="Add Login" content="content" (onAddNewClick)="addItem(content)">
+        </app-addnewbutton>
+    </ng-container>
+    <ng-container class="datacontent">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="sort1 fullWidthColumn" data-sort="identifier">User Name</th>
+                <th class="sort1" data-sort="area">Mobile No.</th>
+                <th class="sort1" data-sort="status">Status</th>
+                <th class="sort1" data-sort="status">Send SMS</th>
+                <th class="sort1">Action</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let data of dataList$ | async">
+                    <td>
+                        <ngb-highlight [result]="data.userName" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.mobileNo" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td class="status">
+                        <app-checkbox labelText="Status" [showLabel]="false"
+                        [checkboxValue]="data.status"
+                        [(ngModel)]="data.status"
+                        (onCheckboxValueChanged)="updateLoginStatus(data)"></app-checkbox>                        
+                    </td>
+                    <td class="status">
+                        <app-checkbox labelText="SMS Status" [showLabel]="false"
+                        [checkboxValue]="data.sendSMS"
+                        [(ngModel)]="data.sendSMS"
+                        (onCheckboxValueChanged)="updateLoginSMSStatus(data)"></app-checkbox>                        
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <app-editbutton content="content" icon="ri-lock-password-line align-middle"
+                                (onEditClick)="resetPwd(content, data);">
+                            </app-editbutton>
+                            <app-editbutton content="content" (onEditClick)="editLogin(content, data);">
+                            </app-editbutton>
+                            <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)">
+                            </app-deletebutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+    <ng-container class="paginationcontent">
+        <app-pager>
+            <ng-container class="pager">
+                <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                    (pageChange)="service.page = $event">
+                </app-pagination>
+            </ng-container>
+        </app-pager>
+    </ng-container>
+</app-master>
+
+<!-- Add New Login -->
+<ng-template #content role="document">
+    <app-newmodel [modelTitle]="modalTitle" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3" *ngIf="isNewRecord">
+                    <app-input labelText="User Name" placeHolder="Enter User Name" formControlName="userName"
+                    [formSubmitted]="submitted" requiredMessage="User Name is required"
+                    maxLengthMessage="User Name should not exceed 15 chars" 
+                    [applyAutoFocus]="isNewRecord"
+                    [applyAllowLettersOnly]="true"></app-input>                    
+                </div>
+                <div class="mb-3" *ngIf="isNewRecord || resettingPwd">
+                    <app-input labelText="User Password" placeHolder="Enter User Password" formControlName="userPwd"
+                    [inputType]="isNewRecord ? 'text' : 'password'"
+                    [formSubmitted]="submitted" requiredMessage="User Password is required"
+                    maxLengthMessage="User Password should not exceed 15 chars"
+                    [applyAutoFocus]="resettingPwd"
+                    [applyAllowLettersOnly]="true"
+                    [applyAllowUnderScore]="true"
+                    [applyNumbers]="true"
+                    [applySpecialChars]="true"></app-input>                    
+                </div>
+                <div class="mb-3" *ngIf="isNewRecord || !resettingPwd">
+                    <app-input labelText="Mobile No." placeHolder="Enter Mobile No."
+                    formControlName="mobileNo" [formSubmitted]="submitted"
+                    requiredMessage="Mobile No. is required"
+                    minLengthMessage="Mobile No. should be of 10 digits"
+                    maxLengthMessage="Mobile No. should be of 10 digits"
+                    [applyAutoFocus]="!isNewRecord && !resettingPwd"
+                    [applyAllowNumbersOnly]="true"></app-input>                    
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

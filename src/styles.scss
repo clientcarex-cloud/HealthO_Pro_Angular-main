@@ -1,0 +1,717 @@
+/* You can add global styles to this file, and also import other style files */
+@import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
+@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+@import '../node_modules/ngx-toastr/toastr.css';
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=IBM+Plex+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200&family=Inter:wght@100;200;300;400;500;600;700;800&family=Merriweather+Sans:wght@300;400;500&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Open+Sans:wght@300;400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
+@font-face {
+  font-family: 'Gilroy-Regular';
+  src: url('./assets/fonts/Gilroy-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy-Semibold';
+  src: url('./assets/fonts/Gilroy-SemiBold.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+.rotate-chevron {
+  transition: transform 0.2s ease-in-out;
+}
+
+.rotate-chevron.rotate-up {
+  transform: rotate(180deg);
+}
+
+.serialNumber{
+  max-width: 45px;
+  width: 45px;
+}
+
+.width-250{
+  min-width: 250px;
+}
+.widthFifty{
+  width: 50px;
+}
+
+.widthSevenFive{
+  width: 75px;
+}
+
+.width-75{
+  width: 75px;
+}
+
+.width-100{
+  width: 100px;
+}
+
+.width-200{
+  width: 200px;
+}
+
+.width-200-imp{
+  width: 200px !important;
+}
+
+.widthOneTwenty{
+  width: 112px;
+}
+
+.width-150{
+  width: 150px;
+}
+
+.width-275{
+  min-width: 273px;
+  width: 273px;
+}
+
+
+/* Style for the dropdown arrow */
+.dropdown-arrow {
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(45deg);
+}
+
+/* Hide the toggle arrow */
+button[ngbDropdownToggle]::after {
+  display: none;
+}
+
+
+.dx-tabpanel-tab {
+  flex-basis: unset;
+   padding: 3px !important; 
+}
+
+.dx-ribbon .dx-toolbar .dx-toolbar-items-container {
+  padding-top: 0px !important; 
+  padding-bottom: 0px !important; 
+  box-sizing: content-box;
+}
+
+.bg-status{
+  background: rgba(134, 205, 226, 0.15);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.02) inset;
+}
+
+
+// .dx-button-content{
+//   padding: 3px !important;
+// }
+
+// .dx-texteditor-input{
+//   padding: 3px !important;
+//   min-height: 0px !important;
+// }
+
+// .dx-texteditor-input {
+//   margin: 0;
+//   padding: 0px 9px 0px 9px !important; 
+//   background: rgba(0, 0, 0, 0);
+//   color: #333;
+//   font-size: 1em;
+//   border-radius: 4px;
+//   min-height: 0px !important; 
+// }
+
+// // .dx-button-content{
+// //   // padding: 0 !important
+// // }
+
+.dxreOtherPa{
+  .dxrePageArea{
+    pointer-events: none !important;
+  }
+ 
+
+}
+
+.visibility-none{
+  visibility: hidden;
+}
+
+blockquote {
+  box-shadow: -1px 0 0 0 rgb(11 148 241 / 25%) !important
+}
+
+.styled-space {
+  box-shadow: 0px 1px 0 0 rgb(11 148 241 / 25%) !important;
+}
+
+.page-break{
+  background-color: #29badb3b;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: 16px;
+  text-align: center;
+  border: 2px dashed #0000ff2b;
+}
+
+
+/* Set CKEditor content area to A4 size */
+/* Set CKEditor content area to A4 size /* Set CKEditor content area to A4 size */
+.cke_1.cke_chrome {
+  border-color: rgb(192, 196, 203);
+  border-radius: 5px !important;
+  overflow: hidden;
+  min-height: 70vh;
+}
+
+a.cke_button:hover {
+  font-family: 'DM Sans', sans-serif;
+  
+  display: inline-block;
+  height: 18px;
+  padding: 4px 6px;
+  outline: 0;
+  cursor: default;
+  border: 0px solid black !important;
+  position: relative;
+}
+
+.cke_inner > .cke_contents {
+  width: 221mm; /* Width of A4 paper */
+  border: 1px solid #ccc; /* Border style */
+  margin: 10px auto; /* Center horizontally */
+}
+
+.iframeDoc{
+  width: 221mm;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  height: 80vh;
+}
+
+/* Set CKEditor content area to A4 size */
+// .cke_top{
+//   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Shadow style */
+// }
+
+.cke_inner {  
+  border: 1px solid #ccc; /* Border style */
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow style */
+  margin: 0 auto; /* Center horizontally */
+  background-color: #E7EFFE !important;
+  // max-height: 65vh;
+}
+
+.ck-editor-body {
+  background-color: blue; /* Set your desired background color */
+}
+
+.ck-content .table .ck-table-resized {
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Custom styles for table */
+.custom-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.custom-table th,
+.custom-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+.custom-table th {
+  background-color: #f2f2f2;
+}
+
+.cke_reset_all,
+.cke_reset_all *,
+.cke_reset_all a,
+.cke_reset_all textarea {
+  background-color: white; 
+  transition: 2s all ease-in-out; 
+  font-family: 'Readex Pro', sans-serif !important;
+  text-align: left;
+}
+
+.cke_notification_warning {
+  display: none;
+}
+
+
+.modal-bg{
+  background-color: #F8FAFC;
+}
+
+html{
+  background-color: #F8FAFC;
+  font-family: 'Readex Pro', sans-serif;
+}
+
+.font-gilroy{
+  font-family: 'Gilroy-Regular';
+}
+
+.font-gilroy-semibold{
+  font-family: 'Gilroy-Semibold';
+}
+
+.lato-thin {
+  font-family: "Lato", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.lato-light {
+  font-family: "Lato", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.lato-regular {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.lato-bold {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.lato-black {
+  font-family: "Lato", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.lato-thin-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.lato-light-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.lato-regular-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.lato-bold-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.lato-black-italic {
+  font-family: "Lato", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.cormorant-garamond-light {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.cormorant-garamond-regular {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.cormorant-garamond-medium {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.cormorant-garamond-semibold {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.cormorant-garamond-bold {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.cormorant-garamond-light-italic {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.cormorant-garamond-regular-italic {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.cormorant-garamond-medium-italic {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.cormorant-garamond-semibold-italic {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.cormorant-garamond-bold-italic {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.lefleatStyle{
+  background: white;
+  overflow-y: auto;
+  max-height: 300px;
+  padding: 10px;
+  font-size: 26px !important;
+}
+
+
+.font-monsterract{
+  font-family: 'Montserrat', sans-serif;
+}
+
+.font-inter {
+    font-family: 'Inter', sans-serif;
+}
+
+.font-Readex {
+    font-family: 'Readex Pro', sans-serif;
+}
+
+.font-Merriweather {
+    font-family: 'Merriweather Sans', sans-serif;
+}
+
+.font-DMSans{
+  font-family: 'DM Sans', sans-serif;
+}
+.font-IBMPlex{
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.font-opensans{
+  font-family: 'Open Sans', sans-serif;
+}
+
+#suggestions-history{
+  z-index: 2000 !important;
+}
+
+.bg-status {
+  background: rgba(134, 205, 226, 0.15);
+  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.02) inset;
+}
+
+.logoColor{
+  color:#1e336a;
+}
+
+.bg-logoColor{
+  background-color: #1e336a;
+}
+
+.blue-theme-color{
+  background-color: #dceaf4;
+}
+
+.shiftReport{
+  background-color: #29BADB;
+}
+
+.chartHeader{
+  background: rgba(134, 205, 226, 0.15);
+  color: #1E336A;
+}
+
+
+.chartHeadColor{
+  color: #1E336A;
+}
+
+.IDs{
+  color:#000;
+}
+
+
+.IDs:hover{
+  color: rgb(182, 44, 44);
+}
+
+.td-color{
+color: #475569;
+}
+
+
+
+.btn[ngbDropdownToggle]::after {
+  display: none;
+}
+
+.btn-group-active{
+  background-color:white;
+  color:#000;
+  // box-shadow: $box-shadow-sm;
+}
+
+.custom-letter-spacing {
+  letter-spacing: 0.5px; /* Adjust the value as needed */
+}
+
+.indianFlagText{
+  position: absolute;
+  z-index: 99;
+}
+
+.Link{
+  color: rgba(0, 0, 255, 0.796);
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 7.5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  // border: 1px solid #0000001d;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #01017020; /* Color of the scrollbar handle */
+  border-radius: 4px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #9d9d9d; /* Color of the scrollbar handle on hover */
+}
+
+@media (max-width: 768px) {
+  .ngbCourse{
+    height:100%; width:100%; overflow:hidden; object-fit: cover; background-color: white;
+  }
+
+
+  .images{
+    height:100%; width:100%; overflow:hidden; object-fit: cover; background-color: white;
+  }
+}
+
+@media (min-width: 769px) {
+  .ngbCourse{
+    height:520px; width:520px; overflow:hidden; object-fit: cover; background-color: white;
+  }
+
+
+  .images{
+    height:520px; width:520px; overflow:hidden; object-fit: cover; background-color: white;
+  }
+}
+
+
+
+
+
+#loader {
+    bottom: 0;
+    height: 175px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 175px;
+  }
+  
+  #loader {
+    bottom: 0;
+    height: 175px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 175px;
+  }
+  
+  #loader .dot {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 87.5px;
+  }
+  
+  #loader .dot::before {
+    border-radius: 100%;
+    content: "";
+    height: 87.5px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: scale(0);
+    width: 87.5px;
+  }
+  
+  #loader .dot:nth-child(7n+1) {
+    transform: rotate(45deg);
+  }
+  
+  #loader .dot:nth-child(7n+1)::before {
+    animation: 0.8s linear 0.1s normal none infinite running load;
+    background: #00ff80 none repeat scroll 0 0;
+  }
+  
+  #loader .dot:nth-child(7n+2) {
+    transform: rotate(90deg);
+  }
+  
+  #loader .dot:nth-child(7n+2)::before {
+    animation: 0.8s linear 0.2s normal none infinite running load;
+    background: #00ffea none repeat scroll 0 0;
+  }
+  
+  #loader .dot:nth-child(7n+3) {
+    transform: rotate(135deg);
+  }
+  
+  #loader .dot:nth-child(7n+3)::before {
+    animation: 0.8s linear 0.3s normal none infinite running load;
+    background: #00aaff none repeat scroll 0 0;
+  }
+  
+  #loader .dot:nth-child(7n+4) {
+    transform: rotate(180deg);
+  }
+  
+  #loader .dot:nth-child(7n+4)::before {
+    animation: 0.8s linear 0.4s normal none infinite running load;
+    background: #0040ff none repeat scroll 0 0;
+  }
+  
+  #loader .dot:nth-child(7n+5) {
+    transform: rotate(225deg);
+  }
+  
+  #loader .dot:nth-child(7n+5)::before {
+    animation: 0.8s linear 0.5s normal none infinite running load;
+    background: #2a00ff none repeat scroll 0 0;
+  }
+  
+  #loader .dot:nth-child(7n+6) {
+    transform: rotate(270deg);
+  }
+  
+  #loader .dot:nth-child(7n+6)::before {
+    animation: 0.8s linear 0.6s normal none infinite running load;
+    background: #9500ff none repeat scroll 0 0;
+  }
+  
+  #loader .dot:nth-child(7n+7) {
+    transform: rotate(315deg);
+  }
+  
+  #loader .dot:nth-child(7n+7)::before {
+    animation: 0.8s linear 0.7s normal none infinite running load;
+    background: magenta none repeat scroll 0 0;
+  }
+  
+  #loader .dot:nth-child(7n+8) {
+    transform: rotate(360deg);
+  }
+  
+  #loader .dot:nth-child(7n+8)::before {
+    animation: 0.8s linear 0.8s normal none infinite running load;
+    background: #ff0095 none repeat scroll 0 0;
+  }
+  
+  #loader .loading {
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    bottom: -40px;
+    height: 20px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    width: 180px;
+  }
+  
+  @keyframes load {
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes load {
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+  
+  .spinner-message {
+    text-align: center;
+  }
+
+  @media print {
+    body * {
+      visibility: hidden;
+      background-color: #fff;
+    }
+    #print-section ,#print-section * {
+      visibility: visible;
+      background-color: #fff;
+    }
+    #print-section{
+      position: absolute;
+      left: 0;
+      top: 0;
+      background-color: #fff;
+    }
+  }
+
+
+  // this is the same pdf what is issue
+
+  // can you do with background graphics same as the pdf from server 
+  // i will try to manage 
+
+  // okay do try 
+
+  // check out fonts also same as pdf yes
+  
+// bro , once check out ngx-print-element module 
+

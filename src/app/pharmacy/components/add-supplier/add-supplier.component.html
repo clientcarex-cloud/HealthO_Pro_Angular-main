@@ -1,0 +1,54 @@
+<form [formGroup]="baseForm">
+    <div class="row mb-2">
+
+        <div class="col-lg-3">
+            <app-select selectBindLabel="name" [selectItems]="supplierTypes" placeHolder="Select Type"
+            formControlName="supplier_type" labelText="Supplier Type" [imp]="true" labelClass="form-label mb-1"></app-select>
+        </div>
+
+
+        <div class="col-lg-6 col-12">
+            <app-input [removeCloseIcon]="true" [imp]="true" labelText="Name" labelClass="form-label mb-1" classVal="form-control fw-semibold rounded-3 fs-5"
+            formControlName="name" placeHolder="" [camelCase]="true" [formSubmitted]="submitted"
+            ></app-input>
+        </div>
+
+        <div class="col-lg-3 col-12">
+            <app-input [imp]="true" labelText="Mobile Number" labelClass="form-label mb-1"  classVal="form-control fw-semibold rounded-3 fs-5"
+            formControlName="mobile_number" placeHolder="+91" [applyAllowNumbersOnly]="true" [inputLength]="10" [formSubmitted]="submitted"
+            ></app-input>
+        </div>
+
+    </div>
+
+    <div class="row mb-2">
+
+        <div class="col-lg-5 col-12">
+            <app-input [removeCloseIcon]="true" [imp]="true" labelText="Contact Person" labelClass="form-label mb-1"
+            formControlName="contact_person" placeHolder="" [formSubmitted]="submitted"></app-input>
+        </div>
+
+        <div class="col-lg-4 col-12">
+            <app-input  labelText="Email" labelClass="form-label mb-1"
+            formControlName="email" placeHolder="@"  [formSubmitted]="submitted"
+            ></app-input>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-lg-6 col-12">
+            <app-textarea-input labelText="Address" formControlName="address" [removeCloseIcon]="true"
+             labelClass="form-label mb-1" classVal="form-control rounded-3" placeHolder=""></app-textarea-input>
+        </div>
+        <div class="col-lg-6 col-12">
+            <app-textarea-input labelText="Description" formControlName="description" [removeCloseIcon]="true"
+            labelClass="form-label mb-1" classVal="form-control rounded-3" placeHolder=""></app-textarea-input>
+        </div>
+    </div>
+
+    <!-- <div class="row">
+        <div class="col-12 d-flex justify-content-end">
+            <button type="button" (click)="saveApiCall()" class="btn btn-success rounded-3 fs-5 px-2 shadow">Save</button>
+        </div>
+    </div> -->
+</form>

@@ -1,0 +1,287 @@
+<!-- <p>subscription works!</p> -->
+<div class="container-full pt-2">
+    <div class="row">
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs-custom">
+                <li ngbNavItem>
+                    <a ngbNavLink class="fs-5">Subscription Overview</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="overview"></ng-container>
+                    </ng-template>
+                </li>
+                <li ngbNavItem>
+                    <a ngbNavLink >
+                        <div class="d-flex flex-row align-items-center gap-2">
+                            <span class="fs-5">Purchase History</span>
+                            <i *ngIf="showMark" class="ri-error-warning-line text-danger fs-4 p-0"></i>
+                        </div>
+
+                    </a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="purchaseHistory"></ng-container>
+                    </ng-template>
+                </li>
+            </ul>
+
+            <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </div>
+    </div>
+</div>
+
+<ng-template #purchaseHistory>
+    <div class="container-full pt-3" *ngIf="purchaseData; else noDetails">
+        <table class="table-subscribe">
+            <thead class="fw-light">
+                <tr>
+                    <th>Plan Name</th>
+                    <th class="text-center">Subscription Start Date</th>
+                    <th class="text-center">Subscription End Date</th>
+                    <th class="text-center">Amount</th>
+                    <!-- <th class="text-center">Subscription Date</th> -->
+                    <th class="text-center">Payment Status</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let sub of purchaseData">
+                <tr class="bg-white my-2 border shadow">
+                    <td class="text-center py-3  fs-5">
+                        <div class="border-end">
+                            {{sub.plan_name}}
+                        </div>
+                    </td>
+                    <td class="text-center py-3  fs-5">
+                        <div class="border-end">
+                            {{timeSrvc.decodeTimestamp(sub.plan_start_date)}}
+                        </div>
+                    </td>
+                    <td class="text-center py-3  fs-5">
+                        <div class="border-end">
+                            {{timeSrvc.decodeTimestamp(sub.plan_end_date)}}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="border-end">
+                           <span class="  fs-5" *ngIf="sub.is_plan_completed"> ₹ {{formatIndianNumber(sub.invoice_bill_amount)}}</span>
+                           <small class="text-muted" *ngIf="!sub.is_plan_completed"> Bill Not Generated</small>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <!-- <div class="fs-5" *ngIf="sub.is_plan_completed"> -->
+                            <!-- <span *ngIf="sub.is_bill_paid" class="text-success">Paid</span>
+                            <span *ngIf="!sub.is_bill_paid" class="text-danger">Due</span> -->
+                            <!-- <span>{{sub.payment_status}}</span> -->
+                        <!-- </div>
+                        <div class="" *ngIf="!sub.is_plan_completed">
+                            <small class="text-muted" *ngIf="!sub.is_plan_completed"> Bill Not Generated</small>
+                        </div> -->
+                        <span>{{sub.payment_status}}</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-template>
+
+<ng-template #overview>
+    <div class="container-full" *ngIf="invDetails && purchaseData; else noDetails">
+        <div class="row pt-3">
+            <div class="col-12">
+                <div class="row  px-2">
+                    <div class="col-6 bg-soft-primary py-3 ps-3 rounded-3 shadow position-relative">
+                        <!-- First col-6 content -->
+                        <div class="row">
+                            <div class="col-12 fs-5 fw-light logoColor">
+                                Your current plan is
+                            </div>
+                            <div class="col-12 fs-4 fw-normal logoColor">
+                                <!-- Healtho PRO Premium (6 Months Subscription) -->
+                                {{purchaseData && purchaseData[0]?.plan_name}}
+                            </div>
+                        </div>
+                        <!-- Badge positioned at top right corner -->
+                        <div class="position-absolute top-0 end-0 mt-2 me-2 discount-badge" *ngIf="false">
+                            <div class="d-flex flex-column text-wrap align-items-center justify-content-center rounded-circle bg-logoColor p-3"
+                                style="height: 75px; width: 75px;">
+                                <span class="fw-medium text-white fs-5" style="line-height: 10px;">20%</span>
+                                <span class="text-white fw-light uppercase" style="line-height: 8px;">
+                                    <small>
+                                        <small>
+                                            <small>
+                                                {{"Discount on first purchase" | uppercase}}
+                                            </small>
+                                        </small>
+                                    </small>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <!-- Second col-6 content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <table class="table-subscribe">
+                    <thead class="fw-light">
+                        <tr>
+                            <th class="text-center">Status</th>
+
+                            <th class="text-center">Plan Expires On</th>
+                            <th class="text-center">Payment Deadline</th>
+
+                            <th class="text-center">Amount Per Patient</th>
+                            <!-- <th class="text-center">Discount Amount</th> -->
+                            <!-- <th class="text-center">Total Price</th> -->
+                            <!-- <th class="text-center">Expires On</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white my-2 border shadow  fs-5">
+                            <td class="text-center py-3">
+                                <div class="border-end">
+
+                                    <span
+                                        *ngIf="purchaseData && purchaseData[0].subscription_status?.is_subscription_active"
+                                        class="text-success"> Active</span>
+                                    <span
+                                        *ngIf="purchaseData && !purchaseData[0].subscription_status?.is_subscription_active"
+                                        class="text-danger"> In-Active</span>
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="logoColor border-end">
+                                    {{purchaseData && purchaseData[0].subscription_status?.validity ?
+                                    timeSrvc.dateAsString(purchaseData[0].subscription_status?.validity) : ""}}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="logoColor border-end">
+                                    {{purchaseData && purchaseData[0].subscription_status?.account_locks_on ?
+                                    timeSrvc.dateAsString(purchaseData[0].subscription_status?.account_locks_on) : ""}}
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="border-end logoColor fs-4">
+                                    <span *ngIf="!purchaseData[0]?.is_amount_percentage">₹</span>
+                                    {{formatIndianNumber(purchaseData[0]?.amount_per_patient)}} 
+                                    <span *ngIf="purchaseData[0]?.is_amount_percentage">%</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row justify-content-end mb-3">
+            <div class="col-5 d-flex justify-content-end fs-5">
+                <table>
+                    <tbody>
+                        <ng-container *ngIf="purchaseData[0]?.is_amount_percentage">
+                            <tr>
+                                <td>Total Payments</td>
+                                <td class="text-end" style="width: 250px;">{{"₹ " +formatIndianNumber(invDetails.patients_total_payments)}}</td>
+                            </tr>
+                            <tr>
+                                <td>Amount Per Patient</td>
+                                <td class="text-end" style="width: 250px;">
+                                    <span *ngIf="!purchaseData[0]?.is_amount_percentage">₹</span>
+                                    {{formatIndianNumber(purchaseData[0]?.amount_per_patient)}} 
+                                    <span *ngIf="purchaseData[0]?.is_amount_percentage">%</span>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <ng-container *ngIf="!purchaseData[0]?.is_amount_percentage">
+                            <tr>
+                                <td>Total Patients</td>
+                                <td class="text-end">{{invDetails.patients_count}}</td>
+                            </tr>
+                            <tr>
+                                <td>Amount Per Patient</td>
+                                <td class="text-end" style="width: 250px;">
+                                    <span *ngIf="!purchaseData[0]?.is_amount_percentage">₹</span>
+                                    {{formatIndianNumber(purchaseData[0]?.amount_per_patient)}} 
+                                    <span *ngIf="purchaseData[0]?.is_amount_percentage">%</span>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <tr>
+                            <td colspan="2">
+                                <hr class="m-0">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Total Amount</td>
+                            <td class="text-end">
+                                {{"₹ " +formatIndianNumber(invDetails.invoice_bill)}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Billing Start Date</td>
+                            <td class="text-end">{{timeSrvc.decodeTimestamp(invDetails.plan_start_date)}}</td>
+                        </tr>
+                        <tr>
+                            <td>Billing End Date</td>
+                            <td class="text-end">{{timeSrvc.decodeTimestamp(invDetails.plan_end_date)}}</td>
+                        </tr>
+                        <tr>
+                            <td>Bill Status</td>
+                            <td class="text-end">
+                                <!-- <ng-container *ngIf="purchaseData[0].is_plan_completed">
+                                    <span *ngIf="purchaseData[0].is_bill_paid" class="text-success">Paid</span>
+                                    <span *ngIf="!purchaseData[0].is_bill_paid" class="text-danger">Due</span>
+                                </ng-container>
+                                <ng-container *ngIf="!purchaseData[0].is_plan_completed">
+                                    <span class="text-muted fw-light">Bill Not Generated</span>
+                                </ng-container> -->
+                                <span>{{purchaseData[0].payment_status}}</span>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-2">
+                <button  *ngIf="false" [ngbTooltip]="purchaseData[0].plan_name != 'HealthOPro - Trail Subscription' ? purchaseData[0].is_plan_completed ? purchaseData[0].is_bill_paid ? '' : 'Bill is generated, Kindly pay the amount and extend your subscription' : 'Can`t Subscribe because bill is not generated yet !' : '  Subscribe Now'" 
+                [disabled]="!purchaseData[0].is_plan_completed && purchaseData[0].plan_name != 'HealthOPro - Trail Subscription'" 
+                (click)="postSUbscription()" class="bg-logoColor card-animate p-3 w-100 rounded-3 border-0 text-white"
+                    routerLink="/subscribe">
+                    <span *ngIf="purchaseData[0].plan_name == 'HealthOPro - Trail Subscription'">
+                        Subscribe Now
+                    </span>
+                    <span *ngIf="purchaseData[0].plan_name != 'HealthOPro - Trail Subscription'">
+                        {{ purchaseData[0].is_plan_completed ? purchaseData[0].is_bill_paid ? "" : "Pay Now" : purchaseData[0].payment_status }}
+                    </span>
+                </button>
+            </div>
+
+            <div class="col-2" *ngIf="false">
+                <button class="bg-white border-primary logoColor card-animate p-3 w-100 rounded-3"
+                    routerLink="/subscribe">
+                    Change Plan
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #noDetails>
+    <div class="container-full">
+        <div class="row">
+            <div class="col-12 d-flex flex-column py-3">
+                <span class="fs-4 fw-medium ">No Subscription Details Found</span>
+                <span class="fw-light fs-4">Please Contact Admin</span>
+            </div>
+        </div>
+    </div>
+</ng-template>

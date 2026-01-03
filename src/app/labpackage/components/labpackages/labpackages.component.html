@@ -1,0 +1,898 @@
+<div class="container-full">
+
+  <div class="row mt-2 mb-2">
+    <div class="col-8 fw-semibold fs-5">
+      {{"Lab Packages" | uppercase}}
+    </div>
+    <div class="col-4">
+      <div class="d-flex justify-content-end align-items-end">
+        <!-- add new package  -->
+        <app-addnewbutton buttonText="Add Package" (onAddNewClick)="openXl(Expense)"></app-addnewbutton>
+
+        <!-- info btn  -->
+        <app-info-btn></app-info-btn>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH AND SORT OPTIONS  -->
+  <div class="row g-2 mb-2">
+    <div class="col-lg-9 col-12">
+      <div class="row g-1">
+        <div class="searchSort col-lg-3">
+          <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-12">
+
+      <div class="row mx-0 g-1 align-items-center justify-content-end">
+        <div class="col-3 d-flex justify-content-end">
+          <span class="fw-light">Showing</span>
+        </div>
+        <div class="col-3">
+          <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+          </select>
+        </div>
+        <div class="col-2 justify-content-end pe-0">
+          <span class="fw-light">Entries</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row mb-2">
+    <div class="col-12">
+      <app-datatable>
+        <ng-container class="tableheader">
+          <th style="width:10px">S.no</th>
+          <th>Name</th>
+          <th>Total Tests</th>
+          <th>Offer Price</th>
+          <th>Total Amount</th>
+          <th>Discount</th>
+          <th>Active</th>
+        </ng-container>
+
+        <ng-container class="tablebody">
+          <tr *ngFor="let package of pkgs; let i=index" style="min-height: 32px;">
+            <td class="text-black text-nowrap fs-5 fw-medium">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+            <td class="text-black text-nowrap fs-5 fw-medium py-2" (click)="updatePckgs(ExpenseSecond, package)">
+              {{package.name}}</td>
+            <td (click)="updatePckgs(ExpenseSecond, package)">
+              <div *ngIf="package.lab_tests && package.lab_tests.length!==0"
+              class="d-flex flex-row justify-content-between align-items-center" style="max-width: 230px;">
+              <div class="d-flex flex-column">
+                <small class="text-truncate fw-medium text-black" style="max-width: 230px;">
+                  {{concatenateShortCodes(package.lab_tests)}}
+                </small>
+                <small>Total: {{ package.lab_tests ? package.lab_tests.length : 0 }}</small>
+              </div>
+            </div>
+
+            <div *ngIf="package.lab_tests && package.lab_tests.length===0">
+              <small>No Tests Added</small>
+            </div>
+
+            </td>
+     
+            <td class="text-black text-nowrap fs-6 fw-semibold" (click)="updatePckgs(ExpenseSecond, package)">
+              {{formatCurrency(package.offer_price)}}
+            </td>
+
+            <td class="text-black text-nowrap fs-6 fw-normal" (click)="updatePckgs(ExpenseSecond, package)">
+              {{formatCurrency(package.total_amount)}}
+            </td>
+
+
+            <td class="text-black text-nowrap fs-6 fw-normal" (click)="updatePckgs(ExpenseSecond, package)">
+            
+              <span *ngIf="!package?.is_disc_percentage">
+                {{formatCurrency(package.total_discount)}}
+              </span>
+
+              <span *ngIf="package?.is_disc_percentage">
+                {{getFormatedVal(package.total_discount) + " %"}}
+              </span>
+            
+            </td>
+
+            <td (click)="updatePckgs(ExpenseSecond, package, true)">
+              <app-checkbox [showLabel]="false" classVal="form-switch" activeText="" inactiveText=""
+                [checkboxValue]="package.is_active"></app-checkbox>
+            </td>
+          </tr>
+        </ng-container>
+      </app-datatable>
+    </div>
+  </div>
+
+  <!-- PAGINATION  -->
+  <div class="row g-1 justify-content-md-between align-items-md-center font-DMSans">
+    <div class="col col-sm-6 text-sm-right ">
+      <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+          all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </div>
+    <div class="col col-sm-6">
+      <div class="text-sm-right float-end text-black">
+        <div class="d-flex">
+          <ngb-pagination [collectionSize]="all_count ? all_count : 0" [(page)]="page_number" [maxSize]="3"
+            (pageChange)="onPageChange($event)" [pageSize]="page_size" [rotate]="true" [boundaryLinks]="true"
+            class="custom-pagination">
+            <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+            <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+          </ngb-pagination>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<ng-template #updatePackage let-modal>
+  <div class="modal-header py-2 px-3 border-bottom bg-light-blue">
+    <span class="modal-title fs-4" id="modal-basic-title">{{modelHeader}}</span>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body ">
+    <!-- LAB PACKAGE  -->
+    <div class="container-full">
+
+      <!-- name , description  -->
+      <div class="row g-2 mb-3">
+        <div class="col-lg-4 col-12">
+          <div class="row">
+            <div class="col-12">Package Name<span class="text-danger">*</span></div>
+            <div class="col-12">
+              <app-input [removeLabel]="true" placeHolder="Type Name" [formSubmitted]="submitted" formControlName="name"
+                classVal="form-control fw-light rounded-3 py-2"
+                (onValueChanged)="CapitalizeDescIncome('name')"></app-input>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8 col-12">
+          <div class="row">
+            <div class="col-12">Enter Description </div>
+            <div class="col-12">
+              <!-- <app-input [removeLabel]="true" placeHolder="Type description" [formSubmitted]="submitted"
+                  formControlName="description" classVal="form-control fw-light rounded-3"></app-input> -->
+
+              <app-input labelText="Enter Description" [removeLabel]="true" placeHolder="Type description"
+                [formSubmitted]="submitted" formControlName="description"
+                classVal="form-control fw-light rounded-3 py-2"
+                (onValueChanged)="CapitalizeDescIncome('description')"></app-input>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="row mb-3 g-2 justify-content-between ">
+        <div class="col-md-9 col-12">
+          <div class="row align-items-center">
+            <!-- search tests  -->
+            <div class="col-6">
+
+              <div class="row">
+                <div class="col-12">
+                  Add Tests<span class="text-danger">*</span>
+                </div>
+                <div class="col-12">
+                  <div class="ng-autocomplete fw-light">
+
+                        <ng-template #itemTemplate let-item>
+                            <a class="py-1 px-2 d-flex justify-content-between align-items-center">
+                                <span class="d-flex flex-column">
+                        
+                                    <span *ngIf="!item?.lab_tests" [innerHTML]="item.name" class="fw-normal fs-6"></span>
+                        
+                                    <small *ngIf="item?.sourcing_lab">
+                                        <small class="item-type text-white  px-2 py-0 me-2 rounded bg-dark"
+                                            [innerHTML]="item?.sourcing_lab?.partner?.organization_name"></small>
+                                    </small>
+                        
+                                </span>
+                        
+                        
+                                <small class="d-flex justify-content-end align-items-center">
+                        
+                                    <small *ngIf="!item?.lab_tests && item.short_code && item.short_code!==''"
+                                        class="item-type text-black font-DMSans px-2 py-0 me-2 rounded bg-soft-warning"
+                                        [innerHTML]="item.short_code"></small>
+                        
+                                    <small>
+                                        <small *ngIf="!item?.lab_tests"
+                                            class="item-type text-black px-2 font-DMSans py-0 rounded bg-soft-danger"
+                                            [innerHTML]="item.department"></small>
+                                    </small>
+                                </small>
+                            </a>
+                        </ng-template>
+
+                    <ng-template #notFoundTemplate let-notFound>
+                      <div [innerHTML]="notFound"></div>
+                    </ng-template>
+
+                    <ng-autocomplete historyHeading="" [isLoading]="searchLoading" [historyListMaxNumber]="0"
+                      [data]="searchData" [searchKeyword]="'name'" placeholder="Add Lab Tests / Packages"
+                      class="autoComplete_wrapper fw-light"
+                      (selected)="onItemSelected($event);auto_complete_view.clear()" [itemTemplate]="itemTemplate"
+                      [notFoundTemplate]="notFoundTemplate" class="w-100" #auto_complete_view
+                      (keydown.enter)="selectFirstOptionView()" (inputChanged)="getSearches($event)">
+                    </ng-autocomplete>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Active package  -->
+            <div class="col-6">
+              <app-checkbox labelText="" activeText="Active Package" classVal="form-switch form-switch-lg"
+                (onCheckboxValueChanged)="selectPackage.is_active = !selectPackage.is_active"
+                inactiveText="Active Package" [checkboxValue]="selectPackage.is_active"></app-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-12">
+          <div class="row g-1 align-items-end">
+            <div class="col-6">
+              <button class="btn btn-primary edit-item-btn w-100 rounded-3 text-nowrap">
+                Sync Tests
+              </button>
+            </div>
+
+            <div class="col-6">
+              <button class="btn btn-success text-nowrap w-100 rounded-3" (click)="saveUpdateModel()">
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3 ">
+        <app-datatable>
+          <ng-container class="tableheader">
+            <th style="width: 20px">S.no</th>
+            <th><span>Test Name</span></th>
+            <th><span></span></th>
+            <th class="text-center">
+              <span>Cost (₹)</span>
+            </th>
+            <th class="text-center">
+              <span>Discount</span>
+            </th>
+            <th class="text-center">
+              <span>Total (₹)</span>
+            </th>
+          </ng-container>
+          <ng-container class="tablebody">
+            <tr *ngFor="let test of selectedTests; let i = index" class=" td-color">
+              <td class="text-black fs-5">
+                {{ i + 1 }}
+              </td>
+              <td class="fw-medium text-black Fs-5">
+                {{ test.name }}
+              </td>
+              <td class="text-center">
+
+                <app-deletebutton btnClassVal="bg-transparent fs-6 border-0" placement="bottom" [ngbTooltip]="test.name"
+                  deleteIconClass="bi bi-x-lg text-danger" (click)="deleteViewTest(i,test.id)"></app-deletebutton>
+              </td>
+              <td class="text-center">
+                {{ test.cost }}
+              </td>
+              <td>
+                <div class="d-flex flex-row justify-content-center align-items-center">
+                  <div class="d-flex flex-column">
+                    <small>0</small>
+                    <small style="line-height: 2px;">-------</small>
+                    <small>0.00</small>
+                  </div>
+                  <div>
+                    <small style="line-height: 2px;">%</small>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                {{ test.cost }}
+              </td>
+            </tr>
+            <tr *ngIf="!selectedTests || selectedTests.length === 0">
+              <td colspan="8">
+                <div class="td-color fs-6 font-monsterract d-flex align-items-center justify-content-center "
+                  style="vertical-align: middle;min-height: 100px;">
+                  <!-- NO PATIENTS -->
+                </div>
+              </td>
+            </tr>
+            <tr class=" fs-5 fw-medium bg-light-blue">
+              <td colspan="3"></td>
+              <td class="text-center">{{ getTotalAmount() }}</td>
+              <td class="text-center">0.00</td>
+              <td class="text-center">{{ getTotalAmount() }}</td>
+            </tr>
+          </ng-container>
+        </app-datatable>
+      </div>
+
+      <div class="row mt-0 mb-3 g-2 justify-content-between ">
+        <div class="col-md-8 col-12">
+          <div class="row g-2">
+
+
+            <div class="col-md-3 col-12">
+              <!-- offer price  -->
+              <app-input labelText="Offer Price" [imp]="true" placeHolder=""
+                [inputValue]="selectPackage?.offer_price || ''" (onValueChanged)="offerChange($event)"
+                [applyAllowNumbersOnly]="true"></app-input>
+            </div>
+
+            <div class="col-md-5 col-12">
+              <!-- description -->
+              <app-input labelText="Description" [imp]="false" placeHolder=""
+                [inputValue]="selectPackage?.description || ''"
+                (onValueChanged)="descriptionChange($event)"></app-input>
+            </div>
+
+            <div class="col-lg-3 col-12">
+              <div class="row">
+                <div class="col-10">
+                  <div class="row">
+
+                    <div class="col-12">
+                      <app-input labelText="Total Discount" [imp]="true" [inputValue]="selectPackage?.total_discount"
+                        placeHolder="0" [applyAllowNumbersOnly]="true"></app-input>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <div class="row">
+                    <div class="col-12 pb-2"> </div>
+                    <div class="col-12">
+                      <app-checkbox labelText="" activeText="%" inactiveText="%"
+                        [checkboxValue]="selectPackage.is_disc_percentage" classVal="form-check"></app-checkbox>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="row td-color" *ngIf="selectPackage">
+        <div class="col-12">
+          Created on <span
+            class="fs-6 fw-semibold text-black">{{timeSrvc.decodeTimestamp(selectPackage?.added_on)}}</span>
+          by <span class="fs-6 fw-semibold text-black">{{ selectPackage?.created_by}}</span> and Last Modified on
+          <span class="fs-6 fw-semibold text-black">{{ selectPackage.last_updated ?
+            timeSrvc.decodeTimestamp(selectPackage?.last_updated) : ""}} </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #Expense let-modal>
+  <div class="modal-header py-2 px-3  bg-light-blue border-bottom">
+    <span class="modal-title fs-5" id="modal-basic-title">Add Lab Package</span>
+    <button type="button" class="btn-close" aria-label="Close"
+      (click)="modal.dismiss('Cross click');resetForm();"></button>
+  </div>
+
+  <div class="modal-body" style="background-color: #F8FAFC; ">
+    <form [formGroup]="baseForm">
+      <div class="container-full">
+
+
+        <!-- name , description  -->
+        <div class="row g-2 mb-3">
+          <div class="col-lg-4 col-12">
+            <div class="row">
+              <div class="col-12">Package Name<span class="text-danger">*</span></div>
+              <div class="col-12">
+                <app-input [removeLabel]="true" placeHolder="Type Name" [formSubmitted]="submitted"
+                  formControlName="name" classVal="form-control fw-light rounded-3 py-2"
+                  (onValueChanged)="CapitalizeDescIncome('name')" [applyAutoFocus]="true"></app-input>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8 col-12">
+            <div class="row">
+              <div class="col-12">Enter Description </div>
+              <div class="col-12">
+                <!-- <app-input [removeLabel]="true" placeHolder="Type description" [formSubmitted]="submitted"
+                  formControlName="description" classVal="form-control fw-light rounded-3"></app-input> -->
+
+                <app-input labelText="Enter Description" [removeLabel]="true" placeHolder="Type description"
+                  [formSubmitted]="submitted" formControlName="description"
+                  classVal="form-control fw-light rounded-3 py-2"
+                  (onValueChanged)="CapitalizeDescIncome('description')"></app-input>
+
+              </div>
+            </div>
+          </div>
+
+
+
+        </div>
+
+        <!-- add tests  -->
+        <div class="row g-0 mb-2" style="z-index: 1100; position: relative;">
+          <div class="col-12">
+            <div class="text-nowrap">
+              Add Tests<span class="text-danger">*</span> :
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="d-flex  gap-3 align-items-center w-100 flex-row">
+
+              <div class="ng-autocomplete fw-light">
+                <!-- <form [formGroup]="selectBoxForm">
+                <app-select [imp]="true" labelText="" formControlName="selectGlobalTest" [selectItems]="tests" selectBindLabel="name" 
+                  placeHolder="Search Tests" (onSelectionChanged)="onAddPackageSelected($event)"
+                  #auto_complete_add></app-select>
+                </form> -->
+                <ng-template #itemTemplate let-item>
+                  <a class="py-1 px-2 d-flex justify-content-between align-items-center">
+                      <span class="d-flex flex-column">
+              
+                          <span *ngIf="!item?.lab_tests" [innerHTML]="item.name" class="fw-normal fs-6"></span>
+              
+                          <small *ngIf="item?.sourcing_lab">
+                              <small class="item-type text-white  px-2 py-0 me-2 rounded bg-dark"
+                                  [innerHTML]="item?.sourcing_lab?.partner?.organization_name"></small>
+                          </small>
+              
+                      </span>
+              
+              
+                      <small class="d-flex justify-content-end align-items-center">
+              
+                          <small *ngIf="!item?.lab_tests && item.short_code && item.short_code!==''"
+                              class="item-type text-black font-DMSans px-2 py-0 me-2 rounded bg-soft-warning"
+                              [innerHTML]="item.short_code"></small>
+              
+                          <small>
+                              <small *ngIf="!item?.lab_tests"
+                                  class="item-type text-black px-2 font-DMSans py-0 rounded bg-soft-danger"
+                                  [innerHTML]="item.department"></small>
+                          </small>
+                      </small>
+                  </a>
+              </ng-template>
+
+                <ng-template #notFoundTemplateAdd let-notFound>
+                  <div [innerHTML]="notFound"></div>
+                </ng-template>
+
+                <ng-autocomplete historyHeading="" [isLoading]="searchLoading" [historyListMaxNumber]="0"
+                  [data]="searchData" [searchKeyword]="'name'" placeholder="Add Lab Tests" [minQueryLength]="2"
+                  (selected)="onAddPackageSelected($event);auto_complete_adddd.clear()" [itemTemplate]="itemTemplate"
+                  [notFoundTemplate]="notFoundTemplateAdd" class="w-100" #auto_complete_adddd
+                  (keydown.enter)="selectFirstOption()" (inputChanged)="getSearches($event)">
+                </ng-autocomplete>
+
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row mb-3">
+          <app-datatable>
+            <ng-container class="tableheader">
+              <th style="width: 10px">S.no</th>
+              <th><span>Test Name</span></th>
+
+              <!-- <th class="text-center">
+                <span>Cost (₹)</span>
+              </th> -->
+              <!-- <th class="text-center">
+                <span>Discount</span>
+              </th> -->
+              <th><span></span></th>
+              <th class="text-center">
+                <span>Total (₹)</span>
+              </th>
+
+            </ng-container>
+            <ng-container class="tablebody">
+              <tr *ngFor="let test of addPackages; let i = index" class="td-color">
+                <td class="text-black fs-5 py-2">
+                  {{ i + 1 }}
+                </td>
+                <td class="fw-semibold text-black fs-6">
+                  <!-- {{ test.name }} -->
+                  <div class="d-flex gap-2 align-items-center">
+      
+                    <span class="fw-medium text-nowrap fs-lg-5 fs-6 text-black">
+                      {{test.name}} 
+                    </span>
+                    <small *ngIf="test?.sourcing_lab" >
+                        <small 
+                            class="bg-dark fw-light d-flex align-items-center text-white rounded-3 px-1">
+                            {{test?.sourcing_lab?.partner?.organization_name}}
+                        </small>
+                    </small>
+                  </div>
+                </td>
+
+                <td class="text-center">
+                  <app-deletebutton btnClassVal="bg-transparent fs-6 border-0" placement="bottom"
+                    ngbTooltip="Remove Test" deleteIconClass="bi bi-x-lg text-danger"
+                    (click)="deleteAddTest(i)"></app-deletebutton>
+                </td>
+                <td class="text-center">
+                  {{ test.cost }}
+                </td>
+
+              </tr>
+              <tr>
+                <td colspan="4" *ngIf="addPackages&&addPackages.length ===0 ">
+                  <div style="min-height: 100px"></div>
+                </td>
+              </tr>
+
+              <tr class=" fs-5 fw-medium">
+                <td colspan="2">Total : </td>
+                <td></td>
+                <!-- <td class="text-center">{{ get_AddTotalAmount () }}</td> -->
+                <!-- <td class="text-center">{{ 0.00 }}</td> -->
+                <td class="text-center">{{ get_AddTotalAmount () }}</td>
+
+              </tr>
+            </ng-container>
+          </app-datatable>
+        </div>
+
+
+        <!-- offer price, discount, percentage -->
+        <div class="row g-2 mb-3 justify-content-end">
+          <div class="col-lg-3 col-12">
+            <div class="row">
+              <div class="col-12">Offer Price <span class="text-danger">*</span></div>
+              <div class="col-12">
+
+                <input formControlName="offer_price" placeholder="₹"  [class.border-danger]="submitted && !baseForm.value.offer_price && baseForm.value.offer_price !==0"
+                  class="form-control rounded-3 py-2 fs-5 fw-bold DMSans" (input)="validatePrice($event)">
+              </div>
+              <div class="col-12 text-danger">
+                <small>{{OfferPriceText}}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-12">
+            <div class="row">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-12">Total Discount <span class="text-danger">*</span></div>
+                  <div class="col-12 input-group d-flex align-items-center gap-2">
+
+                    <input formControlName="total_discount"  [class.border-danger]="submitted && !baseForm.value.total_discount  && baseForm.value.total_discount !==0"
+                      [placeholder]="baseForm.get('is_disc_percentage')?.value ? '%' : '₹'"
+                      class="form-control rounded-3 py-2 fs-5 fw-bold " (input)="validateDiscount($event)">
+
+                    <app-checkbox (onCheckboxValueChanged)="resetDiscount()"
+                      labelClass="form-check-label fw-light ps-1 fw-bold" [showLabel]="false" activeText="%"
+                      formControlName="is_disc_percentage" inactiveText="%"
+                      classVal="form-check fs-5 fw-bold"></app-checkbox>
+                  </div>
+                  <div class="col-12 text-danger">
+                    <small>{{discountLimitText}}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- package price  -->
+        <div class="row g-2 mb-3 justify-content-end">
+          <div class="d-flex justify-content-end align-items-end">
+            <table style="min-width: 220px">
+              <tbody class="fs-5">
+                <tr class="border-0">
+                  <td class="fw-light fs-6">Tests Price : </td>
+                  <td class="text-end fw-semibold">{{getPrice()}}</td>
+                </tr>
+                <tr class="border-0">
+                  <td class="fw-light fs-6">Discount : </td>
+                  <td class="text-end fw-semibold">{{ getDiscount() || "0.00"}}</td>
+                </tr>
+                <tr class="border-0">
+                  <td class="fw-light fs-6">Offer Price : </td>
+                  <td class="text-end fw-semibold">{{this.baseForm.get('offer_price')?.value || "0.00"}}</td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+
+      </div>
+    </form>
+    <!-- <button (click)="showData()">show</button> -->
+  </div>
+  <div class="modal-footer py-2 px-3  bg-light-blue border-top">
+    <button type="button" class="btn btn-success rounded-3 shadow" (click)="saveApiCall()">
+      Save Package
+    </button>
+  </div>
+
+</ng-template>
+
+<ng-template #ExpenseSecond let-modal>
+  <div class="modal-header py-3 px-3  bg-light-blue border-bottom">
+    <span class="modal-title " id="modal-basic-title">Created on <span
+        class="fs-6 fw-semibold text-black">{{timeSrvc.decodeTimestamp(selectPackage?.added_on)}}</span>
+      by <span class="fs-6 fw-semibold text-black">{{ selectPackage?.created_by}}</span> and Last Modified on
+      <span class="fs-6 fw-semibold text-black">{{ selectPackage.last_updated ?
+        timeSrvc.decodeTimestamp(selectPackage?.last_updated) : ""}} </span></span>
+    <button type="button" class="btn-close" aria-label="Close"
+      (click)="modal.dismiss('Cross click');resetForm();"></button>
+  </div>
+
+  <div class="modal-body" style="background-color: #F8FAFC; ">
+    <form [formGroup]="baseForm">
+      <div class="container-full">
+
+
+        <!-- name , description  -->
+        <div class="row g-2 mb-3">
+          <div class="col-lg-4 col-12">
+            <div class="row">
+              <div class="col-12">Package Name<span class="text-danger">*</span></div>
+              <div class="col-12">
+                <app-input [removeLabel]="true" placeHolder="Type Name" [formSubmitted]="submitted"
+                  formControlName="name" classVal="form-control fw-light rounded-3 py-2"
+                  (onValueChanged)="CapitalizeDescIncome('name')"></app-input>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8 col-12">
+            <div class="row">
+              <div class="col-12">Enter Description </div>
+              <div class="col-12">
+                <app-input labelText="Enter Description" [removeLabel]="true" placeHolder="Type description"
+                  [formSubmitted]="submitted" formControlName="description"
+                  classVal="form-control fw-light rounded-3 py-2"
+                  (onValueChanged)="CapitalizeDescIncome('description')"></app-input>
+
+              </div>
+            </div>
+          </div>
+
+
+
+        </div>
+
+        <div class="row mb-3 g-2 justify-content-between" style="z-index: 1100; position: relative;">
+          <div class="col-md-9 col-12">
+            <div class="row align-items-center">
+              <!-- search tests  -->
+              <div class="col-6">
+
+                <div class="row">
+                  <div class="col-12">
+                    Add Tests<span class="text-danger">*</span>
+                  </div>
+                  <div class="col-12">
+                    <div class="ng-autocomplete fw-light">
+                    
+                      <ng-template #itemTemplate let-item>
+                        <a class="py-1 px-2 d-flex justify-content-between align-items-center">
+                            <span class="d-flex flex-column">
+                                <span *ngIf="!item?.lab_tests" [innerHTML]="item.name" class="fw-normal fs-6"></span>
+                                <small *ngIf="item?.sourcing_lab">
+                                    <small class="item-type text-white  px-2 py-0 me-2 rounded bg-dark"
+                                        [innerHTML]="item?.sourcing_lab?.partner?.organization_name"></small>
+                                </small>
+                            </span>
+                    
+                            <small class="d-flex justify-content-end align-items-center">
+                                <small *ngIf="!item?.lab_tests && item.short_code && item.short_code!==''"
+                                    class="item-type text-black font-DMSans px-2 py-0 me-2 rounded bg-soft-warning"
+                                    [innerHTML]="item.short_code"></small>
+                    
+                                <small>
+                                    <small *ngIf="!item?.lab_tests"
+                                        class="item-type text-black px-2 font-DMSans py-0 rounded bg-soft-danger"
+                                        [innerHTML]="item.department"></small>
+                                </small>
+                            </small>
+                        </a>
+                    </ng-template>
+
+                      <ng-template #notFoundTemplate let-notFound>
+                        <div [innerHTML]="notFound"></div>
+                      </ng-template>
+
+                      <ng-autocomplete historyHeading="" [isLoading]="searchLoading" [historyListMaxNumber]="0"
+                        [data]="searchData" [searchKeyword]="'name'" placeholder="Add Lab Tests / Packages"
+                        class="autoComplete_wrapper fw-light"
+                        (selected)="onAddPackageSelected($event);auto_complete_adddd.clear()"
+                        [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate" class="w-100"
+                        #auto_complete_adddd [minQueryLength]="2" (inputChanged)="getSearches($event)">
+                      </ng-autocomplete>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Active package  -->
+              <div class="col-6">
+                <app-checkbox labelText="" activeText="Active Package" classVal="form-switch form-switch-lg"
+                  (onCheckboxValueChanged)="selectPackage.is_active = !selectPackage.is_active"
+                  inactiveText="Active Package" [checkboxValue]="selectPackage.is_active"></app-checkbox>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row mb-5">
+          <app-datatable>
+            <ng-container class="tableheader">
+              <th style="width: 10px">S.no</th>
+              <th><span>Test Name</span></th>
+
+
+              <th><span></span></th>
+              <th class="text-center">
+                <span>Total (₹)</span>
+              </th>
+
+            </ng-container>
+            <ng-container class="tablebody">
+              <tr *ngFor="let test of addPackages; let i = index" class="td-color">
+                <td class="text-black fs-5 py-2">
+                  {{ i + 1 }}
+                </td>
+                <td class="fw-semibold text-black fs-6">
+                    <!-- {{ test.name }} -->
+                    <!-- {{package.name}} -->
+                    <div class="d-flex gap-2 align-items-center">
+      
+                      <span class="fw-medium text-nowrap fs-lg-5 fs-6 text-black">
+                        {{test.name}} 
+                      </span>
+                      <small *ngIf="test?.sourcing_lab" >
+                          <small 
+                              class="bg-dark fw-light d-flex align-items-center text-white rounded-3 px-1">
+                              {{test?.sourcing_lab?.partner?.organization_name}}
+                          </small>
+                      </small>
+                    </div>
+                </td>
+
+                <td class="text-center">
+                  <app-deletebutton btnClassVal="bg-transparent fs-6 border-0" placement="bottom"
+                    ngbTooltip="Remove Test" deleteIconClass="bi bi-x-lg text-danger"
+                    (click)="deleteAddTest(i)"></app-deletebutton>
+                </td>
+                <td class="text-center">
+                  {{ test.cost }}
+                </td>
+
+              </tr>
+              <tr>
+                <td colspan="4" *ngIf="addPackages&&addPackages.length ===0 ">
+                  <div style="min-height: 100px"></div>
+                </td>
+              </tr>
+
+              <tr class=" fs-5 fw-medium">
+                <td colspan="2">Total : </td>
+                <td></td>
+                <!-- <td class="text-center">{{ get_AddTotalAmount () }}</td> -->
+                <!-- <td class="text-center">{{ 0.00 }}</td> -->
+                <td class="text-center">{{ get_AddTotalAmount () }}</td>
+
+              </tr>
+            </ng-container>
+          </app-datatable>
+        </div>
+
+
+        <!-- offer price, discount, percentage -->
+        <div class="row g-2 mb-5 justify-content-end">
+          <div class="col-lg-3 col-12">
+            <div class="row">
+              <div class="col-12">Offer Price <span class="text-danger">*</span></div>
+              <div class="col-12">
+                <!-- <app-input [removeLabel]="true" [formSubmitted]="submitted" formControlName="offer_price"
+                  placeHolder="₹" [applyAllowNumbersOnly]="true"></app-input> -->
+                <input formControlName="offer_price" placeholder="₹"
+                  class="form-control rounded-3 py-2 fs-5 fw-bold DMSans" (input)="validatePrice($event)">
+              </div>
+              <div class="col-12 text-danger">
+                <small>{{OfferPriceText}}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-12">
+            <div class="row">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-12">Total Discount <span class="text-danger">*</span></div>
+                  <div class="col-12 input-group d-flex align-items-center gap-2">
+                    <input formControlName="total_discount"
+                      [placeholder]="baseForm.get('is_disc_percentage')?.value ? '%' : '₹'"
+                      class="form-control rounded-3 py-2 fs-5 fw-bold " (input)="validateDiscount($event)">
+
+                    <app-checkbox (onCheckboxValueChanged)="resetDiscount()"
+                      labelClass="form-check-label fw-light ps-1 fw-bold" [showLabel]="false" activeText="%"
+                      formControlName="is_disc_percentage" inactiveText="%"
+                      classVal="form-check fs-5 fw-bold"></app-checkbox>
+                  </div>
+                  <div class="col-12 text-danger">
+                    <small>{{discountLimitText}}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- package price  -->
+        <div class="row g-2 mb-3 justify-content-end">
+          <div class="d-flex justify-content-end align-items-end">
+            <table style="min-width: 220px">
+              <tbody class="fs-5">
+                <tr class="border-0">
+                  <td class="fw-light fs-6">Tests Price : </td>
+                  <td class="text-end fw-semibold">{{getPrice()}}</td>
+                </tr>
+                <tr class="border-0">
+                  <td class="fw-light fs-6">Discount : </td>
+                  <td class="text-end fw-semibold">{{ getDiscount() || "0.00"}}</td>
+                </tr>
+                <tr class="border-0">
+                  <td class="fw-light fs-6">Offer Price : </td>
+                  <td class="text-end fw-semibold">{{this.baseForm.get('offer_price')?.value || "0.00"}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+
+      </div>
+    </form>
+    <!-- <button (click)="showData()">show</button> -->
+  </div>
+  <div class="modal-footer py-2 px-3  bg-light-blue border-top">
+    <button type="button" class="btn btn-success rounded-3 shadow" (click)="saveUpdateModel()">
+      Update Package
+    </button>
+  </div>
+
+</ng-template>

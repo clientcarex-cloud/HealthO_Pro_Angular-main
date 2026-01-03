@@ -1,0 +1,141 @@
+
+<div class="container-full">
+    <div class="row">
+        <div class="col-12">
+            <app-datatable>
+                <ng-container class="tableheader">
+                    <th>S.no</th>
+                    <!-- <th></th> -->
+                    <th>Used By & Date</th>
+                    <th>Benefit Type</th> 
+                    <th>Test Name</th>
+                    <th>Bill Amount (Total)</th>
+                    <th>Amount Saved</th>
+                </ng-container>
+
+                <ng-container class="tablebody"  *ngFor="let item of patients; let i = index">
+                    <tr class=" td-color cursor-pointer" (dblclick)="showPatient(item)">
+                      <td class="fw-semibold text-black">{{ i + 1 }}.</td>
+                      <td>
+                        <app-patient-details [name]="item.name" [time]="timeSrvc.decodeTimestamp(item.added_on)"
+                        [query]="query" [title]="item?.title?.name"
+                        ></app-patient-details>
+                      </td>
+
+                      <td>
+                        <span *ngIf="item?.bill?.benefit_type" 
+                        class="fw-medium text-black">{{ item?.bill?.benefit_type }}</span>
+                      </td>
+            
+                      <td>
+                        <div (click)="toggleAccordionnn(item.visit_id)"
+                          class="d-flex flex-row justify-content-between align-items-center" style="max-width: 200px;">
+                          <div class="d-flex flex-column">
+                            <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                              <ngb-highlight [result]="concatenateShortCodes(item)" [term]="query"></ngb-highlight>
+                            </small>
+                            <small>Total:
+                              {{ item.lab_tests.length }}
+                            </small>
+                          </div>
+                          <div class="div">
+                            <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === item.mr_no}"
+                              class="fas fa-chevron-down text-black"></i>
+                          </div>
+                        </div>
+                      </td>
+            
+                      <td *ngIf="false">
+                        <div class="container-full flex-column IDs">
+                          <div class="row IDs g-0 d-flex flex-nowrap align-items-end">
+                            <div class="col-4 px-0 d-flex flex-row flex-nowrap" style="vertical-align: bottom;">
+                              <small style="vertical-align: bottom;">
+                                <small class="d-flex flex-row text-nowrap" style="vertical-align: bottom;">
+                                  MR NO :
+                                </small>
+                              </small>
+                            </div>
+                            <div class="col-8 ps-0 d-flex flex-row">
+                              <ngb-highlight [result]="item.mr_no" [term]="query"></ngb-highlight>
+                            </div>
+                          </div>
+                          <div class="row IDs g-0 d-flex flex-nowrap align-items-center">
+                            <div class="col-4 px-0">
+                              <small>
+                                <small class="d-flex flex-row text-nowrap">
+                                  VISIT ID :
+                                </small>
+                              </small>
+                            </div>
+                            <div class="col-8 ps-0">
+                              <ngb-highlight [result]="item.visit_id" [term]="query"></ngb-highlight>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+            
+                      <td class="text-black fw-medium text-nowrap">
+                        <ng-container *ngIf="item.bill; else noInvoice">
+                          <ng-container *ngIf="item.bill.total_cost" class="fw-medium">
+                            Rs. {{item.bill.total_cost}}
+                          </ng-container>
+                        </ng-container>
+                        <ng-template #noInvoice>Rs. ---</ng-template>
+                      </td>
+            
+            
+                      <td class="text-nowrap">
+                        <span *ngIf="item?.bill?.privilege_card_discount" 
+                        class="fw-medium text-black">Rs. {{ item?.bill?.privilege_card_discount }}</span>
+                      </td>
+                    </tr>
+
+                    <tr *ngIf="activeId === item.visit_id" class="cursor-pointer" (dblclick)="showPatient(item)">
+                      <td colspan="8" class="bg-light-blue">
+                        <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === item.visit_id}"
+                          class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+                          <table class="table">
+                            <thead class="fw-medium">
+                              <tr class=" fs-6 text-white bg-black">
+                                <!-- <th style="width: 10px">#</th> -->
+                                <th class="text-nowrap">Lab Test</th>
+                                <th>Price</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">User</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container *ngFor="let test of item.lab_tests; let i = index">
+                                <tr>
+                                  <td class="text-nowrap fw-semibold">
+                                    <div class="d-flex gap-2">
+                                      <span>{{ test.name }}</span>
+                                    </div>
+                                  </td>
+
+                                <td>{{test?.price}}</td>
+                                  <td class="text-center">
+                                    <small>{{test.status_id}}</small>
+                                  </td>
+            
+                                  <td class="text-nowrap text-center">
+                                    <small>{{ item.created_by }}</small>
+                                  </td>
+                                </tr>
+            
+                              </ng-container>
+            
+
+                            </tbody>
+            
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+            
+                  </ng-container>
+                
+            </app-datatable>
+        </div>
+    </div>
+</div>

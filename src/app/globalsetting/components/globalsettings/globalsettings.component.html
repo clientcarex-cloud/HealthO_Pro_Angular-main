@@ -1,0 +1,123 @@
+<div class="container-full">
+    <div class="row mb-3">
+        <div class="col-6">
+            <app-datatable tableHeaderClass="bg-soft-primary">
+                <ng-container class="tableheader">
+                    <tr>
+                        <td class="py-2 logoColor fw-semibold fs-5">
+                            Communication
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-container class="tablebody">
+
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium d-flex align-items-center justify-content-between gap-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                SMS Messaging
+                                                <i class="ri-message-2-line text-primary fs-4 p-0"
+                                                    style="line-height: 10px"></i>
+                                            </div>
+                                            <div class="td-color">
+                                                Enables sending reports, bills, and lab information via SMS.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex pb-1 flex-row align-items-center">
+                                    <app-checkbox labelText="" inactiveText="" activeText="" [showLabel]="false"
+                                        classVal="form-switch form-switch-lg" [checkboxValue]="smsMessage?.is_active" *ngIf="!smsLoading"
+                                        (onCheckboxValueChanged)="toggleMessaging(messagingRemark, $event, 1)"></app-checkbox>
+                                </div>
+
+                                <div class="d-flex fs-5" *ngIf="!smsMessage?.is_active">
+                                    <i>"{{smsMessage?.remarks}}"</i>
+                                </div>
+
+                                <div class="d-flex gap-1">
+                                    <span>Last Updated by</span> <b>{{smsMessage?.last_updated_by?.last_updated_by}}</b> <span>at</span> <b>{{timeSrvc.dateAsString(smsMessage?.last_updated)}}</b>
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium d-flex align-items-center justify-content-between gap-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                WhatsApp Messaging
+                                                <i class="ri-whatsapp-line text-success fs-4 p-0"
+                                                    style="line-height: 10px"></i>
+                                            </div>
+                                            <div class="td-color">
+                                                Enables sending reports, bills, and lab information via WhatsApp.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex pb-1 flex-row align-items-center">
+                                    <app-checkbox labelText="" inactiveText="" activeText="" [showLabel]="false"
+                                        classVal="form-switch form-switch-lg" *ngIf="!waLoading"
+                                        [checkboxValue]="whatsAppMessage?.is_active" (onCheckboxValueChanged)="toggleMessaging(messagingRemark, $event, 2)"></app-checkbox>
+                                    <!-- (onCheckboxValueChanged)="toggleMessagingService($event, 'is_sms_active')" -->
+                                </div>
+
+                                <div class="d-flex fs-5" *ngIf="!whatsAppMessage?.is_active">
+                                    <i>"{{whatsAppMessage?.remarks}}"</i>
+                                </div>
+
+                                <div class="d-flex gap-1 ">
+                                    <span>Last Updated by</span> <b>{{whatsAppMessage?.last_updated_by?.last_updated_by}}</b> <span>at</span> <b>{{timeSrvc.dateAsString(whatsAppMessage?.last_updated)}}</b>
+                                </div>
+
+                            </div>
+
+                        </td>
+                    </tr>
+
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #messagingRemark let-modal>
+    <!-- <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">Enter Remarks <span class="text-danger">*</span></span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div> -->
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end">
+                    <button type="button" class="btn-close" aria-label="Close" (click)="getMessagingData(); modal.dismiss('Cross click')"></button>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <app-input labelText="Remarks" [imp]="true" (onValueChanged)="enterMessageRemarks($event)"
+                        placeHolder="Enter Remarks"></app-input>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <button (click)="saveRemarksForMessaging()" class="btn btn-success fs-5 px-3">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

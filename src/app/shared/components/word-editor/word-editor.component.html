@@ -1,0 +1,114 @@
+
+<div class="outer-container bg-light-blue border" id="outer" [spellcheck]="false" >
+
+    <div class="bg-white border-bottom-0 st-custom-toolbar w-100 px-2 py-1 d-flex flex-row gap-2 justify-content-between" >
+
+      <!-- tools -->
+
+      <div class=" d-flex flex-row gap-2 align-items-center">
+        <button class="btn d-flex align-items-center gap-2 border rounded-3 text-nowrap btn-sm " 
+        [class.bg-dark]="!fullScreenMode"
+        [class.text-white]="!fullScreenMode"
+        [class.bg-soft-primary]="fullScreenMode"
+        (click)="onFullscreenClick();">
+        <i [class]="'ri-' + (!fullScreenMode ? 'fullscreen' : 'fullscreen-exit') + '-line'"></i>
+
+         <span class="text-nowrap">{{fullScreenMode ? 'Exit Full Screen' : 'Full Screen'}}</span> 
+        </button>
+       
+        <div class="d-flex align-items-center gap-2">
+          <small>Zoom</small>
+          <span class="d-flex align-items-center justify-content-center">
+            <input type="range" min="0.44" max="1.5" step="0.05" [(ngModel)]="scale" (input)="zoomContent($event)"
+            class="custom-range" style="width: 100%; height: 2px; background-color: #ccc; outline: none; cursor: pointer;"
+            thumbstyle="height: 10px; width: 10px; border-radius: 50%; background-color: #007bff; border: none;">
+          </span>
+        </div>
+
+        <div>
+          <select class="form-select form-select-sm py-1 ps-2 pe-0" (change)="changeFont($event.target!)">
+            <option class="fs-6 fw-normal" *ngFor="let font of fontList" [style.font-family]="font">{{ font }}</option>
+          </select>
+        </div>
+
+        <!-- <div>
+          <select class="form-select form-select-xs py-1 ps-2 pe-0" (change)="changeFontSize($event.target!)">
+            <option class="fs-6 fw-normal" *ngFor="let font of fontSizes" [style.font-family]="font">{{ font }}</option>
+          </select>
+        </div> -->
+
+      </div>
+      <!-- <button (click)="checkSplitttt()">test</button> -->
+      <!-- save and save and print  -->
+      <div class=" d-flex flex-row gap-2">
+
+        <button class="btn btn-primary d-flex align-items-center gap-2 border rounded-3"  (click)="emitExtractedContent(false)">
+          {{onlySave ? "Save Report" : "Save"}}
+        </button>
+
+        <button class="btn btn-success d-flex align-items-center gap-2 border rounded-3 text-nowrap" *ngIf="!onlySave" (click)="emitExtractedContent(true)">
+          {{auth ? "Save & Send for Dr.Authorization" : "Mark as Complete"}}
+        </button>
+      </div>
+
+      <!-- <button (click)="checkSplit()">check</button> -->
+
+    </div>
+   <st-editor #simpleEditor [(ngModel)]="st_area_editor" [config]="config" ></st-editor>
+</div> 
+
+
+<!-- <div [innerHTML]="extractedContent"></div> -->
+<ng-template #setMargins let-modal>
+  <div class="modal-body">
+    <div class="container-full p-3">
+      <div class="row mb-3 g-3">
+
+        <div class="col-6">
+          <label for="paddingLeft">Margin Left:</label>
+          <select class="form-select" id="paddingLeft" [(ngModel)]="paddingLeft">
+                <option *ngFor="let option of marginOptions" [value]="option">{{ option }}</option>
+            <!-- Add more options as needed -->
+          </select>
+        </div>
+        <div class="col-6">
+          <label for="paddingRight">Margin Right:</label>
+          <select class="form-select" id="paddingRight" [(ngModel)]="paddingRight">
+                <option *ngFor="let option of marginOptions" [value]="option">{{ option }}</option>
+            <!-- Add more options as needed -->
+          </select>
+        </div>
+      </div>
+      <div class="row mb-3 g-3">
+
+        <div class="col-6">
+          <label for="paddingBottom">Margin Bottom:</label>
+          <select class="form-select" id="paddingBottom" [(ngModel)]="paddingBottom">
+                <option *ngFor="let option of marginOptions" [value]="option">{{ option }}</option>
+            <!-- Add more options as needed -->
+          </select>
+        </div>
+
+        <div class="col-6">
+          <label for="paddingTop">Margin Top:</label>
+          <select class="form-select" id="paddingTop" [(ngModel)]="paddingTop">
+                <option *ngFor="let option of marginOptions" [value]="option">{{ option }}</option>
+            <!-- Add more options as needed -->
+          </select>
+        </div>
+
+
+
+      </div>
+
+      <div class="row mt-5">
+        <div class="col-12 d-flex justify-content-center ">
+          <button (click)="setMarginsForPage(); modal.dismiss('Cross click');" class="btn btn-primary rounded-2 shadow">Set Margins</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+

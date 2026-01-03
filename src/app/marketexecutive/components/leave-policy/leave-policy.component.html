@@ -1,0 +1,40 @@
+
+<div class="container-full p-3">
+
+    
+    <div class="row mb-3">
+        <div class="col-8">
+            <div class="row">
+                <div class="col-12 d-flex flex-nowrap">
+                    Number of Paid Leaves <span class="text-danger">*</span>
+                </div>
+                <div class="col-12">
+                    <app-num-input classVal="form-control fw-light rounded-3 py-1 fs-5 fw-semibold" [maintainLimit]="true" [inputValue]="leavePolicy?.no_of_paid_leaves"
+                    [limit]="leavePolicy?.is_monthly ? 31 : 365" (inputValueChange)="setDays($event)"></app-num-input>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-12 d-flex flex-nowrap">
+                    For <span class="text-danger">*</span>
+                </div>
+            </div>
+            <div class="col-12">
+                <select class="form-select fs-5 py-1 rounded-3 fw-medium" (change)="setIsMonthly($event)">
+                    <option [value]="true" [selected]="leavePolicy?.is_monthly">Month</option>
+                    <option [value]="false" [selected]="!leavePolicy?.is_monthly">Year</option>
+                </select>
+                
+            </div>
+
+        
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end fs-5 px-2">
+            <button (click)="saveApiCall()" class="btn btn-success fs-5 rounded-3 shadow">Save</button>
+        </div>
+    </div>
+</div>

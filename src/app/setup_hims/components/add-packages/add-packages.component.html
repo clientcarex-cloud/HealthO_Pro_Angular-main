@@ -1,0 +1,183 @@
+<form [formGroup]="baseForm">
+    <div class="container-full">
+        <div class="row mb-2">
+            <div class="col-lg-4 col-12">
+                <app-input labelText="Package Name" labelClass="form-label mb-1" [formSubmitted]="submitted"
+                    formControlName="name" placeHolder="Enter Name"></app-input>
+            </div>
+
+            <div class="col-lg-6 col-12">
+                <app-input labelText="Description" labelClass="form-label mb-1" [formSubmitted]="submitted"
+                    formControlName="description" placeHolder="Enter Description"></app-input>
+            </div>
+        </div>
+
+        <ng-container [ngTemplateOutlet]="testsTable"></ng-container>
+
+        <!-- offer price, discount, percentage -->
+        <div class="row g-2 mb-3 justify-content-end">
+            <div class="col-lg-3 col-12">
+                <div class="row">
+                    <div class="col-12">Offer Price <span class="text-danger">*</span></div>
+                    <div class="col-12">
+
+                        <input formControlName="offer_price" placeholder="₹"
+                            [class.border-danger]="submitted && !baseForm.value.offer_price && baseForm.value.offer_price !==0"
+                            class="form-control rounded-3 py-2 fs-5 fw-bold DMSans" (input)="validatePrice($event)">
+                    </div>
+                    <div class="col-12 text-danger">
+                        <small>{{OfferPriceText}}</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12">Total Discount <span class="text-danger">*</span></div>
+                            <div class="col-12 input-group d-flex align-items-center gap-2">
+
+                                <input formControlName="total_discount"
+                                    [class.border-danger]="submitted && !baseForm.value.total_discount  && baseForm.value.total_discount !==0"
+                                    [placeholder]="baseForm.get('is_disc_percentage')?.value ? '%' : '₹'"
+                                    class="form-control rounded-3 py-2 fs-5 fw-bold "
+                                    (input)="validateDiscount($event)">
+
+                                <app-checkbox (onCheckboxValueChanged)="resetDiscount()"
+                                    labelClass="form-check-label fw-light ps-1 fw-bold" [showLabel]="false"
+                                    activeText="%" formControlName="is_disc_percentage" inactiveText="%"
+                                    classVal="form-check fs-5 fw-bold"></app-checkbox>
+                            </div>
+                            <div class="col-12 text-danger">
+                                <small>{{discountLimitText}}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- package price  -->
+        <div class="row g-2 mb-3 justify-content-end">
+            <div class="d-flex justify-content-end align-items-end">
+                <table style="min-width: 220px">
+                    <tbody class="fs-5">
+                        <tr class="border-0">
+                            <td class="fw-light fs-6">Tests Price : </td>
+                            <td class="text-end fw-semibold">{{getPrice()}}</td>
+                        </tr>
+                        <tr class="border-0">
+                            <td class="fw-light fs-6">Discount : </td>
+                            <td class="text-end fw-semibold">{{ getDiscount() || "0.00"}}</td>
+                        </tr>
+                        <tr class="border-0">
+                            <td class="fw-light fs-6">Offer Price : </td>
+                            <td class="text-end fw-semibold">{{this.baseForm.get('offer_price')?.value || "0.00"}}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<ng-template #notFoundTemplate let-notFound>
+    <!-- <div [innerHTML]="returnNotFoundHTML()" *ngIf="testTerm && testTerm != '' && !searchLoading"></div> -->
+</ng-template>
+
+<ng-template #testsTable>
+    <div class="row mb-2  rounded-3 p-0 g-0">
+        <div class="border border-bottom-0 rounded-top bg-white font-Readex" style="min-height:225px; ">
+            <table class="table table-hover bg-white rounded-3">
+                <thead class="bg-soft-primary text-muted">
+                    <tr class="fw-light">
+                        <th class="sort1 text-nowrap fw-medium" data-sort="sno" style="width: 20px;">S.no</th>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th></th>
+                        <th>Quantity</th>
+                        <th class="text-end">Pricing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Iterate through each type in selectedData -->
+                    <ng-container
+                        *ngFor="let category of ['lab_tests', 'consultations', 'services', 'rooms']; let i = index">
+                        <ng-container *ngFor="let item of selectedData[category]; let j = index">
+                            <tr class="td-color">
+                                <td class="fs-5 text-black text-nowrap">{{ getSerialNumber(i, j) }}.</td>
+                                <td class="text-nowrap">
+                                    {{ formatCamelCase(category != 'lab_tests' ? category : 'Lab Tests') }}
+                                </td>
+                                <td class="text-nowrap fw-medium text-black">{{item.showName}}</td>
+                                <td>
+                                    <button class="bg-transparent fs-6 border-0" type="button"
+                                    (click)="deleteRow(category, j)"><i class="bi bi-x-lg fw-bold text-danger"></i></button>
+                                </td>
+                                <td class="text-nowrap">
+                                    <!-- Quantity controls -->
+                                    <button class="btn btn-sm btn-light" (click)="changeQuantity(item, -1)"
+                                        [disabled]="item.quantity <= 1">
+                                        -
+                                    </button>
+                                    <span class="mx-2 fw-semibold">{{ item.quantity }}</span>
+                                    <button class="btn btn-sm btn-light" (click)="changeQuantity(item, 1)">
+                                        +
+                                    </button>
+                                </td>
+                                <td class="text-nowrap text-end">
+                                    <!-- Display pricing based on type -->
+                                    <ng-container *ngIf="category === 'lab_tests'">
+                                        {{ item.price || 'N/A' }}
+                                    </ng-container>
+                                    <ng-container *ngIf="category === 'consultations'">
+                                        {{ item.consultation_fee || 'N/A' }}
+                                    </ng-container>
+                                    <ng-container *ngIf="category === 'services'">
+                                        {{ item.price || 'N/A' }}
+                                    </ng-container>
+                                    <ng-container *ngIf="category === 'rooms'">
+                                        {{ item.charges_per_bed || 'N/A' }}
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </tbody>
+            </table>
+
+
+        </div>
+
+        <div
+            class="px-2 py-1 d-flex justify-content-between align-items-center font-Readex bg-white border rounded-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <div class="ng-autocomplete d-lg-flex d-md-flex d-none">
+
+                    <ng-autocomplete #auto_complete historyHeading="" [isLoading]="searchLoading"
+                        [historyListMaxNumber]="0" [data]="searchData" [searchKeyword]="'showName'" placeholder="Search"
+                        [spellcheck]="false" (selected)="onItemSelected($event);auto_complete.clear()"
+                        [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate" [minQueryLength]="2"
+                        (inputChanged)="getSearches($event)">
+                    </ng-autocomplete>
+                </div>
+            </div>
+
+
+            <div class="text-black fw-medium fs-6 text-end">
+                {{totalAmount()}}
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #itemTemplate let-item>
+
+    <a class="py-1 px-2 d-flex justify-content-between align-items-center border-bottom">
+        <span [innerHTML]="item.showName" class="fw-normal fs-6"></span>
+    </a>
+
+</ng-template>

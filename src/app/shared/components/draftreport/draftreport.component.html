@@ -1,0 +1,10 @@
+<button type="button" id="export-btn" [class]="classVal" [disabled]="isLoading">
+        <span *ngIf="!isLoading" class="d-flex flex-column">
+                <span>{{buttonText}}</span>
+            </span>
+            <span *ngIf="isLoading" class="px-3 d-flex align-items-center">
+                <div class="spinner-border" role="status" style="height: 13px; width: 13px" >
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </span>
+</button>

@@ -1,0 +1,101 @@
+:host ::ng-deep .jodit-workplace{
+  margin: 10px auto;
+  width: 815px !important;
+  transform-origin: top center !important;
+  transform-box: content-box;
+  //   white-space: pre-line !important;
+}
+
+:host ::ng-deep .jodit .jodit-workplace .jodit-wysiwyg, .jodit .jodit-workplace .jodit-wysiwyg_iframe, .jodit-container .jodit-workplace .jodit-wysiwyg{
+  background-color: white !important;
+  border: 1px solid #bdbdbd;
+  box-shadow: 4px 4px 5px #80808047 !important;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-wrap: break-word !important;
+    // overflow-wrap: break-word !important;
+    // height: 297mm;
+    // width: 815px !important;
+    // overflow-wrap: anywhere;
+    // white-space: pre-line !important;
+    // display: flex;
+    // flex-direction: column;
+}
+
+// :host ::ng-deep .jodit-wysiwyg p{
+//   white-space: pre-line !important;
+// }
+
+.outer-container {
+  overflow: scroll;
+  width: 100%;
+}
+
+
+
+:host ::ng-deep .jodit-container{
+  border: 0px solid black !important;
+}
+
+
+:host ::ng-deep .jodit-toolbar-button[aria-pressed=true]:not(:disabled){
+  border: 1px solid rgba(0, 0, 0, 0.59);
+  color: white !important;
+  display: flex !important;
+  justify-content: center !important;
+  // background-color: rgb(231, 231, 231) !important;
+  // box-shadow: 2px 1px 1px 10px rgba(0, 0, 0, 0.179);
+}
+
+:host ::ng-deep .jodit-toolbar__box {
+  background-color: white !important;
+  // border: 0px solid black !important;
+}
+
+
+
+
+/* width */
+:host ::ng-deep  .jodit-wysiwyg::-webkit-scrollbar {
+  width: 20px;
+  border-radius: 50px;
+}
+
+/* Track */
+:host ::ng-deep  .jodit-wysiwyg::-webkit-scrollbar-track {
+  border: 5px solid #fcfcfc;
+  border-radius: 50px;
+}
+
+/* Handle */
+:host ::ng-deep  .jodit-wysiwyg::-webkit-scrollbar-thumb {
+  background: rgb(216, 216, 216);
+  border-radius: 50px;
+  border: 5px solid white;
+  border-radius: 50px !important;
+  cursor: pointer;
+}
+
+//   /* Handle on hover */
+//   :host ::ng-deep  .jodit-wysiwyg::-webkit-scrollbar-thumb:hover {
+//     background: #555;
+//     border-radius: 50px !important;
+
+//   }
+
+//   /* Arrow buttons */
+//   :host ::ng-deep  .jodit-wysiwyg::-webkit-scrollbar-button {
+//     height: 20px;
+//     background: #fcfcfc;
+//     border: 0px solid #888;
+//     cursor: pointer;
+//   }
+
+//   /* Up arrow */
+//   :host ::ng-deep  .jodit-wysiwyg::-webkit-scrollbar-button:vertical:decrement {
+//     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 8L18 14H6L12 8Z'%3E%3C/path%3E%3C/svg%3E") no-repeat center center;
+//   }
+
+//   /* Down arrow */
+//   :host ::ng-deep  .jodit-wysiwyg::-webkit-scrollbar-button:vertical:increment {
+//     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 16L6 10H18L12 16Z'%3E%3C/path%3E%3C/svg%3E") no-repeat center center;
+//   }

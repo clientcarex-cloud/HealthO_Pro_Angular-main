@@ -1,0 +1,124 @@
+<!-- OVERVIEW COMPONENT  -->
+<app-layout [showNav]="false" [showPageTitle]="false" [displayInformation]="true" [labPackage]="false">
+    
+    <ng-container class="addNewoptions">
+        <app-info-btn></app-info-btn>
+    </ng-container>
+
+    <ng-container class="displayInformation">
+        <app-display-data [data]="dataEmployee"></app-display-data>
+    </ng-container>
+
+    <ng-container class="searchbox">
+        <!-- <app-searchbox placeholder="Search " [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="service.onSearchTermUpdate($event)"></app-searchbox> -->
+            <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker">
+        <app-datepicker placeHolder="Today's Attendance"  
+                requiredMessage="Start Date is required" ></app-datepicker>
+
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <!-- <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+          name="pageSize" placeholder="Select" [(ngModel)]="service.pageSize">
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="service.totalLength">All</option>
+        </select> -->
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+        name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option [value]="all_count">All</option>
+      </select>
+      </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-black" >#</th>
+                <th><span>Name</span></th>
+                <th><span>Branch</span></th>
+                <th><span>Status</span></th>
+                <th><span>In-Time</span></th>
+                <th><span>Out-Time</span></th>
+                <th><span>Total Time</span></th>
+                <th><span>Action</span></th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let item of staffs; let i = index" class="font-Readex td-color"  (click)="showStaff(item.id)">
+                    <td class="text-black fs-5 fw-medium">
+                        {{(page_number * page_size) - page_size + 1 + i}}
+                        <!-- {{service.startNum? service.startNum + i : "" }} -->
+                    </td>
+                    <td>
+                        <div class="d-flex flex-row justify-content-between gap-2">
+                           
+                            <div class="d-flex flex-column ">
+                                <span class="fw-medium text-black text-nowrap">
+                                    <ngb-highlight [result]="item.name" [term]="service.searchTerm"></ngb-highlight>
+                                </span>
+                                <small>
+                                    {{item.role ? item.role.name ?  item.role.name : "-": "-"}}
+                                </small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column justify-content-start">
+                            <span class="fw-medium text-black">
+                                {{item.branch ? item.branch.name ?  item.branch.name : "-": "-"}}
+                            </span>
+                            </div>
+                    </td>
+                    <td>
+                        <span class="text-black" *ngIf="item.is_login_access">Active</span>
+                        <span class="text-danger" *ngIf="!item.is_login_access">Inactive</span>
+                    </td>
+                    <td>
+                        10:00 AM
+                    </td>
+                    <td>
+                        7:00 PM
+                    </td>
+                    <td>
+                        9 Hours
+                    </td>
+                    <td>
+                        <div class="d-flex flex-row fs-5 gap-3">
+                            <span ngbTooltip="View Staff" class="cursor-pointer" (click)="showStaff(item.id)"><i class="bi bi-eye-fill"></i></span>
+                            <span class="cursor-pointer" (click)="showStaff(item.id)"><i class="bi bi-chat-left-text-fill"></i></span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+            all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+      </ng-container>
+    
+      <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </ng-container> 
+
+</app-layout>

@@ -1,0 +1,108 @@
+<div class="container-fluid mx-2">
+    <div class="row my-2 mb-1 border-5 border-start border-primary rounded-2 ps-2 pe-3">
+        <div class="col-8">
+            <div class="col-12">
+                <span class="fw-medium fs-5">Staff Role Permissions</span>
+              </div>
+              <div class="col-12">
+                <span class="text-wrap td-color">Turn on/off essential features required for Staff</span>
+              </div>
+        </div>
+
+        <!-- ADD NEW BUTTON FOR ADDING TESTS  -->
+        <div class="col-lg-4 col-12 d-flex justify-content-lg-end justify-content-start">
+            <!-- addnewbutton (onAddNewClick)="openXl(addDoctor, 'Add Consulting Doctor')" -->
+            <app-addnewbutton  buttonText="Add Role" (click)="showInput = !showInput"
+                content="content"></app-addnewbutton>
+        </div>
+    </div>
+
+    <!-- placeHolder="Enter role name" -->
+    <div class="row mt-3 mb-3 align-item-bottom justify-content-start" *ngIf="showInput">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-12">
+                    Role Name<span class="text-danger">*</span>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <form [formGroup]="staffName" class="d-flex flex-row gap-2">
+                        <div class="col-7">
+                        
+                            <app-input formControlName="name" [removeLabel]="true" [imp]="true" placeHolder="Enter role name" (onValueChanged)="formatName($event)"></app-input>
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-success rounded-3 px-3" (click)="saveRole()">Save</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-3 align-item-bottom justify-content-start"  *ngIf="!showInput">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-12">
+                    Select Role<span class="text-danger">*</span>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-8">
+                           <app-select (onSelectionChanged)="sortRoles($event)" placeHolder="Select Role" [selectItems]="staffRoles" [selectBindLabel]="'name'"></app-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row pe-3" *ngIf="!selectedRole">
+
+        <div class="col-12 ">
+            <app-datatable>
+                <ng-container class="tableheader">
+                    <th>Feature</th>
+                    <th>Capabilities</th>
+                </ng-container>
+
+                <ng-container class="tablebody">
+                    <tr *ngFor="let item of filteredRoles">
+                        <td class="py-1 fs-5 fw-medium">
+                            {{item.name}}
+                        </td>
+                        <td>
+                            <app-checkbox classVal="" [showLabel]="false" (onCheckboxValueChanged)="updateStaffRole(item, $event)"
+                            [checkboxValue]="item?.is_active"></app-checkbox>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+    <div class="row pe-3" *ngIf="selectedRole">
+        <div class="col-12">
+            <app-datatable>
+                <ng-container class="tableheader">
+                    <th>Feature</th>
+                    <th>Capabilities</th>
+                </ng-container>
+
+                <ng-container class="tablebody">
+                    <tr *ngFor="let item of menuList">
+                        <td class="py-1 fs-5 fw-medium">
+                            {{item.label}}
+                        </td>
+                        <td>
+                            <app-checkbox classVal="" [showLabel]="false" 
+                            [checkboxValue]="accessList?.includes(item.id)" (onCheckboxValueChanged)="accessPermissions($event, item.id)"></app-checkbox>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,212 @@
+<div class="container-full">
+
+  <div class="row mb-1" *ngIf="is_referring">
+    <div class="col-12">
+      <div class="d-flex pb-2 flex-row gap-3 align-items-center justify-content-end">
+        <div>
+          <!-- Want to download report ? -->
+        </div>
+        <div class="d-flex flex-row align-items-center gap-3">
+          <div>
+            <app-radio [checkValue]="download_letterhead == '&lh=true'"
+              (checkValueChange)="toggleDownloadLetterhead(true)" [labelText]="'With Letterhead'"
+              labelClass="form-check-label ps-1"></app-radio>
+          </div>
+          <div>
+            <app-radio [checkValue]="download_letterhead == '&lh=false'"
+              (checkValueChange)="toggleDownloadLetterhead(false)" [labelText]="'Without Letterhead'"
+              labelClass="form-check-label ps-1"></app-radio>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-2 justify-content-between">
+
+    <div class="col-7">
+
+
+      <div class="row">
+        <div class="col-3">
+          <app-datepicker [selectToday]="true" datePickerFormat="Y-m-d" labelText="From" [imp]="true" [setMax]="true"
+            (dateValueChange)="setStartDate($event); endDate.dateValue = '' " [dateValue]="from_date"
+            classVal="form-control font-Readex flatpickr-input rounded-3 fw-semibold"></app-datepicker>
+        </div>
+
+        <div class="col-3">
+          <app-datepicker #endDate [selectToday]="true" datePickerFormat="Y-m-d" labelText="To" [imp]="true"
+            [setMax]="true" (dateValueChange)="setEndDate($event); " [datePickerMinDate]="max_date"
+            [disableDate]="from_date == ''" [ngbTooltip]="from_date == '' ? 'Select Start Date First.' : ''"
+            classVal="form-control font-Readex flatpickr-input rounded-3 fw-semibold"></app-datepicker>
+        </div>
+
+
+        <div class="col-6" *ngIf="!pageLoading">
+          <div class="row">
+
+            <div class="col-3">
+              <div class="row">
+                <div class="col-12">
+                  Patients
+                </div>
+                <div class="col-12 d-flex align-items-center">
+                  <span class="fw-semibold fs-5">{{pageLoading ? '0' : all_count}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="row">
+                <div class="col-12">
+                  Total Paid
+                </div>
+                <div class="col-12 d-flex align-items-center">
+                  <span class="fw-semibold fs-5">{{pageLoading ? '' : "₹" + formatIndianNumber(total_paid)}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="row">
+                <div class="col-12">
+                  Total Due
+                </div>
+                <div class="col-12 d-flex align-items-center">
+                  <span class="fw-semibold fs-5">{{pageLoading ? '' : "₹" + formatIndianNumber(total_due)}}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <ng-container *ngIf="is_referring">
+      <div class="col-5 d-flex justify-content-end" *ngIf="!pageLoading">
+        <button class="btn btn-success rounded-3 d-flex flex-column"
+          [ngbTooltip]="!from_date && !to_date ? 'Select start date and end date.' : ''"
+          [disabled]="invoiceLoading || !from_date || !to_date" (click)="sendMail()">
+
+          <ng-container *ngIf="!invoiceLoading">
+            <span class="fw-light d-flex align-items-center justify-content-center gap-2"><i
+                class="ri-mail-line"></i><span> Send to</span></span>
+            <span class="fw-semibold">{{company?.email}}</span>
+          </ng-container>
+
+          <ng-container *ngIf="invoiceLoading">
+            <span class="fw-light d-flex align-items-center justify-content-center gap-2">
+              <span class="spinner-border spinner-border-sm mr-1" *ngIf="invoiceLoading"></span><span> Sending..
+              </span></span>
+            <span class="fw-semibold">{{company?.email}}</span>
+          </ng-container>
+
+          <!-- <span class="spinner-border spinner-border-sm mr-1" *ngIf="invoiceLoading"></span> -->
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+
+  <div class="row mb-3" *ngIf="company && company?.partners && company?.partners.length != 0">
+    <div class="col-lg-4 col-12">
+      <app-select labelText="Select Partner" [imp]="true" labelClass="form-label mb-0" placeHolder="Select "
+        (onSelectionChanged)="selectPartner($event)" selectBindLabel="name" [selectItems]="company?.partners || []"
+        classVal="fw-semibold ng-select-container border-0  rounded-3"></app-select>
+    </div>
+
+
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12">
+      <app-datatable tableClass="table table-striped">
+        <ng-container class="tableheader">
+          <th class="text-black" style="width: 10px">Sno.</th>
+          <th class="sort1">Patients ({{patients?.length|| 0}})</th>
+          <th *ngIf="company">Partner</th>
+          <th class="sort1">Lab Test</th>
+          <th class="sort1 text-end">Cost(₹)</th>
+          <th class="sort1 text-end">Discount</th>
+          <th class="sort1 text-end">Paid</th>
+          <th class="sort1 text-end">Total Due</th>
+
+        </ng-container>
+        <ng-container class="tablebody">
+          <tr *ngFor="let patient of patients; let i = index" class="font-Readex td-color">
+            <td class="text-black fs-6">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+            <td>
+              <div class="d-flex flex-column text-black">
+                <small class="fw-medium ">
+                  <ngb-highlight [result]="patient.name" [term]="query">
+                  </ngb-highlight></small>
+                <small class="td-color">{{ timeSrvc.decodeTimestamp(patient.added_on) }}</small>
+              </div>
+            </td>
+            <td *ngIf="company">
+              <small>
+                <small>{{patient?.partner?.name}}</small>
+              </small>
+            </td>
+            <td>
+              <div class="d-flex flex-column">
+
+                <ng-template #popContent>
+                  <div [innerHTML]="concatenateShortCodesHTML(patient)"></div>
+                </ng-template>
+
+                <small class="text-black fw-medium text-truncate cursor-pointer" [ngbPopover]="popContent"
+                  style="max-width: 150px;">{{concatenateShortCodes(patient)}}</small>
+                <small>Total: {{ getTestsLength(patient) }}</small>
+              </div>
+            </td>
+            <td class="fw-semibold text-end text-black">
+              {{patient.invoice?.total_cost}}
+            </td>
+            <td class="fw-semibold text-end text-black">
+              {{patient.invoice?.total_discount}}
+            </td>
+
+            <td class="fw-semibold text-end text-black">
+              {{patient.invoice?.total_paid}}
+            </td>
+
+            <td class="fw-semibold text-end " [class.text-success]="patient.invoice?.total_due == '0.00'"
+              [class.text-black]="patient.invoice?.total_due != '0.00'">
+              {{patient.invoice?.total_due == '0.00' ? 'Paid' : patient.invoice?.total_due}}
+            </td>
+
+          </tr>
+
+
+          <ng-container class="tablebody">
+            <tr *ngIf="!patients || patients.length === 0">
+              <td colspan="8">
+                <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                  style="vertical-align: middle;min-height: 100px;">
+
+                  <span *ngIf="query==='' && !pageLoading">
+                    No patients registered on this day.
+                  </span>
+
+                  <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                    <div class="spinner-border" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="text-black pt-2 fw-light">Loading</div>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+        </ng-container>
+
+
+
+      </app-datatable>
+    </div>
+  </div>
+</div>

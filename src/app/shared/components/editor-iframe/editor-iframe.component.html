@@ -1,0 +1,150 @@
+
+<div [style]="!docLoading ? 'display: none': ''" *ngIf="!disableEditor">
+  <div class="d-flex align-items-center justify-content-center fs-5 fw-light" style="height: 30vh">
+    Loading...
+  </div>
+</div>
+<div *ngIf="!disableEditor" class="outer-container bg-light-blue border overflow-hidden"
+  [style]="!docLoading ? '' : 'visibility: hidden'" id="outer" [spellcheck]="false" >
+
+ 
+    <div *ngIf="!disableEditor" class="bg-white border-bottom-0 st-custom-toolbar w-100 px-2 py-1 d-flex flex-row gap-2 justify-content-between" >
+
+      <!-- tools -->
+
+      <div class=" d-flex flex-row gap-2 align-items-center">
+        <button class="btn d-flex align-items-center gap-2 border rounded-3 text-nowrap btn-sm " 
+        [class.bg-dark]="!fullScreenMode"
+        [class.text-white]="!fullScreenMode"
+        [class.bg-soft-primary]="fullScreenMode"
+        (click)="onFullscreenClick();">
+        <i [class]="'ri-' + (!fullScreenMode ? 'fullscreen' : 'fullscreen-exit') + '-line'"></i>
+
+         <span class="text-nowrap">{{fullScreenMode ? 'Exit Full Screen' : 'Full Screen'}}</span> 
+        </button>
+       
+        <div class="d-flex align-items-center gap-2" *ngIf="false">
+          <small>Zoom</small>
+          <span class="d-flex align-items-center justify-content-center">
+            <!-- placement="bottom" -->
+            <!-- [ngbPopover]="scale.toString()" -->
+            <input placement="bottom" [ngbPopover]="scale.toString()" type="range" min="0.44"
+             max="1.5" step="0.05" [(ngModel)]="scale" (input)="zoomContent($event);"
+            class="custom-range" #rangeInput="ngModel"
+            style="width: 75px; height: 2px; background-color: #ccc; outline: none; cursor: pointer;"
+            thumbstyle="height: 10px; width: 10px; border-radius: 50%; background-color: #007bff; border: none;">
+          </span>
+        </div>
+
+        <!-- <div>
+          <button (click)="test()">Test</button>
+        </div> -->
+
+        <div *ngIf="false">
+          <select class="form-select form-select-sm py-1 ps-2 pe-0" (change)="changeFont($event.target!)">
+            <option class="fs-6 fw-normal" *ngFor="let font of fontList" [style.font-family]="font">{{ font }}</option>
+          </select>
+        </div>
+
+        <!-- <button (click)="PRINTREPORT()">test</button> -->
+
+      </div>
+
+      <!-- save and save and print  -->
+      <div class=" d-flex flex-row gap-2">
+
+        <div style="width: 165px" *ngIf="!onlySave">
+          <app-select placeHolder="Search Paramters" selectBindLabel="parameter" 
+          selectBindId="id" [selectItems]="parameters" [applyAutoFocus]="false"
+          #routineSelect (onCustomSearch)="getTestDefaultParamters($event)"
+          (onSelectionChanged)="addText($event)"
+          [emptyFound]="true"></app-select>
+        </div>
+
+
+
+        <!-- (onSelectionChanged)="changeTestTemplate($event)"  -->
+        <div style="width: 165px" *ngIf="!onlySave">
+          <app-select #appSelect placeHolder="Routine Templates" selectBindLabel="name" 
+          selectBindId="id" [selectItems]="routineTemplates" [applyAutoFocus]="false" 
+          #routineSelect (onSelectionChanged)="changeTestTemplate($event); appSelect.clearInput(); appSelect.selectValue = null" 
+          [emptyFound]="true"></app-select>
+        </div>
+
+        <!-- (onSelectionChanged)="changeTestTemplate($event);" -->
+        <div style="width: 165px" *ngIf="!onlySave">
+          <app-select placeHolder="Test Templates" selectBindLabel="name" 
+          selectBindId="id" [selectItems]="TestTemplates" [applyAutoFocus]="false"
+          (onSelectionChanged)="changeTestTemplate($event)" 
+          [emptyFound]="true"></app-select>
+        </div>
+
+
+        <button class="btn border bg-transparent text-nowrap" 
+        [disabled]="previewLoad" *ngIf="!onlySave" (click)="openPreview()">
+          <span *ngIf="!previewLoad">Preview</span>
+          <!-- class="spinner-border spinner-border-sm mr-1 "> -->
+          <span *ngIf="previewLoad" >Loading..</span>
+        </button>
+
+        <button [disabled]="loadingAnm || loadingAuthAnm" 
+        class="btn btn-primary d-flex align-items-center gap-2 border rounded-3"  
+        (click)="emitExtractedContent(false)">
+          <span *ngIf="!loadingAnm">{{onlySave ? "Save Report" : "Save"}}</span>
+          <!-- <span *ngIf="loadingAnm" class="spinner-border spinner-border-sm mr-1 "></span> -->
+          <span *ngIf="loadingAnm">Saving..</span>
+        </button>
+
+        <button [disabled]="loadingAnm || loadingAuthAnm" class="btn btn-success d-flex align-items-center gap-2 border rounded-3 text-nowrap" *ngIf="!onlySave" (click)="emitExtractedContent(true)">
+          <span *ngIf="!loadingAuthAnm">{{auth ? "Save & Send for Dr.Authorization" : "Mark as Complete"}}</span>
+          <!-- <span *ngIf="loadingAuthAnm" class="spinner-border spinner-border-sm mr-1 "></span> -->
+          <span *ngIf="loadingAuthAnm">Saving & Sending..</span>
+        </button>
+      </div>
+
+      <!-- <button (click)="test()">check</button> -->
+
+    </div>
+
+    <div *ngIf="disableEditor" class="bg-white border-bottom-0 st-custom-toolbar w-100 px-2 py-1 d-flex flex-row gap-2 justify-content-between" >
+      <div class="d-flex align-items-center gap-2">
+        <small>Zoom</small>
+        <span class="d-flex align-items-center justify-content-center">
+          <input type="range" min="0.44" max="1.5" step="0.05" [(ngModel)]="scale" (input)="zoomContent($event)"
+          class="custom-range" style="width: 100%; height: 2px; background-color: #ccc; outline: none; cursor: pointer;"
+          thumbstyle="height: 10px; width: 10px; border-radius: 50%; background-color: #007bff; border: none;">
+        </span>
+      </div>
+    </div>
+
+   <st-editor #simpleEditor [(ngModel)]="content" [config]="config" 
+   (ngModelChange)="showChanges()"
+   (click)="saveCursorPosition($event)" (keyup)="saveCursorPosition($event)"></st-editor>
+</div> 
+
+
+<div  *ngIf="disableEditor" class="disabled_preview d-flex h-100" id="previewofreport">
+  <iframe id="disbaled_iframe" style="width: 221mm; margin: 0 auto; height: 85vh"></iframe>
+</div>
+
+
+
+
+<ng-template #setMargins let-modal>
+  <div class="modal-body">
+    <div class="container-full p-3">
+      <div class="row mb-3 g-3">
+        <div class="col-12">
+          Deleting the entire content cannot be undone or redone.
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <button class="btn btn-primary">Proceed</button>
+          <button class="btn btn-danger">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

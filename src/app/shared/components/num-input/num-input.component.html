@@ -1,0 +1,9 @@
+
+
+<div class="input-box">
+    <label *ngIf="!removeLabel" [attr.for]="inputId" [class]="labelClass">{{labelText}}<span *ngIf="imp" class="text-danger">*</span></label>
+    <div class="d-flex align-items-center w-100">
+        <input [placeholder]="placeHolder" [style]="styleVal" [maxLength]="10" [id]="inputId"
+        [class]="classVal" [ngClass]="{ 'is-invalid': formSubmitted && inputErrors }" (blur)="onBlur()" 
+        (input)="validateInput($event)" [disabled]="disableInput" [(ngModel)]="inputValue">
+</div>

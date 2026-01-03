@@ -1,0 +1,205 @@
+<form [formGroup]="baseForm">
+    <div class="container-full ">
+
+        <div class="row mb-1">
+            <div class="col-12 fw-light fs-4 text-muted border-bottom pb-2">
+                Personal Details
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 col-12">
+                <div class="row gap-1 mb-3">
+                    <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+                        <span>Name</span>
+                        <span class="text-danger">*</span>
+                    </div>
+                    <div class="col-12">
+                        <app-input [formSubmitted]="submitted" formControlName="name" [removeCloseIcon]="true"
+                            [removeLabel]="true" placeHolder="" [applyAllowLettersOnly]="true" [applyEmptySpace]="true"
+                            [formatLetter]="true" [inputLength]="100"
+                            classVal="form-control fs-6 fw-semibold rounded-3"></app-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-12">
+                <div class="row gap-1 mb-3">
+                    <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+                        <span>Gender</span>
+                        <span class="text-danger">*</span>
+                    </div>
+                    <div class="col-12">
+                        <app-select [formSubmitted]="submitted" labelText="" [selectItems]="genders"
+                            selectBindLabel="name" placeHolder="Select Gender" formControlName="gender"></app-select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3 col-12">
+                <div class="row gap-1 mb-3">
+                    <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+                        <span>Date of Birth</span>
+                        <span class="text-danger">*</span>
+                    </div>
+                    <div class="col-12">
+                        <app-datepicker [formSubmitted]="submitted" formControlName="dob" [labelText]="''"
+                            datePickerFormat="Y-m-d"></app-datepicker>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3 col-12">
+                <div class="row gap-1 mb-3">
+                    <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+                        <span>Mobile Number</span>
+                        <span class="text-danger">*</span>
+                    </div>
+                    <div class="col-12">
+                        <app-input [formSubmitted]="submitted" formControlName="mobile_number" [removeCloseIcon]="true"
+                            [removeLabel]="true" placeHolder="+91 " [applyAllowNumbersOnly]="true" [formatLetter]="true"
+                            [applyDot]="false" [inputLength]="10"
+                            classVal="form-control fs-6 fw-semibold rounded-3"></app-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 col-12">
+                <div class="row gap-1 mb-3">
+                    <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+                        <span>Email Address</span>
+                        <!-- <span class="text-danger">*</span> -->
+                    </div>
+                    <div class="col-12">
+                        <app-input [formSubmitted]="submitted" formControlName="email" [removeCloseIcon]="true"
+                            [removeLabel]="true" placeHolder="Enter Email" [inputLength]="100"></app-input>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-12 fw-light fs-4 text-muted border-bottom pb-2">
+                Card Details
+            </div>
+        </div>
+
+        <div class="row justify-content-between">
+            <div class="col-lg-12 col-12">
+                <div class="row mb-0">
+                    <div class="col-6 d-flex gap-2 flex-row flex-nowrap">
+                        <span>Card Name & Type</span>
+                        <span class="text-danger">*</span>
+                    </div>
+                    <div class="col-12">
+                        <div class="row align-items-center g-1">
+                            <div class="col-lg-5 col-12">
+                                <app-select [inputDisable]="details"
+                                    [ngbTooltip]="details ? 'Can`t modify the card once it has been issued.' : ''"
+                                    [formSubmitted]="submitted" labelText="" [selectItems]="cards"
+                                    [formSubmitted]="submitted"
+                                    classVal="fw-bold ng-select-container border-0  rounded-3" selectBindLabel="name"
+                                    placeHolder="Select Card" formControlName="card"
+                                    (onSelectionChanged)="cardSelected($event, popover3);"></app-select>
+                            </div>
+                            <div class="col-7" >
+                                <button [class.d-none]="card" type="button" class="btn border-0 bg-transparent fs-3" #popover3="ngbPopover"
+                                    [ngbPopover]="card ? popContent : ''" [popoverTitle]="popTitle">
+                                    <i class="ri-information-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="col-lg-5 col-12 ">
+                <div class="row gap-0 mb-3">
+                    <div class="col-12 d-flex gap-2 flex-row flex-nowrap text-end justify-content-end">
+                        <span class="fw-semibold fs-5"> {{'₹ ' + card?.card_cost}}</span>
+                    </div>
+                    <div class="col-12 text-end">
+                        <span class="fw-semibold fs-5">{{card?.duration}} {{card?.duration_type?.name}}</span>
+                    </div>
+                </div>
+            </div> -->
+
+
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-12  d-flex justify-content-end">
+                <button class="btn btn-success fs-5 rounded-3 px-3" (click)="saveMembership()">
+                    {{details ? 'Update' : 'Save'}}
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+</form>
+
+<ng-template #popTitle>
+    <div class="d-flex align-items-center justify-content-between fw-semibold fs-5 gap-3" *ngIf="card">
+        <div>{{card?.name}}</div>
+       
+    </div>
+    <div class="text-muted" *ngIf="!card">
+        Select Card to see details
+    </div>
+</ng-template>
+
+<ng-template #popContent>
+    <div class="container-full" style="width: 250px">
+        <!-- <div class="row">
+            <div class="col-12 fw-semibold fs-5">
+                {{card?.duration}} {{card?.duration_type?.name}}
+            </div>
+        </div> -->
+
+        <div class="row">
+            <div class="col-12">
+                <ul>
+                    <li *ngIf="card?.duration">{{card?.duration}} {{card?.duration_type?.name}} Validity</li>
+                    <li *ngIf="card?.no_of_members">{{card?.no_of_members}} {{card.no_of_members > 1 ? ' Persons' : ' Person'}}</li>
+                    <li *ngIf="card?.benefits && card?.benefits.length == 1">Eligibility Count(Free)
+                        {{card?.benefits[0]?.free_usages}} times</li>
+                    <li *ngIf="card?.benefits && card?.benefits.length == 1">Eligibility Count(Discount)
+                        {{card?.benefits[0]?.discount_usages}} times</li>
+                    <li>
+                        <span [class.text-success]="card?.is_active" [class.text-danger]="!card?.is_active">
+                            {{card?.is_active ? 'Active' : 'In-Active'}}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="false">
+            <div class="col-12">
+                <ul>
+                    <li *ngIf="card?.doctor_consultation">
+                        {{"Discount on Doctor Consultation " + card?.doctor_consultation?.discount + "% For " +
+                        card?.doctor_consultation?.frequency + " times"}}
+                    </li>
+                    <li *ngIf="card?.ambulance">
+                        {{"Ambulance " + card?.ambulance?.type?.name + " For " + card?.ambulance?.frequency + " times"}}
+                    </li>
+                    <li *ngIf="card?.ip_billing">
+                        {{"In-Patient Discount " + card?.ip_billing?.discount + "% For " + card?.ip_billing?.frequency +
+                        " times"}}
+                    </li>
+                    <li *ngIf="card?.pharmacy">
+                        {{"Pharmacy Discount " + card?.pharmacy?.discount + "% For " + card?.pharmacy?.frequency + "
+                        times"}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</ng-template>

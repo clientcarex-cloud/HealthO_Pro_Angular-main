@@ -1,0 +1,172 @@
+<!-- PATIENT COMPONENT  -->
+<app-layout [showNav]="false" [showMap]="false" [showPageTitle]="false" [displayInformation]="true" [labPackage]="false"
+  [extraFilter]="false" [showSelectPrint]="false" [extraFilterSecond]="false">
+
+  <ng-container class="displayInformation">
+    <div class="row">
+      <div class="col-6">
+        <div class="fw-bold fs-5">
+          CLIENTS
+        </div>
+      </div>
+
+      <div class="col-6 d-flex justify-content-end">
+        <button class="btn bg-white border rounded-3" (click)="openModal(deleteOrganization, { size: 'xl' })">Delete Organizations</button>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)" [selectToday]="false"></app-datepicker-section>
+  </ng-container>
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="text-nowrap text-black">Sno.</th>
+        <th>
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Name & Joined Date</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+              *ngIf="clients && clients.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th>Last Activity On</th>
+        <th>Curr. Plan Expiry Date</th>
+        <th>Contact Person</th>
+        <th>SMS</th>
+        <th>Whats App</th>
+        <th class="text-center">Action</th>
+        <!-- <th>Address</th> -->
+
+
+      </ng-container>
+
+      <ng-container class="tablebody">
+        <tr (dblclick)="showOrg(item)" *ngFor="let item of clients; let i=index">
+          <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+          <td>
+            <div class="d-flex align-items-center">
+              <div>
+                <img class="me-2 rounded-circle" style="width:27px; height: 27px; object-fit: contain;"
+                  [src]="item?.b_logo && item?.b_logo != '' ? item?.b_logo : '/assets/images/no-profile-picture-icon.svg'">
+
+              </div>
+              <app-patient-details [name]="item?.organization_name"
+                [time]="timeSrvc.dateAsString(item?.added_on, true, true)"></app-patient-details>
+            </div>
+          </td>
+          <td>
+            <app-patient-details *ngIf="item?.last_activity_at"
+              [time]="timeSrvc.dateAsString(item?.last_activity_at, true, true)"
+              [name]="timeSrvc.howManyDaysBack(item?.last_activity_at) != 0 ? timeSrvc.howManyDaysBack(item?.last_activity_at) + ' days back' : timeSrvc.decodeTimestamp(item?.last_activity_at)"></app-patient-details>
+            <span *ngIf="!item?.last_activity_at" class="text-danger fw-medium">No Activity</span>
+          </td>
+          <td>
+            <app-patient-details *ngIf="item?.subscription_status"
+              [name]="timeSrvc.dateAsString(item?.subscription_status?.validity, true, true)"
+              [insertTime]="returnHtml(item?.subscription_status?.validity)"></app-patient-details>
+          </td>
+          <td>
+            <app-patient-details [name]="item?.owner || ''" [time]="'+91' + item?.phone_number"></app-patient-details>
+          </td>
+          <td>
+            <span class="fw-bold fs-6" [class.text-success]="item?.business_settings.is_sms_active"
+              [class.text-danger]="!item?.business_settings.is_sms_active">
+              {{item?.business_settings.is_sms_active ? 'ON' : 'OFF'}}
+            </span>
+          </td>
+          <td>
+            <span class="fw-bold fs-6" [class.text-success]="item?.business_settings.is_whatsapp_active"
+              [class.text-danger]="!item?.business_settings.is_whatsapp_active">
+              {{item?.business_settings.is_whatsapp_active ? 'ON' : 'OFF'}}
+            </span>
+          </td>
+
+          <!-- <td>
+                <div class="d-flex flex-column">
+                    <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                        {{item?.addresses && item?.addresses.length == 1 ? item?.addresses[0].address : ''}}
+                    </small>
+                </div>
+            </td> -->
+          <td>
+            <div class="d-flex align-items-center justify-content-center fs-5">
+              <button class="btn" ngbTooltip="Edit" placement="top" (click)="showOrg(item)">
+                <i class="ri-edit-2-line fs-4"></i>
+              </button>
+              <!-- [ngbTooltip]="'Toggle ON/OFF '+ item?.organization_name +' Organization'"  -->
+              <app-checkbox [showLabel]="false" activeText="" (onCheckboxValueChanged)="toggleOrganization(item)"
+                inactiveText="" [checkboxValue]="!item?.is_account_disabled"></app-checkbox>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="pageLoading">
+          <td colspan="8">
+            <div class="p-3 text-center">
+              Loading..
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </ng-container>
+
+</app-layout>
+
+
+
+<ng-template #deleteOrganization let-modal>
+  <div class="modal-header py-2 px-3 bg-white d-flex justify-content-between align-items-center">
+    <span class="modal-title fs-4 " id="modal-basic-title">
+        Delete Organizations
+    </span>
+    <div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  </div>
+
+  <div class="modal-body">
+    <app-delete-organizations (saved)="getData()"></app-delete-organizations>
+  </div>
+</ng-template>

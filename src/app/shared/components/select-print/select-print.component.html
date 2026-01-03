@@ -1,0 +1,25 @@
+<div class="row g-0 d-flex align-items-center px-0">
+  <div class="col-7">
+    <!-- SELECT COMPONENT  -->
+    <app-select 
+      [selectItems]="items" 
+      [selectValue]="items && items.length !== 0 ? items[0] : null" 
+      selectBindLabel="name" 
+      [placeHolder]="placeHolderText" 
+      (onSelectionChanged)="selectReport($event)"
+      [inputDisable]="isLoading || disableSelect"
+    ></app-select>
+  </div>
+  <div class="col-5">
+    <!-- SELECT AND PRINT BUTTON  -->
+    <button 
+      type="button" 
+      class="w-100 btn btn-success p-1 rounded-2 text-nowrap" 
+      (click)="onPrintClick()" [disabled]="isLoading">
+      <span *ngIf="!isLoading" class="text-nowrap">{{buttonText}}
+        <i class="{{iconClassVal}}"></i>
+      </span>
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm mr-1 "></span>
+    </button>
+  </div>
+</div>

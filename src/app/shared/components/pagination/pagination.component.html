@@ -1,0 +1,44 @@
+<!-- <ngb-pagination [collectionSize]="collectionSize" 
+    [pageSize]="pageSize" [page]="page" (pageChange)="this.pageChange.emit($event)"
+    [boundaryLinks]="boundaryLinks" size="sm">
+    <ng-template ngbPaginationPages let-page let-pages="pages">
+        <li class="ngb-custom-pages-item" *ngIf="pages.length > 0">
+            <div class="mb-3 d-flex flex-nowrap px-2">
+              <label
+                  [attr.id]="paginationInputLabelId"
+                  [attr.for]="paginationInputId"
+                  class="col-form-label me-2 ms-1"
+              >Page</label>
+              <input #i
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  class="form-control custom-pages-input"
+                  [attr.id]="paginationInputId"
+                  [value]="page"
+                  (keyup.enter)="selectPage(i.value)"
+                  (blur)="selectPage(i.value)"
+                  (input)="formatInput($any($event).target)"
+                  aria-labelledby="paginationInputLabel paginationDescription"
+                  style="width: 2.5rem"
+              />
+              <span id="paginationDescription" class="col-form-label text-nowrap px-2">
+                  of {{pages.length}}</span>
+            </div>
+        </li>
+    </ng-template>
+</ngb-pagination> -->
+
+<div class="d-flex">
+    <ngb-pagination [collectionSize]="collectionSize" [page]="page" [pageSize]="pageSize" [maxSize]="3"
+                     (pageChange)="onPageChange($event)" [size]="paginationSize"
+                     [boundaryLinks]="true" [rotate]="true" class="custom-pagination">
+      <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+      <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+    </ngb-pagination>
+  </div>
+
+
+
+
+

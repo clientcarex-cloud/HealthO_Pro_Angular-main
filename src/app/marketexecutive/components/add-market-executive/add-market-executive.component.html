@@ -1,0 +1,809 @@
+<div class="container-full" >
+    <form [formGroup]="baseForm">
+        
+        <div class="row px-2 align-item-center pt-2 mb-2">
+            <div class="col-lg-9 col-12 d-flex flex-lg-row flex-column justify-content-sm-start align-item-center" >
+                <div class="d-flex align-item-lg-center align-item-start justify-content-start"
+                    style="align-items: center;">
+                    <span>
+                        <button class="border-0 bg-transparent p-0" routerLink="/marketingexecutive">
+                            <i class="ri-arrow-left-line fs-4 td-color"></i>
+                        </button>
+                    </span>
+                    <span class="fs-4 ps-2">{{staff?.name ? staff?.name + ' | ' : 'Add Marketing Executive'}}  {{staff?.mobile_number}}</span>
+                </div>
+            </div>
+
+
+            <div class="col-3 d-flex justify-content-end">
+                <div class="row">
+                    <div class="col-12">
+                        <button class="btn btn-success rounded-3 px-lg-5" (click)="saveExecutive()">
+                            {{staff ? 'Update' : 'Save'}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row gap-1 flex-lg-nowrap flex-wrap mb-1">
+
+
+            <!-- personal details  -->
+            <div class="col-lg-6 col-12 bg-white rounded-3 border p-3" >
+
+                <div class="row mb-3 ">
+                    <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                        Personal & Contact Details
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-8 col-12">
+                        <app-input [applyAutoFocus]="true" labelText="Name" [imp]="true" labelClass="form-label mb-1" classVal="form-control fw-semibold rounded-3"
+                            placeHolder="Enter Name" formControlName="name" [formSubmitted]="submitted" (onValueChanged)="formatString($event, 'name')"></app-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-datepicker labelText="DOB" datePickerFormat="Y-m-d" [imp]="false" placeHolder="Select DOB" formControlName="date_of_birth"
+                            [spanClass]="'d-flex align-items-center mt-1'"  [formSubmitted]="submitted"></app-datepicker>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-5 col-12">
+                        <app-input labelText="Mobile Number" [imp]="true" labelClass="form-label mb-1" formControlName="mobile_number"
+                            placeHolder="Enter Ph no." [inputLength]="10" [applyAllowNumbersOnly]="true" classVal="form-control fw-semibold rounded-3"
+                            [applyDot]="false"  [formSubmitted]="submitted"></app-input>
+                    </div>
+
+                    <div class="col-lg-3 col-12">
+                        <app-select [selectItems]="genders" labelText="Gender" selectBindLabel="name" formControlName="gender"
+                            labelClass="form-label mb-1" placeHolder="Select Gender"  [formSubmitted]="submitted"></app-select>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-input labelText="Email" labelClass="form-label mb-1" formControlName="email"
+                         placeHolder="Enter Email" [formSubmitted]="submitted"></app-input>
+                    </div>
+                </div>
+
+                <div class="row mb-3" *ngIf="false">
+
+                    <!-- <div class="col-lg-3 col-12">
+                        <app-input labelText="Area" labelClass="form-label mb-1" formControlName="area"
+                         placeHolder="Enter Area"></app-input>
+                    </div> -->
+
+                    <div class="col-lg-3 col-12">
+                        <app-input labelText="City" labelClass="form-label mb-1" formControlName="city"
+                         placeHolder="Enter City" [formSubmitted]="submitted"></app-input>
+                    </div>
+
+                    <div class="col-lg-3 col-12">
+                        <app-input labelText="State" labelClass="form-label mb-1" formControlName="state"
+                        placeHolder="Enter State" [formSubmitted]="submitted"></app-input>
+                    </div>
+
+                    <div class="col-lg-3 col-12">
+                        <app-input labelText="Pincode" labelClass="form-label mb-1" formControlName="pin_code"
+                            placeHolder="Enter Pincode" [formSubmitted]="submitted"></app-input>
+                    </div>
+
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-8 col-12">
+                        <app-input labelText="Address" labelClass="form-label mb-1" formControlName="address"
+                        placeHolder="Enter Address" [formSubmitted]="submitted"></app-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <div class="row align-items-end ">
+                            <div class="col-12 mb-1">
+                                Profile Picture
+                            </div>
+                            <div class="col-12">
+                                <div class="row g-2">
+                                    <div class="col-12 fw-light" *ngIf="!baseForm.value.profile_pic">
+                                        <input name="logo" type="file" class="form-control rounded-3"
+                                            accept="image/png, image/gif, image/jpeg"  (change)="handleImages($event, 'profile_pic')">
+                            
+                                    </div>
+                                    <div class="col-6" *ngIf="baseForm.value.profile_pic">
+                                        <button name="removeBtn" (click)="openImage(viewImage ,baseForm.value.profile_pic)"
+                                            class="btn btn-soft-primary w-100 border-primary rounded-3">
+                                            View
+                                        </button>
+                                    </div>
+                                    <div class="col-6" *ngIf="baseForm.value.profile_pic">
+                                        <button name="removeBtn" (click)="clearLogo(false, 'profile_pic')"
+                                            class="btn btn-soft-danger w-100 border-danger rounded-3">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+
+
+            </div>
+
+            
+            <!-- job Details  -->
+
+            <div class="col-lg-6 col-12 bg-white rounded-3 border p-3" >
+
+                <div class="row mb-3 ">
+                    <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                        Job Description
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-5 col-12">
+                        <!-- <app-input labelText="Designation" labelClass="form-label mb-1"
+                            placeHolder="Enter Designation" [formSubmitted]="submitted"></app-input> -->
+                        <app-select [selectItems]="roles" formControlName="role" labelText="Role" [imp]="true" selectBindLabel="name"
+                        labelClass="form-label mb-1" placeHolder="Select Type" [formSubmitted]="submitted" classVal="fw-semibold ng-select-container border-0  rounded-3"></app-select>
+                    </div>
+
+                    
+                    <div class="col-lg-4 col-12">
+                        <app-select [selectItems]="employmentTypes" formControlName="employement_type" labelText="Employment Type" [imp]="true" selectBindLabel="name"
+                            labelClass="form-label mb-1" placeHolder="Select Type" [formSubmitted]="submitted" classVal="fw-semibold ng-select-container border-0  rounded-3"></app-select>
+                    </div>
+
+                    <div class="col-lg-3 col-12">
+                        <app-datepicker labelText="Date of Joining" [imp]="false" placeHolder="Select DOJ" formControlName="date_of_joining"
+                            [spanClass]="'d-flex align-items-center mt-1'" [formSubmitted]="submitted" datePickerFormat="Y-m-d"></app-datepicker>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-4 col-12">
+                        <app-select [selectItems]="paymentTypes" labelText="Payment Type" selectBindLabel="name" formControlName="payment_type"
+                            labelClass="form-label mb-1" placeHolder="Select Type" [formSubmitted]="submitted"></app-select>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-input labelText="Commision Rate" [applyAllowNumbersOnly]="true"
+                        labelClass="form-label mb-1" placeHolder="Enter Rate" [formSubmitted]="submitted"
+                        [applyAllowNumbersOnly]="true" formControlName="commission_rate"
+                        ></app-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-input labelText="Incentive Rate" [applyAllowNumbersOnly]="true"
+                        labelClass="form-label mb-1" placeHolder="Enter Rate" [formSubmitted]="submitted"
+                        [applyAllowNumbersOnly]="true" formControlName="incentive_rate"
+                        ></app-input>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-3">
+                        <app-input labelText="Extra Hours Pymt." [applyAllowNumbersOnly]="true"
+                        labelClass="form-label mb-1" placeHolder="Enter Amount" [formSubmitted]="submitted"
+                        [applyAllowNumbersOnly]="true" formControlName="extra_hours_pay"
+                        ></app-input>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <app-input labelText="Salary Deduction" [applyAllowNumbersOnly]="true"
+                        labelClass="form-label mb-1" placeHolder="Enter Amount" [formSubmitted]="submitted"
+                        [applyAllowNumbersOnly]="true" formControlName="salary_deduction"
+                        ></app-input>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <app-datepicker placeHolder="In Time" labelText="Shift Start Time"
+                        [allowTime]="true" [showCalender]="false" [formSubmitted]="submitted"
+                        datePickerFormat="H:i" formControlName="shift_start_time"></app-datepicker>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <app-datepicker placeHolder="Out Time" labelText="Shift End Time"
+                        [allowTime]="true" [showCalender]="false" [formSubmitted]="submitted"
+                        datePickerFormat="H:i" formControlName="shift_end_time"></app-datepicker>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+        <div class="row gap-1 flex-lg-nowrap flex-wrap mb-1">
+
+            <!-- bank details -->
+            <div class="col-lg-6 col-12 bg-white rounded-3 border p-3" >
+
+                <div class="row mb-3 ">
+                    <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                        Bank Details
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-6">
+                        <app-input labelText="A/C Holder Name" labelClass="form-label mb-1" placeHolder="Enter Name" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [applyUpperCase]="true" formControlName="ac_holder_name" [applyUpperCase]="true"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-input labelText="Bank A/C Number" [inputLength]="16" placeHolder="Enter Number" [formSubmitted]="submitted"
+                            [applyAllowNumbersOnly]="true" labelClass="form-label mb-1" formControlName="bank_account_no"></app-input>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-6 col-12">
+                        <app-input labelText="Bank Name" labelClass="form-label mb-1" formControlName="bank_name" [formSubmitted]="submitted"
+                        placeHolder="Enter Bank Name"  labelClass="form-label mb-1" [applyUpperCase]="true"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-input labelText="IFSC Code" [inputLength]="16" placeHolder="Enter Code" [formSubmitted]="submitted"
+                        formControlName="bank_ifsc_code" labelClass="form-label mb-1"></app-input>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <app-input labelText="Pan Card Number" placeHolder="Enter Number" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [formSubmitted]="submitted" formControlName="pan_card_no"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-select labelText="Salary Payment Mode" placeHolder="Select Mode" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [selectItems]="salaryTypes || []" selectBindLabel="name" formControlName="salary_payment_mode"></app-select>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <!-- vehicle information  -->
+            <div class="col-lg-6 col-12 bg-white rounded-3 border p-3" >
+
+                <div class="row mb-3 ">
+                    <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                        Vehicle Information
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <app-select labelText="Vehicle Type" placeHolder="Select Type" formControlName="vehicle_type" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [selectItems]="vehiclesTypes" selectBindLabel="name"></app-select>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-select labelText="Fuel Type" placeHolder="Select Type" formControlName="fuel_type" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [selectItems]="fuelTypes" selectBindLabel="name"></app-select>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <app-input labelText="Fuel Rate Per Km" [inputLength]="4" placeHolder="Enter Number" formControlName="fuel_rate" [formSubmitted]="submitted"
+                             labelClass="form-label mb-1"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-input labelText="Variable Milege" [inputLength]="4" placeHolder="Enter Number" formControlName="variable_mileage" [formSubmitted]="submitted"
+                           labelClass="form-label mb-1"></app-input>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <div class="row align-items-end mb-3">
+                            <div class="col-12">
+                                Vehicle Registration No.
+                            </div>
+                            <div class="col-12">
+                                <div class="row g-2">
+                                    <div class="col-12 fw-light" *ngIf="!baseForm.value.vehicle_reg_img">
+                                        <input name="logo" type="file" class="form-control rounded-3"
+                                            accept="image/png, image/gif, image/jpeg"  (change)="handleImages($event, 'vehicle_reg_img')">
+                            
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm.value.vehicle_reg_img">
+                                        <button name="removeBtn" (click)="openImage(viewImage ,baseForm.value.vehicle_reg_img)"
+                                            class="btn btn-soft-primary w-100 border-primary rounded-3">
+                                            
+                                            View</button>
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm.value.vehicle_reg_img">
+                                        <button name="removeBtn" (click)="clearLogo(false, 'vehicle_reg_img')"
+                                            class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="row align-items-end mb-3">
+                            <div class="col-12">
+                                Driving License
+                            </div>
+                            <div class="col-12">
+                                <div class="row g-2">
+                                    <div class="col-12 fw-light" *ngIf="!baseForm.value.driving_license">
+                                        <input name="logo" type="file" class="form-control rounded-3"
+                                            accept="image/png, image/gif, image/jpeg" (change)="handleImages($event, 'driving_license')">
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm?.value?.driving_license">
+                                        <button name="removeBtn" (click)="openImage(viewImage , baseForm.value?.driving_license)"
+                                            class="btn btn-soft-primary w-100 border-primary rounded-3">
+                                            View</button>
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm?.value?.driving_license">
+                                        <button name="removeBtn" (click)="clearLogo(false, 'driving_license')"
+                                            class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </form>
+
+
+</div>
+
+
+
+    <div class="container-full"  *ngIf="false">
+
+        <div class="row px-2 align-item-center pt-2 mb-2">
+            <div class="col-lg-9 col-12 d-flex flex-lg-row flex-column justify-content-sm-start align-item-center" >
+                <div class="d-flex align-item-lg-center align-item-start justify-content-start"
+                    style="align-items: center;">
+                    <span>
+                        <button class="border-0 bg-transparent p-0" routerLink="/marketingexecutive">
+                            <i class="ri-arrow-left-line fs-4 td-color"></i>
+                        </button>
+                    </span>
+                    <span class="fs-4 ps-2">{{staff?.name + ' | ' || 'Add Marketing Executive'}}  {{staff?.mobile_number}}</span>
+                </div>
+            </div>
+
+
+            <div class="col-3 d-flex justify-content-end">
+                <div class="row">
+                    <div class="col-12">
+                        <button class="btn btn-success rounded-3 px-lg-5" (click)="saveExecutive()">
+                            {{staff ? 'Update' : 'Save'}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+            <div class="row">
+                <div class="col-12">
+                    <ul ngbNav #nav="ngbNav" class="nav-tabs-custom-transparent" [activeId]="activeTab">
+                        <li ngbNavItem [ngbNavItem]="1"  (click)="activeTab = 1">
+                        <button ngbNavLink class="fs-4">Personal & Contact Details</button>
+                        <ng-template ngbNavContent>
+                            <ng-container *ngTemplateOutlet="personal"></ng-container>
+                        </ng-template>
+                        </li>
+            
+                        <li ngbNavItem [ngbNavItem]="2"  (click)="activeTab = 2" >
+                        <button ngbNavLink class="fs-4">Job Description</button>
+                        <ng-template ngbNavContent>
+                            <ng-container *ngTemplateOutlet="jobDescription"></ng-container>
+                        </ng-template>
+                        </li>
+
+                        <li ngbNavItem [ngbNavItem]="3"  (click)="activeTab = 3" >
+                            <button ngbNavLink class="fs-4">Bank Details</button>
+                            <ng-template ngbNavContent>
+                                <ng-container *ngTemplateOutlet="bankDetails"></ng-container>
+                            </ng-template>
+                        </li>
+
+                        <li ngbNavItem [ngbNavItem]="4"  (click)="activeTab = 4" >
+                            <button ngbNavLink class="fs-4">Vehicle Information</button>
+                            <ng-template ngbNavContent>
+                                <ng-container *ngTemplateOutlet="vehicle"></ng-container>
+                            </ng-template>
+                        </li>
+                    </ul>
+                    <div [ngbNavOutlet]="nav"></div>
+                </div>
+            </div>
+
+
+    </div>
+
+    <ng-template #personal>
+        <div class="container-full">
+            <div class="row">
+                <div class="col-lg-8 col-12 p-3" >
+
+                    <div class="row mb-3">
+                        <div class="col-lg-8 col-12">
+                            <app-input [applyAutoFocus]="true" labelText="Name" [imp]="true" labelClass="form-label mb-1" classVal="form-control fw-semibold rounded-3"
+                                placeHolder="Enter Name" formControlName="name" [formSubmitted]="submitted" (onValueChanged)="formatString($event, 'name')"></app-input>
+                        </div>
+
+                        <div class="col-lg-4 col-12">
+                            <app-datepicker labelText="DOB" datePickerFormat="Y-m-d" [imp]="false" placeHolder="Select DOB" formControlName="date_of_birth"
+                                [spanClass]="'d-flex align-items-center mt-1'"  [formSubmitted]="submitted"></app-datepicker>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-lg-5 col-12">
+                            <app-input labelText="Mobile Number" [imp]="true" labelClass="form-label mb-1" formControlName="mobile_number"
+                                placeHolder="Enter Ph no." [inputLength]="10" [applyAllowNumbersOnly]="true" classVal="form-control fw-semibold rounded-3"
+                                [applyDot]="false"  [formSubmitted]="submitted"></app-input>
+                        </div>
+
+                        <div class="col-lg-3 col-12">
+                            <app-select [selectItems]="genders" labelText="Gender" selectBindLabel="name" formControlName="gender"
+                                labelClass="form-label mb-1" placeHolder="Select Gender"  [formSubmitted]="submitted"></app-select>
+                        </div>
+
+                        <div class="col-lg-4 col-12">
+                            <app-input labelText="Email" labelClass="form-label mb-1" formControlName="email"
+                            placeHolder="Enter Email" [formSubmitted]="submitted"></app-input>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" *ngIf="false">
+
+                        <!-- <div class="col-lg-3 col-12">
+                            <app-input labelText="Area" labelClass="form-label mb-1" formControlName="area"
+                            placeHolder="Enter Area"></app-input>
+                        </div> -->
+
+                        <div class="col-lg-3 col-12">
+                            <app-input labelText="City" labelClass="form-label mb-1" formControlName="city"
+                            placeHolder="Enter City" [formSubmitted]="submitted"></app-input>
+                        </div>
+
+                        <div class="col-lg-3 col-12">
+                            <app-input labelText="State" labelClass="form-label mb-1" formControlName="state"
+                            placeHolder="Enter State" [formSubmitted]="submitted"></app-input>
+                        </div>
+
+                        <div class="col-lg-3 col-12">
+                            <app-input labelText="Pincode" labelClass="form-label mb-1" formControlName="pin_code"
+                                placeHolder="Enter Pincode" [formSubmitted]="submitted"></app-input>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-lg-8 col-12">
+                            <app-input labelText="Address" labelClass="form-label mb-1" formControlName="address"
+                            placeHolder="Enter Address" [formSubmitted]="submitted"></app-input>
+                        </div>
+
+                        <div class="col-lg-4 col-12">
+                            <div class="row align-items-end ">
+                                <div class="col-12 mb-1">
+                                    Profile Picture
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-2">
+                                        <div class="col-12 fw-light" *ngIf="!baseForm.value.profile_pic">
+                                            <input name="logo" type="file" class="form-control rounded-3"
+                                                accept="image/png, image/gif, image/jpeg"  (change)="handleImages($event, 'profile_pic')">
+                                
+                                        </div>
+                                        <div class="col-6" *ngIf="baseForm.value.profile_pic">
+                                            <button name="removeBtn" (click)="openImage(viewImage ,baseForm.value.profile_pic)"
+                                                class="btn btn-soft-primary w-100 border-primary rounded-3">
+                                                View
+                                            </button>
+                                        </div>
+                                        <div class="col-6" *ngIf="baseForm.value.profile_pic">
+                                            <button name="removeBtn" (click)="clearLogo(false, 'profile_pic')"
+                                                class="btn btn-soft-danger w-100 border-danger rounded-3">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+
+
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #jobDescription>
+        <div class="container-full">
+            <div class="row">
+                <div class="col-lg-8 col-12  p-3" >
+
+                    <!-- <div class="row mb-3 ">
+                        <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                            Job Description
+                        </div>
+                    </div> -->
+    
+                    <div class="row mb-3">
+                        <div class="col-lg-5 col-12">
+                            <!-- <app-input labelText="Designation" labelClass="form-label mb-1"
+                                placeHolder="Enter Designation" [formSubmitted]="submitted"></app-input> -->
+                            <app-select [selectItems]="roles" formControlName="role" labelText="Role" [imp]="true" selectBindLabel="name"
+                            labelClass="form-label mb-1" placeHolder="Select Type" [formSubmitted]="submitted" classVal="fw-semibold ng-select-container border-0  rounded-3"></app-select>
+                        </div>
+    
+                        
+                        <div class="col-lg-4 col-12">
+                            <app-select [selectItems]="employmentTypes" formControlName="employement_type" labelText="Employment Type" [imp]="true" selectBindLabel="name"
+                                labelClass="form-label mb-1" placeHolder="Select Type" [formSubmitted]="submitted" classVal="fw-semibold ng-select-container border-0  rounded-3"></app-select>
+                        </div>
+    
+                        <div class="col-lg-3 col-12">
+                            <app-datepicker labelText="Date of Joining" [imp]="false" placeHolder="Select DOJ" formControlName="date_of_joining"
+                                [spanClass]="'d-flex align-items-center mt-1'" [formSubmitted]="submitted" datePickerFormat="Y-m-d"></app-datepicker>
+                        </div>
+                    </div>
+    
+                    <div class="row mb-3">
+    
+                        <div class="col-lg-4 col-12">
+                            <app-select [selectItems]="paymentTypes" labelText="Payment Type" selectBindLabel="name" formControlName="payment_type"
+                                labelClass="form-label mb-1" placeHolder="Select Type" [formSubmitted]="submitted"></app-select>
+                        </div>
+    
+                        <div class="col-lg-4 col-12">
+                            <app-input labelText="Commision Rate" [applyAllowNumbersOnly]="true"
+                            labelClass="form-label mb-1" placeHolder="Enter Rate" [formSubmitted]="submitted"
+                            [applyAllowNumbersOnly]="true" formControlName="commission_rate"
+                            ></app-input>
+                        </div>
+    
+                        <div class="col-lg-4 col-12">
+                            <app-input labelText="Incentive Rate" [applyAllowNumbersOnly]="true"
+                            labelClass="form-label mb-1" placeHolder="Enter Rate" [formSubmitted]="submitted"
+                            [applyAllowNumbersOnly]="true" formControlName="incentive_rate"
+                            ></app-input>
+                        </div>
+    
+                    </div>
+    
+                    <div class="row mb-3">
+    
+                        <div class="col-lg-3">
+                            <app-datepicker placeHolder="In Time" labelText="Shift Start Time"
+                            [allowTime]="true" [showCalender]="false" [formSubmitted]="submitted"
+                            datePickerFormat="H:i" formControlName="shift_start_time"></app-datepicker>
+                        </div>
+    
+                        <div class="col-lg-3">
+                            <app-datepicker placeHolder="Out Time" labelText="Shift End Time"
+                            [allowTime]="true" [showCalender]="false" [formSubmitted]="submitted"
+                            datePickerFormat="H:i" formControlName="shift_end_time"></app-datepicker>
+                        </div>
+    
+    
+                    </div>
+    
+    
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #bankDetails>
+        <div class="container-full">
+            <div class="row">
+            <!-- bank details -->
+            <div class="col-lg-8 col-12 p-3" >
+
+                <!-- <div class="row mb-3 ">
+                    <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                        Bank Details
+                    </div>
+                </div> -->
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-6">
+                        <app-input labelText="A/C Holder Name" labelClass="form-label mb-1" placeHolder="Enter Name" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [applyUpperCase]="true" formControlName="ac_holder_name" [applyUpperCase]="true"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-input labelText="Bank A/C Number" [inputLength]="16" placeHolder="Enter Number" [formSubmitted]="submitted"
+                            [applyAllowNumbersOnly]="true" labelClass="form-label mb-1" formControlName="bank_account_no"></app-input>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-6 col-12">
+                        <app-input labelText="Bank Name" labelClass="form-label mb-1" formControlName="bank_name" [formSubmitted]="submitted"
+                        placeHolder="Enter Bank Name"  labelClass="form-label mb-1" [applyUpperCase]="true"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-input labelText="IFSC Code" [inputLength]="16" placeHolder="Enter Code" [formSubmitted]="submitted"
+                        formControlName="bank_ifsc_code" labelClass="form-label mb-1"></app-input>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <app-input labelText="Pan Card Number" placeHolder="Enter Number" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [formSubmitted]="submitted" formControlName="pan_card_no"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-select labelText="Salary Payment Mode" placeHolder="Select Mode" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [selectItems]="salaryTypes || []" selectBindLabel="name" formControlName="salary_payment_mode"></app-select>
+                    </div>
+
+                </div>
+
+
+            </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #vehicle>
+        <div class="container-full">
+            <div class="row">
+            <!-- vehicle information  -->
+            <div class="col-lg-8 col-12 p-3" >
+
+                <!-- <div class="row mb-3 ">
+                    <div class="col-12 fs-4 fw-light td-color border-bottom pb-2">
+                        Vehicle Information
+                    </div>
+                </div> -->
+
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <app-select labelText="Vehicle Type" placeHolder="Select Type" formControlName="vehicle_type" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [selectItems]="vehiclesTypes" selectBindLabel="name"></app-select>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-select labelText="Fuel Type" placeHolder="Select Type" formControlName="fuel_type" [formSubmitted]="submitted"
+                            labelClass="form-label mb-1" [selectItems]="fuelTypes" selectBindLabel="name"></app-select>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <app-input labelText="Fuel Rate Per Km" [inputLength]="4" placeHolder="Enter Number" formControlName="fuel_rate" [formSubmitted]="submitted"
+                             labelClass="form-label mb-1"></app-input>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <app-input labelText="Variable Milege" [inputLength]="4" placeHolder="Enter Number" formControlName="variable_mileage" [formSubmitted]="submitted"
+                           labelClass="form-label mb-1"></app-input>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-6">
+                        <div class="row align-items-end mb-3">
+                            <div class="col-12">
+                                Vehicle Registration No.
+                            </div>
+                            <div class="col-12">
+                                <div class="row g-2">
+                                    <div class="col-12 fw-light" *ngIf="!baseForm.value.vehicle_reg_img">
+                                        <input name="logo" type="file" class="form-control rounded-3"
+                                            accept="image/png, image/gif, image/jpeg"  (change)="handleImages($event, 'vehicle_reg_img')">
+                            
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm.value.vehicle_reg_img">
+                                        <button name="removeBtn" (click)="openImage(viewImage ,baseForm.value.vehicle_reg_img)"
+                                            class="btn btn-soft-primary w-100 border-primary rounded-3">
+                                            
+                                            View</button>
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm.value.vehicle_reg_img">
+                                        <button name="removeBtn" (click)="clearLogo(false, 'vehicle_reg_img')"
+                                            class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="row align-items-end mb-3">
+                            <div class="col-12">
+                                Driving License
+                            </div>
+                            <div class="col-12">
+                                <div class="row g-2">
+                                    <div class="col-12 fw-light" *ngIf="!baseForm.value.driving_license">
+                                        <input name="logo" type="file" class="form-control rounded-3"
+                                            accept="image/png, image/gif, image/jpeg" (change)="handleImages($event, 'driving_license')">
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm?.value?.driving_license">
+                                        <button name="removeBtn" (click)="openImage(viewImage , baseForm.value?.driving_license)"
+                                            class="btn btn-soft-primary w-100 border-primary rounded-3">
+                                            View</button>
+                                    </div>
+                                    <div class="col-3" *ngIf="baseForm?.value?.driving_license">
+                                        <button name="removeBtn" (click)="clearLogo(false, 'driving_license')"
+                                            class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+            </div>
+        </div>
+    </ng-template>
+
+
+
+<ng-template #viewImage let-modal>
+    <div class="modal-header py-3 px-3 bg-soft-primary border-bottom d-flex justify-content-between align-items-center">
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row justify-content-center">
+                <div class="col-12 d-flex justify-content-center" style="width: 100%; height: 100%; object-fit: cover;" >
+                    <!-- style="height: 500px; width: 500px; object-fit: cover;" -->
+                    <img [src]="picture" style="width: 100%; height: 100%;object-fit: contain;">
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

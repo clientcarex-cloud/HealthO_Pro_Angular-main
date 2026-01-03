@@ -1,0 +1,307 @@
+<app-layout [showNav]="false" [showPageTitle]="true" [showMap]="false" [displayInformation]="true" [labPackage]="false">
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <!-- <ng-container class="datepicker">
+        <app-datepicker #datePicker datePickerFormat="Y-m-d" dateMode="range" placeHolder="All Time (Active)" 
+         (dateValueChange)="getRangeValue($event)" [selectToday]="false" [setMax]="false" [setMin]="false"
+       ></app-datepicker>
+    </ng-container> -->
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable tableHeaderClass="text-muted bg-white text-nowrap" tableBodyClass="bg-white text-nowrap">
+            <ng-container class="tableheader ">
+                <th class="text-black">S.no</th>
+                <th>
+                    <div class="d-flex gap-5 align-items-center justify-content-start">
+                        <div>Name & Card No.</div>
+                        <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+                            *ngIf="members && members.length != 0 && members.length > 1">
+                            <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                            <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                        </div>
+                    </div>
+                </th>
+                <th>Card</th>
+                <th><span>Valid From</span></th>
+                <th><span>Valid Upto</span></th>
+                <th><span>Mobile Number</span></th>
+                <th>Eligibility Count(Free)</th>
+                <th>Eligibility Count(Discount)</th>
+                <th><span>User</span></th>
+                <th class="text-center">Action</th>
+            </ng-container>
+
+            <ng-container class="tablebody">
+
+                <tr class="font-Readex td-color text-nowrap" [class.d-none]="pageLoading" *ngFor="let item of members; let i=index">
+                    <td class="text-black fs-6 fw-medium" (click)="showMember(memFormtemp, item)">
+                        {{(page_number * page_size) - page_size + i + 1}}.
+                    </td>
+
+                    <td (click)="showMember(memFormtemp, item)">
+                        <app-patient-details name="{{item?.card_holder?.name}}" [query]="query" 
+                            time="{{item?.pc_no}}"></app-patient-details>
+                    </td>
+
+                    <td (click)="showMember(memFormtemp, item)">
+                        <div class="d-flex flex-column">
+                            <small class="fw-semibold text-black text-nowrap">
+                                {{item?.card ? item.card?.name : '-'}}
+                            </small>
+                        </div>
+                    </td>
+
+                    <td (click)="showMember(memFormtemp, item)">
+                        <div class="d-flex flex-column">
+                            <small>
+                                {{timeSrvc.dateAsString(item?.validity_starts_on, false)}}
+                            </small>
+                        </div>
+                    </td>
+
+                    <td (click)="showMember(memFormtemp, item)">
+                        <div class="d-flex flex-column text-danger">
+                            <small>
+                                {{timeSrvc.dateAsString(item?.validity_ends_on, false)}}
+                            </small>
+                        </div>
+                    </td>
+
+                    <td (click)="showMember(memFormtemp, item)">
+                        <small>{{item?.card_holder?.mobile_number}}</small>
+                    </td>
+
+                    <td>
+                        <div class="d-flex flex-column">
+                            <!-- *ngIf="item?.benefits[0]?.availed_free_usages" -->
+                            <div><span class="text-black fw-medium">{{item?.benefits[0]?.availed_free_usages}} times used</span></div>
+                            <small *ngIf="item?.benefits[0]?.free_usages;else limitless">Total - <span class="">{{item?.benefits[0]?.free_usages}} times</span></small>
+                            <ng-template #limitless>
+                                <small>Total - Unlimited Usage</small>
+                            </ng-template>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="d-flex flex-column">
+                            <div><span class="text-black fw-medium">{{item?.benefits[0]?.availed_discount_usages}} times used</span></div>
+                            <small *ngIf="item?.benefits[0]?.discount_usages;else limitless">Total - <span class="">{{item?.benefits[0]?.free_usages}} times</span></small>
+                        </div>
+                    </td>
+
+                    <td (click)="showMember(memFormtemp, item)">
+                        <small class="text-nowrap">{{item.created_by_name}}</small>
+                    </td>
+
+                    <td>
+                        <div ngbDropdown container="body" class="d-flex justify-content-center">
+                            <button class="bg-transparent border-0 rounded-circle" ngbDropdownToggle>
+                                <span class="dropdown-arrow fs-6"></span>
+                            </button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                <button ngbDropdownItem (click)="showMember(memFormtemp, item)">Edit details</button>
+                                <button ngbDropdownItem (click)="showMember(membershipRenewal, item)">Renew card</button>
+                                <button ngbDropdownItem (click)="showMember(usageHistory, item, 'xl')">Usage History</button>
+                                <button ngbDropdownItem (click)="printCard(item)">Print card</button>
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr *ngIf="pageLoading">
+                    <td colspan="10">
+                        <span class="d-flex flex-column align-items-center py-5">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div class="text-black pt-2 fw-light">Loading</div>
+                        </span>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+            (pageChange)="onPageChange($event)">
+        </app-pagination>
+    </ng-container>
+
+</app-layout>
+
+
+
+
+
+<ng-template #memFormtemp let-modal>
+
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+        <span class="modal-title fs-5" id="modal-basic-title">{{title}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+    <div class="modal-body " style="background-color: #F8FAFC; ">
+        <app-member-ship [details]="memData" (updated)="updateMember($event)"></app-member-ship>
+    </div>
+
+</ng-template>
+
+<ng-template #membershipRenewal let-modal>
+
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+        <span class="modal-title fs-5" id="modal-basic-title">Card Renewal - {{title}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+    <div class="modal-body" style="background-color: #F8FAFC; min-height: 300px">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-lg-6 col-12">
+                    <div class="row gap-1 mb-0">
+                        <div class="col-12 d-flex gap-2 flex-row flex-nowrap">
+                            <span>Card Name & Type</span>
+                            <span class="text-danger">*</span>
+                        </div>
+                        <div class="col-12">
+                            <div class="row align-items-center g-1">
+                                <div class="col-11">
+                                    <!-- placeHolder="Select Card" -->
+                                    <app-select [formSubmitted]="submitted"
+                                     labelText="" [selectItems]="cards" [formSubmitted]="submitted" 
+                                     classVal="fw-bold ng-select-container border-0 fs-5 rounded-3"
+                                     selectBindLabel="name" labelClass="form-label mb-1" placeHolder=""
+                                     (onSelectionChanged)="cardSelected($event, popover3);"></app-select>
+                                </div>
+                                <div class="col-1">
+                                    <button type="button" class="btn border-0 bg-transparent fs-3" #popover3="ngbPopover"
+                                    [ngbPopover]="card ? popContent : ''" [popoverTitle]="popTitle">
+                                        <i class="ri-information-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-12 d-flex justify-content-start">
+                    <app-num-input [inputValue]="card?.card_cost" [removeLabel]="false" labelClass="form-label mb-2"
+                    labelText="Amount" classVal="form-control rounded-3 fw-semibold fs-5 py-1" [disableInput]="true"></app-num-input>
+                </div>
+              </div>
+
+              <!-- <div class="row mt-5">
+                <div class="col-12">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn btn-danger rounded-3 fs-5" (click)="modal.dismiss('Cross click');">Cancel</button>
+                        <button class="btn btn-success rounded-3 fs-5 ms-2" (click)="postRenewCard()">Renew</button>
+                    </div>
+                </div>
+              </div> -->
+        </div>
+    </div>
+    <div class="modal-footer py-1 px-3 bg-light-blue">
+        <div class="d-flex justify-content-end align-items-center">
+            <button class="btn btn-danger rounded-3 fs-5" (click)="modal.dismiss('Cross click');">Cancel</button>
+            <button class="btn btn-success rounded-3 fs-5 ms-2" (click)="postRenewCard()">Renew</button>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #usageHistory let-modal>
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+        <span class="modal-title fs-5" id="modal-basic-title">Usage History - {{title}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+      </div>
+
+      <div class="modal-body" style="background-color: #F8FAFC; min-height: 300px">
+        <app-usg-history [member]="memData"></app-usg-history>
+      </div>
+</ng-template>
+
+<ng-template #popTitle>
+    <div class="d-flex flex-column gap-1" *ngIf="card">
+        <span class="fw-medium">{{card?.name}}</span>
+        <span class="fw-medium"> {{"₹ " + card?.card_cost}}</span>
+    </div>
+    <div class="text-muted" *ngIf="!card">
+        Select Card to see details
+    </div>
+</ng-template>
+
+
+<ng-template #popContent>
+    <div class="container-full" style="width: 300px">
+        <!-- <div class="row">
+            <div class="col-12 fw-semibold fs-5">
+                {{card?.duration}} {{card?.duration_type?.name}}
+            </div>
+        </div> -->
+
+        <div class="row">
+            <div class="col-12">
+                <ul>
+                    <li>{{card?.duration}} {{card?.duration_type?.name}} Validity</li>
+                    <li>{{card?.no_of_members}} {{card.no_of_members > 1 ? ' Persons' : ' Person'}}</li>
+                    <li *ngIf="card?.benefits && card?.benefits.length == 1">Eligibility Count(Free) {{card?.benefits[0]?.free_usages}} times</li>
+                    <li *ngIf="card?.benefits && card?.benefits.length == 1">Eligibility Count(Discount) {{card?.benefits[0]?.discount_usages}} times</li>
+                    <li>
+                        <span [class.text-success]="card?.is_active" [class.text-danger]="!card?.is_active">
+                            {{card?.is_active ? 'Active' : 'In-Active'}}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="false">
+            <div class="col-12">
+                <ul>
+                    <li *ngIf="card?.doctor_consultation">
+                        {{"Discount on Doctor Consultation " + card?.doctor_consultation?.discount + "% For " + card?.doctor_consultation?.frequency + " times"}}
+                    </li>
+                    <li *ngIf="card?.ambulance">
+                        {{"Ambulance " + card?.ambulance?.type?.name + " For " + card?.ambulance?.frequency + " times"}}
+                    </li>
+                    <li *ngIf="card?.ip_billing">
+                        {{"In-Patient Discount " + card?.ip_billing?.discount + "% For " + card?.ip_billing?.frequency + " times"}}
+                    </li>
+                    <li *ngIf="card?.pharmacy">
+                        {{"Pharmacy Discount " + card?.pharmacy?.discount + "% For " + card?.pharmacy?.frequency + " times"}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</ng-template>

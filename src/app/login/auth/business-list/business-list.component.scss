@@ -1,0 +1,31 @@
+.overflow-auto {
+    height: 300px; /* Set the height of the container */
+    overflow-y: auto; /* Enable vertical scrollbar */
+    scrollbar-width: thin; /* Set the width of the scrollbar */
+    scrollbar-color: #c1c1c1 #ffffff; /* Set the color of the scrollbar thumb and track */
+  
+    /* Style the scrollbar */
+    &::-webkit-scrollbar {
+      width: 5px; /* Set the width of the scrollbar */
+    }
+  
+    /* Style the scrollbar track */
+    &::-webkit-scrollbar-track {
+      background: #ffffff; /* Set the color of the scrollbar track */
+    }
+  
+    /* Style the scrollbar thumb */
+    &::-webkit-scrollbar-thumb {
+      background-color: #ffffff; /* Set the color of the scrollbar thumb */
+      border-radius: 10px; /* Set the border radius of the scrollbar thumb */
+      &:hover {
+        background-color: #999; /* Set the color of the scrollbar thumb on hover */
+      }
+    }
+  
+    /* Style the scrollbar corner */
+    &::-webkit-scrollbar-corner {
+      background: #ffffff; /* Set the color of the scrollbar corner */
+    }
+  }
+  

@@ -1,0 +1,143 @@
+
+<app-layout [showNav]="false" [showPageTitle]="true" [showMap]="false" [displayInformation]="true" 
+[labPackage]="false">
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+          (searchTermChange)="searchQuery($event)"></app-searchbox>
+      </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+          name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option [value]="all_count">All</option>
+        </select>
+      </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable tableHeaderClass="text-muted bg-white text-nowrap" tableBodyClass="bg-white text-nowrap">
+            <ng-container class="tableheader ">
+                <th class="text-black">S.no</th>
+                <th>
+                    <div class="d-flex gap-5 align-items-center justify-content-start">
+                        <div>Name & Price</div>
+                        <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="cards && cards.length != 0 && cards.length > 1">
+                          <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                              class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                          <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                              class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                        </div>
+                      </div>
+                </th>
+                <th><span>Validity</span></th>
+                <th><span>Card For</span></th>
+                <th>Eligibility Count(Free)</th>
+                <th>Eligibility Count(Discount)</th>
+                <th>Is Active</th>
+
+        
+            </ng-container>
+            <ng-container class="tablebody" *ngFor="let item of cards; let i=index">
+
+                <tr class="font-Readex td-color">
+                    <td class="text-black fs-5 fw-medium"  (click)="showCard(cardFormTemp, item)">
+                        {{(page_number * page_size) - page_size + i + 1}}.
+                    </td>
+
+                    <td  (click)="showCard(cardFormTemp, item)">
+                        <app-patient-details [name]="item.name" [query]="query" time="{{item?.card_cost ?  '₹ ' + item?.card_cost : '-'}}"></app-patient-details>
+                    </td>
+
+                    <td (click)="showCard(cardFormTemp, item)">
+                        <div class="d-flex flex-column" *ngIf="item?.duration && item.plan_period_type == 1">
+                            <span>
+                                {{item?.duration}}  {{item.duration_type?.name}}
+                            </span>
+                        </div>
+
+                        <span *ngIf="item.plan_period_type == 2">Lifetime</span>
+                    </td>
+
+                    <td (click)="showCard(cardFormTemp, item)">
+                        <app-patient-details  name="{{item?.no_of_members}} {{item.no_of_members > 1 ? ' Persons' : ' Person'}}" 
+                        [query]="query" time="{{item.card_for?.name}}"></app-patient-details>
+
+                    </td>
+
+                    <td (click)="showCard(cardFormTemp, item)">
+                        <span *ngIf="item?.benefits && item?.benefits.length == 1"
+                            class="fw-semibold fs-6 text-black" >
+                            <span *ngIf="item?.benefits[0]?.free_usages != null">{{item?.benefits[0]?.free_usages}} Times</span>
+                            <span *ngIf="item?.benefits[0]?.free_usages == null">Limitless</span>
+                        </span>
+                    </td>
+
+                    <td (click)="showCard(cardFormTemp, item)">
+                        <span *ngIf="item?.benefits && item?.benefits.length == 1"
+                        class="fw-semibold fs-6 text-black">
+                        <span *ngIf="item?.benefits[0]?.discount_usages != null">{{item?.benefits[0]?.discount_usages}} Times</span>
+                        <span *ngIf="item?.benefits[0]?.discount_usages == null">Limitless</span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="fs-5">
+                            <app-checkbox [checkboxValue]="item?.is_active" activeText="" inactiveText=""
+                                [removeLabel]="true" mainLabel="d-none" (onCheckboxValueChanged)="updateActiveStatus($event, item)"></app-checkbox>
+                        </div>
+                    </td>
+
+
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+</ng-container>
+
+</app-layout>
+
+
+
+
+
+<ng-template #cardFormTemp let-modal>
+
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+      <span class="modal-title fs-4" id="modal-basic-title">{{title}}</span>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+    <div class="modal-body " style="background-color: #F8FAFC; ">
+      <app-card #card [updateForm]="true" [cardData]="cardData" (updated)="updateCard($event)"></app-card>
+    </div>
+
+    <div class="modal-footer bg-light-blue py-1 px-3 border-top">
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-success rounded-3 fs-5" (click)="card.saveCard();">Save</button>
+        </div>
+      </div>
+  
+  </ng-template>
+
+
+

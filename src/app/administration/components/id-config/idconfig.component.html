@@ -1,0 +1,149 @@
+<app-master pageTitle="ID SETTINGS">
+    <ng-container class="searchbox">
+        <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)" [placeholder]="'Search...'">
+        </app-searchbox>
+    </ng-container>
+    <ng-container class="addnew">
+        <app-addnewbutton buttonText="Add ID Setting" content="content" (onAddNewClick)="addItem(content)">
+        </app-addnewbutton>
+    </ng-container>
+    <ng-container class="datacontent">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="sort1" data-sort="category">Category</th>
+                <th class="sort1" data-sort="type">Type</th>
+                <th class="sort1" data-sort="prefix">Prefix</th>
+                <th class="sort1" data-sort="separator">Separator</th>
+                <th class="sort1" data-sort="initialValue">Start From</th>
+                <th class="sort1" data-sort="resetType">Reset On</th>
+                <th class="sort1" data-sort="startDate">Start Date</th>
+                <th class="sort1 fullWidthColumn" data-sort="preview">Preview</th>
+                <th class="sort1">Action</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let data of dataList$ | async">
+                    <td>
+                        <ngb-highlight [result]="data.category?.description" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.type?.description" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.prefix" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.separator?.separator" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        {{data.initialValue}}
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.reset?.description" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.startedDate" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.preview" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)" [buttonDisabled]="data.disabled">
+                            </app-deletebutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+    <ng-container class="paginationcontent">
+        <app-pager>
+            <ng-container class="pager">
+                <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                    (pageChange)="service.page = $event">
+                </app-pagination>
+            </ng-container>
+        </app-pager>
+    </ng-container>
+</app-master>
+
+<!-- Add New Id Config -->
+<ng-template #content role="document">
+    <app-newmodel [modelTitle]="modalTitle" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col mb-3 mb-md-0">
+                            <app-select labelText="Category" placeHolder="Select Category" formControlName="category"
+                                selectBindLabel="type_name" selectBindId="'id'" [selectItems]="categories"
+                                [formSubmitted]="submitted" requiredMessage="Category is required"
+                                (onSelectionChanged)="categoryChange($event)" [applyAutoFocus]="true"></app-select>
+                        </div>
+                        <div class="col mb-3 mb-md-0">
+                            <app-select labelText="Type" placeHolder="Select Type" formControlName="type"
+                                selectBindLabel="description" selectBindId="id" [selectItems]="types"
+                                [formSubmitted]="submitted" requiredMessage="Type is required"
+                                (onSelectionChanged)="typeChange($event)"></app-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col mb-3 mb-md-0">
+                            <app-input labelText="Prefix" placeHolder="Enter Prefix" formControlName="prefix"
+                                [formSubmitted]="submitted" requiredMessage="Prefix is required"
+                                maxLengthMessage="Prefix should not exceed 5 chars" [applyAllowLettersOnly]="true"
+                                [applyUpperCase]="true"
+                                (onValueChanged)="onPrefixChange($event)"></app-input>
+                        </div>
+                        <div class="col mb-3 mb-md-0">
+                            <app-select labelText="Separator" placeHolder="Select Separator" formControlName="separator"
+                                selectBindLabel="separator" selectBindId="id" [selectItems]="separators"
+                                [formSubmitted]="submitted" requiredMessage="Separator is required"
+                                (onSelectionChanged)="separatorChange($event)"></app-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col mb-3 mb-md-0">
+                            <app-input labelText="Start From" placeHolder="Enter Start From"
+                                formControlName="initialValue" [formSubmitted]="submitted"
+                                requiredMessage="Start From is required"
+                                maxLengthMessage="Enter Start From between 1 and 1,00,000"
+                                [applyAllowNumbersOnly]="true"
+                                (onValueChanged)="onInitialValueChange($event)"></app-input>
+                        </div>
+                        <div class="col mb-3 mb-md-0">
+                            <app-select labelText="Reset Type" placeHolder="Select Reset Type" formControlName="reset"
+                                selectBindLabel="description" selectBindId="id" [selectItems]="resetTypes"
+                                [formSubmitted]="submitted" requiredMessage="Reset Type is required"
+                                (onSelectionChanged)="resetTypeChange($event)"></app-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col mb-3 mb-md-0">
+                            <app-datepicker labelText="Start Date" placeHolder="Enter Start Date"
+                                formControlName="startDate" [formSubmitted]="submitted"
+                                requiredMessage="Start Date is required"
+                                [datePickerMinDate]="minStartDate"></app-datepicker>
+                        </div>
+                        <div class="col mb-3 mb-md-0">
+                            <app-input labelText="Preview" placeHolder="" [inputValue]="preview" [isReadOnly]="true"></app-input>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

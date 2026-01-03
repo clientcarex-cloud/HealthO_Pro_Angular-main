@@ -1,0 +1,10 @@
+yyutu
+<div class="magnify" [class.hidden]="!visible" [position]="position$ | async">
+    <div class="inner" [position]="innerPosition$ | async">
+      <ng-container *ngTemplateOutlet="template"></ng-container> 
+    </div>
+  </div>
+  
+  <div class="content">
+    <ng-container *ngTemplateOutlet="template"></ng-container> 
+  </div>

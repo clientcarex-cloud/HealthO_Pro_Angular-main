@@ -1,0 +1,12 @@
+.ng-autocomplete {
+    width: 100% !important;
+}
+
+:host ::ng-deep .autocomplete-container .input-container input {
+    font-size: 16px !important;
+    font-weight: 600;
+    padding: 10px !important;
+    height: 40px !important;
+    border-radius: 7px !important;
+}
+

@@ -1,0 +1,15 @@
+<div class="modal-header bg-light p-3">
+    <h5 class="modal-title">{{modelTitle}}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"
+        (click)="modal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+    <ng-content select=".modalBody"></ng-content>
+</div>
+<div class="modal-footer">
+    <div class="hstack gap-2 justify-content-end">
+        <button type="button" class="btn btn-soft-danger" data-bs-dismiss="modal"
+            (click)="modal.close('Close click')">{{closeButtonText}}</button>
+        <button *ngIf="showSaveButton" type="submit" [attr.form]="formId" class="btn btn-soft-primary" id="add-btn">{{saveButtonText}}</button>
+    </div>
+</div>

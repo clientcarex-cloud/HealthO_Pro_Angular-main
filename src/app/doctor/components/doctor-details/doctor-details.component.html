@@ -1,0 +1,606 @@
+<div class="container-full" *ngIf="!hideTitle">
+
+    <div class="row px-2 align-item-center pt-2">
+        <!-- <div class="colfdhfvf-1">
+            
+        </div> -->
+        <div class="col-lg-9 col-12 d-flex flex-lg-row flex-column justify-content-sm-start">
+            <div class="d-flex align-item-lg-center align-item-start justify-content-start"
+                style="align-items: baseline;">
+                <span>
+                    <button class="border-0 bg-transparent p-0" routerLink="/doctor/doctors">
+                        <i class="ri-arrow-left-line fs-4 td-color"></i>
+                    </button>
+                </span>
+                <span class="fs-4 ps-2">{{HeadText || ""}}</span>
+                <!-- <span class="td-color fw-light ps-2">( Joined {{ doc ? calculateDaysBack(doc.added_on) : ""}} )</span> -->
+            </div>
+
+        </div>
+
+        <div class="col-3 d-flex justify-content-end">
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-success rounded-3 px-lg-5" (click)="saveApiCall()">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- <button (click)="test()">Test</button> -->
+
+    <div class="row g-2 justify-content-between">
+
+        <div class="col-lg-6 col-12 p-3">
+            <div class="row border rounded-3 bg-white">
+                <div class="col-12 pt-2">
+                    <form [formGroup]="baseForm" class="">
+                        <div class="container-full pt-2 pb-3 px-3">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row mb-2">
+                                        <div class="col-12 fs-5 fw-light td-color border-bottom pb-2">
+                                            Personal & Contact Details
+                                        </div>
+                                    </div>
+                                    <!-- staff name , gender, title  -->
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <span>Full Name & Gender <span style="color:red">*</span></span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="row g-0">
+
+                                                        <!-- NAME INPUT  -->
+                                                        <div class="col-8">
+                                                            <app-input [removeLabel]="true"
+                                                                placeHolder="Enter full name "
+                                                                [formSubmitted]="submitted" formControlName="name"
+                                                                [applyAutoFocus]="true"
+                                                                [applyUpperCase]="true"
+                                                                [(ngModel)]="baseForm.value.name"
+                                                              
+                                                                classVal="form-control fw-light rounded-0 rounded-start"></app-input>
+                                                        </div>
+
+                                                        <!-- GENDER SELECT  -->
+                                                        <div class="col-2">
+                                                            <select formControlName="gender"
+                                                                aria-label="gender input with select button" id="gender"
+                                                                class="form-select bg-soft-primary rounded-0 rounded-end"
+                                                                aria-label="Text input with select button">
+                                                                <option disabled>
+                                                                    <small> Select gender</small>
+                                                                </option>
+                                                                <ng-container *ngFor="let gender of genders">
+                                                                    <option [value]="gender.id" *ngIf="gender.is_active"
+                                                                        [selected]="baseForm.value.gender === gender.name">
+                                                                        {{gender.name}}</option>
+                                                                </ng-container>
+                                                            </select>
+                                                            <!-- <div *ngIf="baseForm.get('gender')!.invalid" class="text-danger">
+                                                    Gender is required
+                                                </div> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- mobile number and email address  -->
+                                    <div class="row g-2 mb-3">
+
+                                        <div class="col-4">
+                                            <!-- MOBILE NUMBER  -->
+                                            <app-input [inputLength]="10" [formSubmitted]="submitted"
+                                            formControlName="mobile_number" labelClass="form-label mb-0"
+                                            placeHolder="Enter Number" [imp]="true" labelText="Mobile Number"
+                                            [applyAllowNumbersOnly]="true"></app-input>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <!-- EMAIL  -->
+                                            <app-input [formSubmitted]="submitted" formControlName="email"
+                                            labelClass="form-label mb-0" labelText="Email"
+                                            placeHolder="Enter Email Address"></app-input>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-5 col-12">
+                                            <app-input labelText="Qualification" labelClass="form-label mb-0"
+                                            placeHolder="Enter Qualification" formControlName="qualification"></app-input>
+                                        </div>
+
+                                        <div class="col-lg-7 col-12">
+                                            <div class="row align-items-end">
+                                                <div class="col-12">
+                                                    Signature
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="row g-2">
+                                                        <div class="col-8 fw-light" [class.d-none]="baseForm.value.signature_for_consulting">
+                                                            <input #fileinput name="logo" type="file" class="form-control" ngbTooltip="Accepts png, jpg & jpeg"
+                                                                accept="image/png, image/gif, image/jpeg" (change)="onFileChanged($event)">
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <button name="removeBtn" *ngIf="baseForm.value.signature_for_consulting"
+                                                                (click)="openXl(viewImage, 'XL')" ngbTooltip="View {{returnFileName(fileinput)}}"
+                                                                class="btn btn-soft-primary w-100 border-primary rounded-3">
+                                                                View
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        <div class="col-4">
+                                                            <button name="removeBtn"
+                                                                *ngIf="baseForm.value.signature_for_consulting"
+                                                                (click)="clearLogo()"
+                                                                class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+
+                                        <div class="col-12">
+                                            <app-input placeHolder="Enter location"
+                                                [formSubmitted]="submitted" formControlName="geo_area"
+                                                [inputValue]="baseForm.value.geo_area" labelText="Location"
+                                                classVal="form-control fw-light rounded-3" [imp]="true" labelClass="form-label mb-1"
+                                                (onValueChanged)="capitalizeName('location')"></app-input>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-12 fs-5 fw-light td-color border-bottom pb-2">
+                                            Consultation Details
+                                        </div>
+                                    </div>
+
+                                    <!-- shift start time end time  -->
+                                    <div class="row mb-3">
+                                        <div class="col-3">
+                                            <div class="col-12">Shift Start Time <span class="text-danger">*</span> </div>
+                                            <div class="col-12">
+                                                <app-datepicker [formSubmitted]="submitted" formControlName="shift_start_time" placeHolder="Start Time" labelText="" [showCloseIcon]="true"
+                                                [allowTime]="true" [showCalender]="false" datePickerFormat="H:i" dateIcon="ri-time-line"></app-datepicker>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-3">
+                                            <div class="col-12">Shift End Time <span class="text-danger">*</span></div>
+                                            <div class="col-12">
+                                                <app-datepicker [formSubmitted]="submitted" formControlName="shift_end_time" placeHolder="End Time" labelText="" [showCloseIcon]="true"
+                                                [allowTime]="true" [showCalender]="false"  dateIcon="ri-time-line"  datePickerFormat="H:i"></app-datepicker>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="col-12">Average Session Time (In Mins) <span class="text-danger">*</span></div>
+                                            <div class="col-12">
+                                                <app-input [inputLength]="3" [removeLabel]="true" [removeCloseIcon]="true" placeHolder="Enter Duration in Minutes"
+                                                formControlName="avg_consulting_time" [applyAllowNumbersOnly]="true"  [formSubmitted]="submitted" [applyDot]="false"
+                                                ></app-input>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-12 fs-5 fw-light td-color border-bottom pb-2">
+                                            Job Details
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <!-- license number  -->
+                                        <div class="col-lg-5 col-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    License Number
+                                                </div>
+                                                <div class="col-12">
+                                                    <app-input [removeLabel]="true" placeHolder="Enter license number"
+                                                        formControlName="license_number"
+                                                        [formSubmitted]="submitted"></app-input>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-7 col-12">
+                                            <div class="col-12 d-flex flex-row justify-content-between">
+                                                <span>Department</span>
+                                                <!-- <span>
+                                                    <app-checkbox [inputDisabled]="!baseForm.get('department')?.value" [removeLabel]="true" [showLabel]="false" classVal="" labelClass="form-check-label ps-1"
+                                                    activeText="Make Dept. Default" inactiveText="Make Dept. Default" formControlName="is_department_default" ></app-checkbox>
+                                                </span> -->
+                                            </div>
+                                            <div class="col-12">
+                                                <app-select formControlName="department" [selectItems]="departments" (onSelectionChanged)="selectDepartment($event)"
+                                                    [selectBindLabel]="'name'" placeHolder="Select Department"></app-select>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                    <!-- role, department  -->
+                                    <div class="row g-2">
+
+                                        <!-- specialization number  -->
+                                        <div class="col-lg-5 col-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    Specialization
+                                                </div>
+                                                <div class="col-12 ">
+                                                    <div class="row g-1">
+                                                        <div class="col-10">
+                                                            <app-select placeHolder="Select Specialization"
+                                                                [formSubmitted]="submitted" formControlName="specialization"
+                                                                selectBindLabel="name" selectBindId="id"
+                                                                [selectItems]="spcztns">
+                                                            </app-select>
+                                                        </div>
+                                                        <div class="col-2 ">
+                                                            <button class="btn p-0 fs-4 fw-semibold d-lg-flex d-none"
+                                                                (click)="openModal(addSpecialization, { size: 'sm', centered: true })">
+                                                                <i class="bi bi-plus-circle"></i>
+                                                            </button>
+                                                            <button class="btn p-0 fs-4 fw-semibold d-lg-none d-flex"
+                                                                (click)="openModal(addSpecialization, { size: 'sm', centered: true })">
+                                                                <i class="bi bi-plus-circle"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-7">
+                                            <div class="row mb-3">
+                                                <div class="col-12">
+                                                    Role
+                                                </div>
+                                                <div class="col-12">
+                                                    <app-select [selectItems]="[]" [selectBindLabel]="'name'"
+                                                        formControlName="role" placeHolder="Select Role"></app-select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <div class="col-12">Branch </div>
+                                            <div class="col-12">
+                                                <app-select formControlName="branch" [selectItems]="branches"
+                                                    [selectBindLabel]="'name'" placeHolder="Select Branch"></app-select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="col-12">Shift </div>
+                                            <div class="col-12">
+                                                <app-select formControlName="shift" [selectItems]="shifts"
+                                                    [selectBindLabel]="'name'" placeHolder="Select Shift"></app-select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- STAFF DETAILS SECTION  -->
+        <div class="col-lg-6 col-12 p-3">
+            <app-staff-details #staffDetails [doctor]="true"></app-staff-details>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+<!-- add referral doctor  -->
+<div class="container-full" *ngIf="hideTitle">
+    <div class="row g-2 justify-content-between">
+        <div class="col-12 p-0">
+            <div class="row rounded-3 bg-white">
+                <div class="col-12 pt-2">
+                    <form [formGroup]="baseForm" (keydown.enter)="saveApiCall(); $event.preventDefault();" class="">
+                        <div class="container-full pt-2 pb-3 px-3">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row mb-3 align-items-center border-bottom pb-2">
+                                        <div class="col-10 fs-4 fw-light td-color ">
+                                            Add Referral Doctor
+                                        </div>
+
+                                        <div class="col-2 fs-5 fw-light td-color d-flex justify-content-end"
+                                            (click)="modalService.dismissAll()">
+                                            <button class="btn-close"></button>
+                                        </div>
+                                    </div>
+                                    <!-- staff name , gender, title  -->
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <span>Full Name & Gender <span style="color:red">*</span></span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="row g-0">
+
+  
+                                                        <div class="col-9">
+                                                            <!-- (onValueChanged)=" capitalizeName('name')" -->
+                                                            <app-input [removeLabel]="true"
+                                                                placeHolder="Enter full name "
+                                                                [formSubmitted]="submitted" formControlName="name"
+                                                                [applyAutoFocus]="true"
+                                                                [(ngModel)]="baseForm.value.name"
+                                                                [applyUpperCase]="true"
+                                                                
+                                                                [inputLength]="70"
+                                                                classVal="form-control fw-light rounded-0 rounded-start"></app-input>
+                                                            <!-- <div class="input-group" ngbDropdown
+                                                                #dropdown="ngbDropdown">
+                                                                <input type="text"
+                                                                    class="form-control fw-light rounded-0 rounded-start"
+                                                                    placeholder="Enter Name" formControlName="name"
+                                                                    id="docName"
+                                                                    [class.border-danger]="submitted && !baseForm.value.name"
+                                                                    [(ngModel)]="baseForm.value.name"
+                                                                    (input)="captilizeName($event);searchDocQuery($event);dropdown.open()">
+
+                                                                <ng-container
+                                                                    *ngIf="docRefQuery && docRefQuery!= '' && docRefQuery.length > 2">
+                                                                    <div class="dropdown-menu" ngbDropdownMenu
+                                                                        [class.d-none]="doctors?.length === 0">
+                                                                        <span class="dropdown-item d-flex flex-column"
+                                                                            *ngFor="let test of doctors">
+                                                                            <span>
+                                                                              
+                                                                                <ngb-highlight [result]="test.name"
+                                                                                    [term]="docRefQuery"></ngb-highlight>
+                                                                            </span>
+                                                                            <small>{{test.mobile_number}}</small>
+                                                                        </span>
+                                                                    </div>
+                                                                </ng-container>
+
+                                                            </div> -->
+
+
+
+                                                        </div>
+
+                                                        <!-- GENDER SELECT  -->
+                                                        <div class="col-3">
+                                                            <select formControlName="gender"
+                                                                aria-label="gender input with select button" id="gender"
+                                                                class="form-select bg-soft-primary rounded-0 rounded-end"
+                                                                aria-label="Text input with select button">
+                                                                <option disabled>
+                                                                    <small> Select gender</small>
+                                                                </option>
+                                                                <ng-container *ngFor="let gender of genders">
+                                                                    <option [value]="gender.id" *ngIf="gender.is_active"
+                                                                        [selected]="baseForm.value.gender === gender.name">
+                                                                        {{gender.name}}</option>
+                                                                </ng-container>
+                                                            </select>
+                                                            <!-- <div *ngIf="baseForm.get('gender')!.invalid" class="text-danger">
+                                                    Gender is required
+                                                </div> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- mobile number and email address  -->
+                                    <div class="row g-2">
+
+                                        <div class="col-6">
+                                            <!-- MOBILE NUMBER  -->
+                                            <div class="row mb-3">
+                                                <div class="col-12">Mobile Number <span class="text-danger">*</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <app-input [inputLength]="10" [formSubmitted]="submitted"
+                                                        formControlName="mobile_number" [removeLabel]="true"
+                                                        placeHolder="Enter Number"
+                                                        (onValueChanged)="docMobileNum($event)"
+                                                        [applyAllowNumbersOnly]="true"></app-input>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="row align-items-end mb-3" *ngIf="false">
+                                        <div class="col-12">
+                                            Signature
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row g-2">
+                                                <div class="col-8 fw-light"
+                                                    *ngIf="!baseForm.value.signature_for_consulting">
+                                                    <input name="logo" type="file" class="form-control"
+                                                        accept="image/png, image/gif, image/jpeg"
+                                                        (change)="onFileChanged($event)">
+                                                </div>
+                                                <div class="col-2">
+                                                    <button name="removeBtn"
+                                                        *ngIf="baseForm.value.signature_for_consulting"
+                                                        (click)="openXl(viewImage, 'XL')"
+                                                        class="btn btn-soft-primary w-100 border-primary rounded-3">View</button>
+                                                </div>
+                                                <div class="col-2">
+                                                    <button name="removeBtn"
+                                                        *ngIf="baseForm.value.signature_for_consulting"
+                                                        (click)="clearLogo()"
+                                                        class="btn btn-soft-danger w-100 border-danger rounded-3">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-12">Location <span class="text-danger">*</span></div>
+                                        <div class="col-12">
+                                            <app-input [removeLabel]="true" placeHolder="Enter location"
+                                                [formSubmitted]="submitted" formControlName="geo_area"
+                                                [inputValue]="baseForm.value.geo_area"
+                                                classVal="form-control fw-light rounded-3"
+                                                (onValueChanged)="capitalizeName('location')"></app-input>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3" *ngIf="!hideExecutive">
+                                        <div class="col-12">Executive</div>
+                                        <div class="col-8">
+                                            <app-select [labelText]="null" [selectItems]="staffs" formControlName="marketing_executive"
+                                             selectBindLabel="name" placeHolder="Select Executive"></app-select>
+                                        </div>
+                                    </div>
+
+                                    
+
+                                    <div class="row  px-2 d-none"  *ngIf="matchedDoc.length != 0 && mobile_number_query?.length == 10 && docRefQuery.length > 2">
+                                        <div class="col-12 rounded-3 border border-primary bg-soft-primary">
+                                            <div class="d-flex flex-column" >
+                                                <span class="fw-light text-muted">HealthO Pro User Found with Matching name and mobile number</span>
+                                                <span class="fs-5 fw-semibold">
+                                                    {{matchedDoc.length != 0 ? matchedDoc[0]?.full_name : ''}}
+                                                </span>
+                                                <small>
+                                                    Ph no. <span class="fs-6 fw-semibold">{{matchedDoc.length != 0 ? matchedDoc[0]?.phone_number : ''}}</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3 mb-2">
+                                        <div class="col-12 d-flex gap-2 justify-content-end align-items-center">
+
+                                                <button class="d-flex d-none flex-column btn btn-success fs-6 shadow rounded-3 px-lg-3"
+                                                        *ngIf="matchedDoc.length != 0 && mobile_number_query?.length == 10 && docRefQuery.length > 2">
+                                                    <small class="fw-light">Link to <span class="fw-semibold fs-6">
+                                                            {{matchedDoc.length != 0 ? matchedDoc[0]?.full_name : ''}}
+                                                        </span></small>
+                                                    <small class="fw-light">Ph no.
+                                                        {{matchedDoc.length != 0 ? matchedDoc[0]?.phone_number : ''}}
+                                                    </small>
+                                                </button>
+                                            
+                                                <!-- *ngIf="!(matchedDoc.length != 0 && mobile_number_query?.length == 10 && docRefQuery.length > 2)" -->
+                                                <button class="btn btn-success fs-6 shadow rounded-3 px-lg-3"
+                                                       
+                                                        (click)="saveApiCall()">
+                                                    Save
+                                                </button>
+                          
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #viewImage let-modal>
+    <div class="modal-header py-2 px-3 bg-soft-primary border-bottom d-flex justify-content-between align-items-center">
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row justify-content-center">
+                <div class="col-12 d-flex justify-content-center"
+                    style="height: 400px; width: 400px; object-fit: contain;">
+                    <img style="height: 500px; width: 500px; object-fit: contain;"
+                        [src]="baseForm.value.signature_for_consulting ? baseForm.value.signature_for_consulting : ''">
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+
+<ng-template #addSpecialization role="document" let-modal>
+    <div class="modal-header py-2 px-3 ">
+      <!-- <span class="modal-title" id="modal-basic-title">Specializations</span> -->
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+      <div class="modal-body">
+        <div class="w-100 mb-2">
+          <app-input labelText="Specialization Name" placeHolder="Type here.." [camelCase]="true"
+            (onValueChanged)="new_specialization = $event" [inputValue]="new_specialization"></app-input>
+        </div>
+      </div>
+      <div class="modal-footer py-0 px-3 ">
+        <button type="button" class="btn btn-success" (click)="saveSpecialization()">
+          Save
+        </button>
+      </div>
+  </ng-template>
+
+
+  <!-- <ng-template #addSpecialization role="document" let-modal>
+    <div class="modal-header py-2 px-3 font-Readex bg-dark text-white">
+      <span class="modal-title" id="modal-basic-title">Specializations</span>
+      <button type="button" class="btn p-0 text-white bi bi-close" aria-label="Close"
+        (click)="modal.dismiss('Cross click')">x</button>
+    </div>
+
+      <div class="modal-body font-Readex bg-light-blue">
+        <div class="w-100 mb-2">
+          <app-input labelText="Specialization Name" placeHolder="Type here.." [camelCase]="true"
+            formControlName="name"></app-input>
+        </div>
+      </div>
+      <div class="modal-footer py-0 px-3 font-Readex bg-dark border-light-blue font-Readex">
+        <button type="button" class="btn btn-soft-success text-white rounded-3">
+          Save
+        </button>
+      </div>
+  </ng-template> -->

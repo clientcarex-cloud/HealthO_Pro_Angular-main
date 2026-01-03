@@ -1,0 +1,84 @@
+<!-- <p>subscription-notice works!</p> -->
+<!-- <div class="container-full pb-1 sticky-top"  style="z-index: 100; top: 51px; background-color: #F8FAFC;"> -->
+
+    <!-- bg-soft-danger border border-danger -->
+
+
+<div class="container-full pb-1" *ngIf="show && trail && expired ">
+    <div class="row justify-content-between align-items-center border-primary rounded-3 bg-soft-primary py-3 px-3" style="z-index: 1000">
+        <div class="col-8">
+            <div class="row">
+                <div class="col-12 fs-5 fw-medium logoColor">
+                    Your access to the trial will come to an end on {{timeSrvc.dateAsString(subData)}} 
+                </div>
+                <div class="col-12 logoColor fs-6">
+                    Continue enjoying the benefits of Healtho Pro with a paid subscription
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="row justify-content-end">
+                <div class="col-5 d-flex justify-content-end">
+                    <button class="bg-logoColor card-animate p-2 w-100 rounded-3 border-0 text-white" routerLink="/subscribe">
+                        Manage Subscription
+                    </button>
+                </div>
+                <div class="col-5 d-flex justify-content-end"  *ngIf="false">
+                    <button class="bg-logoColor card-animate p-2 w-100 rounded-3 border-0 text-white"  style="cursor: pointer;">
+                        Subscribe Now
+                    </button>
+                </div>
+                <div class="col-2 d-flex justify-content-end">
+                    <button (click)="show = false" ngbTooltip="Close" class="bg-transparent p-2 w-100 rounded-3 border-0 text-black fs-4"  style="cursor: pointer;">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-full pb-1" *ngIf="show && trail && !expired ">
+    <div class="row justify-content-between align-items-center border-primary rounded-3 bg-soft-danger border border-danger py-3 px-3" style="z-index: 1000">
+        <div class="col-8">
+            <div class="row">
+                <div class="col-12 fs-5 fw-medium text-danger">
+                    
+                    <span *ngIf="!validityExpired">
+                        Your access to the trial will come to an end 
+                        on {{timeSrvc.dateAsString(subData)}}
+                    </span>
+                    <span *ngIf="validityExpired">
+                        Your access to the trial is Expired
+                    </span>
+                    
+                </div>
+                <div class="col-12 text-danger fs-6">
+                    Continue enjoying the benefits of Healtho Pro with a paid subscription
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="row justify-content-end">
+                <div class="col-5 d-flex justify-content-end">
+                    <button class="bg-logoColor card-animate p-2 w-100 rounded-3 border-0 text-white" routerLink="/subscribe">
+                        Manage Subscription
+                    </button>
+                </div>
+                <div class="col-5 d-flex justify-content-end" *ngIf="false">
+                    <button class="bg-logoColor card-animate p-2 w-100 rounded-3 border-0 text-white"  style="cursor: pointer;">
+                        Subscribe Now
+                    </button>
+                </div>
+                <div class="col-2 d-flex justify-content-end">
+                    <button (click)="show = false" ngbTooltip="Close" class="bg-transparent p-2 w-100 rounded-3 border-0 text-black fs-4"  style="cursor: pointer;">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

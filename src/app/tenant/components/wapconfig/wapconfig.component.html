@@ -1,0 +1,112 @@
+<app-panel panelTitle="Configuration" [expandPanel]="true">
+    <form (ngSubmit)="saveConfig()" [formGroup]="wapConfigForm" [id]="wapConfigFormId">
+        <div class="row mb-1">
+            <div class="col-md-4 mb-1 mb-md-0">
+                <app-input labelText="API Key" placeHolder="Enter API Key" formControlName="apiKey"
+                [formSubmitted]="submitted" requiredMessage="API Key is required"
+                maxLengthMessage="API Key should not exceed 50 chars"
+                [applyAutoFocus]="true"></app-input>                
+            </div>
+            <div class="col-md-4 mb-1 mb-md-0">
+                <app-input labelText="Account Id" placeHolder="Enter Account Id" formControlName="accountId"
+                [formSubmitted]="submitted" requiredMessage="Account Id is required"
+                maxLengthMessage="Account Id should not exceed 50 chars"></app-input>               
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <app-checkbox labelText="Status" [formSubmitted]="submitted" formControlName="status"></app-checkbox>            
+            </div>            
+        </div>
+        <div class="hstack gap-2 justify-content-start">        
+            <app-submitbutton [formId]="wapConfigFormId"></app-submitbutton>
+        </div>
+    </form>
+</app-panel>
+<br />
+<app-panel panelTitle="Summary">
+    <div class="row mb-1">        
+        <div class="col-md-4 mb-1 mb-md-0">
+            <app-input labelText="Total" placeHolder="" [inputValue]="service.wapSummary?.total" [isReadOnly]="true"></app-input>
+        </div>
+        <div class="col-md-4 mb-1 mb-md-0">
+            <app-input labelText="Used" placeHolder="" [inputValue]="service.wapSummary?.used" [isReadOnly]="true"></app-input>
+        </div>
+        <div class="col-md-4 mb-1 mb-md-0">
+            <app-input labelText="Balance" placeHolder="" [inputValue]="service.wapSummary?.balance" [isReadOnly]="true"></app-input>
+        </div>
+    </div>
+</app-panel>
+<br />
+<app-panel panelTitle="Purchase">
+    <app-master pageTitle="">
+        <ng-container class="searchbox">
+            <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)" [applyAutoFocus]="false">
+            </app-searchbox>
+        </ng-container>
+        <ng-container class="addnew">
+            <app-addnewbutton buttonText="Add WAP" content="content" (onAddNewClick)="addItem(content)">
+            </app-addnewbutton>
+        </ng-container>
+        <ng-container class="datacontent">
+            <app-datatable>
+                <ng-container class="tableheader">
+                    <th class="sort1" data-sort="purchaseDate">Added On</th>
+                    <th class="sort1" data-sort="count">WAP Count</th>
+                    <th class="sort1 fullWidthColumn" data-sort="remarks">Remarks</th>
+                    <th class="sort1">Action</th>
+                </ng-container>
+                <ng-container class="tablebody">
+                    <tr *ngFor="let data of dataList$ | async">
+                        <td>
+                            {{data.purchaseDate}}
+                        </td>
+                        <td>
+                            {{data.count}}
+                        </td>
+                        <td>
+                            <ngb-highlight [result]="data.remarks" [term]="service.searchTerm">
+                            </ngb-highlight>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)"
+                                    [buttonDisabled]="data.disabled">
+                                </app-deletebutton>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </ng-container>
+        <ng-container class="paginationcontent">
+            <app-pager>
+                <ng-container class="pager">
+                    <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page"
+                        [pageSize]="service.pageSize" (pageChange)="service.page = $event">
+                    </app-pagination>
+                </ng-container>
+            </app-pager>
+        </ng-container>
+    </app-master>
+</app-panel>
+
+<!-- Purchase New WAP -->
+<ng-template #content role="document">
+    <app-newmodel modelTitle="WAP Purchase" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3">
+                    <app-input labelText="WAP Count" placeHolder="Enter SMS Count" formControlName="wapCount"
+                    [formSubmitted]="submitted" requiredMessage="WAP Count is required"
+                    maxLengthMessage="Enter WAP Count between 1 and 1,00,000"
+                    [applyAutoFocus]="true"
+                    [applyAllowNumbersOnly]="true"></app-input>                    
+                </div>
+                <div class="mb-3">
+                    <app-input labelText="Remarks" placeHolder="Enter Remarks" formControlName="remarks"
+                    [formSubmitted]="submitted" requiredMessage="WAP remarks is required"
+                    maxLengthMessage="WAP remarks should not exceed 500 chars"></app-input>                                       
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

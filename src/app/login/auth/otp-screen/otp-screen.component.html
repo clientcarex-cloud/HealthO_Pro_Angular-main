@@ -1,0 +1,180 @@
+<!-- auth-page wrapper -->
+<div class="auth-page-wrapper py-5 d-flex justify-content-center align-items-center min-vh-100"
+    style="background-color: #F8FAFC;">
+    <!-- <div class="bg-overlay"></div> -->
+    <!-- auth-page content -->
+    <div class="auth-page-content overflow-hidden p-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card overflow-hidden shadow-none border" style="border-radius:12px">
+                        <div class="row flex-column-reverse flex-lg-row">
+                            <div class="col-lg-6 font-Readex">
+                                <div class="p-lg-5 p-4">
+                                    <!-- Logo  -->
+                                    <div class="mb-5">
+                                        <a routerLink="/" class="d-block">
+                                            <img src="assets/images/HealthO.svg" alt="" height="32">
+                                        </a>
+                                    </div>
+
+
+
+                                    <!-- OTP COMPONENT  -->
+                                    <ng-container *ngIf="showOtpComponent">
+                                        <!-- back button  -->
+                                        <div class="mb-5 mt-3">
+                                            <span class="">
+                                                <a routerLink="/auth/signin"
+                                                    class="goBack fw-normal d-flex align-items-center gap-2">
+                                                    <i class="bi bi-arrow-left fs-4 "></i> <span>Go back</span></a>
+                                            </span>
+                                        </div>
+                                        <div class="mb-3 fs-5">
+                                            <span class="logoColor">
+                                                Four digit OTP has been sent successfully to <span
+                                                    class="fs-5 fw-medium"
+                                                    style="color:rgba(0, 0, 255, 0.796)">{{phNumber}}</span>
+                                                <i class="bi bi-check2-circle fw-bold fs-5" style="color:green"></i>
+                                            </span>
+                                        </div>
+                                        <form>
+                                            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
+                                                *ngIf="showOtpComponent" [config]="config"></ng-otp-input>
+
+                                            <div class="d-flex flex-column w-75 ">
+                                                <button type="submit" style="background-color: #1e336a;" class="btn text-white bg-logoColor rounded-3 py-2 fs-5 mb-3"
+                                                    (click)="confirmLabSparkOtp()" [disabled]="otpProgress">
+                                                    <span *ngIf="otpProgress" class="spinner-border spinner-border-sm mr-1"></span>
+                                                    <span *ngIf="!otpProgress">Confirm OTP</span>
+                                                </button>
+
+                                                <button type="button"
+                                                    class="btn btn-primary rounded-3 py-2 fs-5 mb-3 text-nowrap"
+                                                    (click)="onResendOTP()" [disabled]="resendDisabled">
+                                                    Resend OTP
+                                                    <span *ngIf="countdown !== 0"> in {{countdown}}s</span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </ng-container>
+
+                                    <!-- CHOOSE TENENT ACCOUNT COMPONENT  -->
+                                    <ng-container *ngIf="!showOtpComponent">
+                                        <div class="pt-2">
+                                            <span class="fs-5 text-muted fw-light">Choose an account</span>
+                                        </div>
+                                        <div class="d-flex  flex-column flex-nowrap gap-3 mt-2 p-3 overflow-auto"
+                                            style="border-radius: 10px; max-height: 320px">
+                                            <div *ngFor="let profile of profiles"
+                                                class="border p-2 cursor-pointer card-animate"
+                                                style="border-radius: 10px;" (click)="saveTenent(profile)">
+                                                <div class="d-flex  flex-row gap-3 align-items-center"
+                                                    data-aos="fade-right">
+                                                    <div>
+                                                        <div class="rounded-3 bg-white overflow-hidden"
+                                                            style="width:50px; height: 50px">
+                                                            <ng-container *ngIf="profile.business_logo">
+                                                                <img style="width:50px; height: 50px; object-fit: contain;"
+                                                                    [src]="profile.business_logo">
+                                                            </ng-container>
+
+                                                            <ng-container *ngIf="!profile.business_logo">
+                                                                <img style="width:50px; height: 50px; object-fit: contain;"
+                                                                    src="/assets/images/no-profile-picture-icon.svg">
+                                                            </ng-container>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row flex-nowrap align-items-center justify-content-between"
+                                                        style="width:300px">
+                                                        <div class="d-flex flex-column">
+                                                            <small
+                                                                class="font-Readex text-black fw-light">{{profile.business_name}}</small>
+                                                            <small
+                                                                class=" fs-6 fw-medium inactive">{{profile.is_superadmin
+                                                                ? "Super Admin" : profile.lab_staff_role}}</small>
+
+                                                        </div>
+
+                                                        <ng-container *ngIf="!profile.is_account_disabled">
+                                                            <span class="fw-light d-flex flex-row gap-1 fs-3" *ngIf="!profile?.loading"
+                                                                [class.text-success]="(profile.is_login_access || profile.is_superadmin)"
+                                                                [class.text-danger]="!(profile.is_login_access || profile.is_superadmin)">
+
+                                                                <i class="ri-check-line"
+                                                                    *ngIf="(profile.is_login_access || profile.is_superadmin)"></i>
+                                                                <i class="ri-close-line"
+                                                                    *ngIf="!(profile.is_login_access || profile.is_superadmin)"></i>
+                                                        
+                                                                </span>
+                                                                <span class="fw-light d-flex flex-row gap-1 fs-3" *ngIf="profile?.loading">
+                                                                    <span class="spinner-border spinner-border-sm mr-1 text-primary"></span>
+                                                                </span>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="profile.is_account_disabled">
+                                                            <span class="fw-light fs-3 text-danger"  ngbTooltip="Account suspended for violating privacy terms and conditions, please contact admin.">
+                                                                <i class="ri-spam-line"></i>
+                                                            </span>
+                                                        </ng-container>
+
+
+                                                    </div>
+
+
+                                                </div>
+                                                <ng-container *ngIf="profile.is_account_disabled">
+                                                    <small class="fw-normal text-danger" *ngIf="profile.is_superadmin">
+                                                        Account suspended for violating privacy terms and conditions, please contact admin.
+                                                    </small>
+                                                    <small class="fw-normal text-danger" *ngIf="!profile.is_superadmin">
+                                                        Account is disabled, please contact admin.
+                                                    </small>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6  d-lg-flex d-none justify-content-end">
+                                <div class="float-end images">
+                                    <app-carousel></app-carousel>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end col -->
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end col -->
+
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- end container -->
+</div>
+<!-- end auth page content -->
+
+<!-- footer -->
+<footer class="footer start-0 bg-light-blue">
+    <div class="container">
+        <!-- <button (click)="navTest()">test</button> -->
+        <div class="row pt-2">
+            <div class="col-lg-12">
+                <div class="text-center">
+                    <span class="fw-light text-muted font-Readex custom-letter-spacing ">© {{ getCurrentYear() }}
+                        HealthoCare Pvt. Ltd. All Rights Reserved.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- end Footer -->
+
+<!-- end auth-page-wrapper -->

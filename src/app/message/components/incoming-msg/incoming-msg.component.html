@@ -1,0 +1,81 @@
+<!-- <p>incoming-msg works!</p> -->
+
+<ng-container *ngIf="!group">
+    <div class="received_msg">
+        <div class="received_withd_msg">
+            <small>
+                <small class="time_date text-muted fw-light">
+                    {{timeSrvc.decodeTimestamp(chat.timestamp)}}</small>
+            </small>
+            <ng-container *ngFor="let f of chat.attachment">
+                <div class="d-flex">
+                    <div
+                        class="bg-white border d-flex flex-row align-items-center text-black shadow mb-1 px-3 rounded-pill gap-2">
+                        <span>{{f.file_name}}</span>
+                        <button class="p-0 border-0 bg-transparent text-black"
+                            [ngbTooltip]="'Open ' + f.file_name"
+                            (click)="openFile(f, viewPdf)">
+                            <i class="ri-eye-line"></i>
+                        </button>
+                    </div>
+    
+                    <div>
+    
+                    </div>
+                </div>
+            </ng-container>
+            <p [innerHTML]="chat.text"
+            *ngIf="chat.text && chat.text != ''"></p>
+        </div>
+    </div>
+</ng-container>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ng-template let-modal #viewPdf>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">
+            {{openedFile}}
+        </span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <div class="row mb-3">
+            <div class="col-12">
+                <iframe [src]="safeUrl" width="100%" height="450" frameborder="0" style="border:0"
+                    allowfullscreen></iframe>
+                <div id="container"></div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #viewImage>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">
+            {{openedFile}}
+        </span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <div class="row mb-3">
+            <div class="col-12 d-flex justify-content-center">
+                <img [src]="safeUrl" style="width: 500px; height: 500px; object-fit: contain">
+            </div>
+        </div>
+    </div>
+</ng-template>

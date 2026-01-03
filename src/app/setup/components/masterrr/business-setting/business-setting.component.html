@@ -1,0 +1,936 @@
+<div class="container-fluid py-2 px-3" style="min-height: 500px;">
+    <!-- HEADING  -->
+    <div class="row mb-3 g-3 justify-content-between">
+        <div class="col-lg-12 col-12">
+            <!-- Laboratory Tests -->
+            <div class="row border-5 border-start border-primary rounded-2 ps-2">
+                <div class="col-12">
+                    <span class="fw-medium fs-5">Management Setting</span>
+                </div>
+                <div class="col-12">
+                    <span class="text-wrap td-color">This section provides centralized control over various aspects of
+                        your lab's operation within the LIMS platform.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- bill settings  -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <app-datatable tableHeaderClass="bg-soft-primary">
+                <ng-container class="tableheader">
+                    <tr>
+                        <td class="py-2 logoColor fw-semibold fs-5">
+                            Billing
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-container class="tablebody">
+
+                    <tr>
+                        <td>
+                            <div class="fw-medium">
+                                Minimum Payment Required
+                            </div>
+                            <div class="td-color">
+                                Set a minimum payment amount that needs to be paid by the patient during billing.
+                            </div>
+                            <div class="d-flex flex-column"
+                                *ngIf="!paid_amount_setting?.loading && !paid_amount_setting?.error">
+                                <div class="d-flex pb-2 flex-row align-items-center">
+                                    <app-checkbox labelText="" activeText="" [showLabel]="false"
+                                        classVal="form-switch form-switch-lg" inactiveText=""
+                                        (onCheckboxValueChanged)="handlePaidAmountCheckBox($event)"
+                                        [checkboxValue]="paid_amount_setting.is_active"></app-checkbox>
+
+                                    <app-num-input *ngIf="paid_amount_setting.is_active"
+                                        [styleVal]="'min-width: 100px;max-width: 100px'" [classVal]="'form-control fw-bold shadow rounded-3 w-100 me-3 py-1 fs-5' + 
+                                    (paid_amount_setting.number == '' ? ' border border-danger bg-soft-danger' : '')"
+                                        [maintainLimit]="true" [limit]="100" [inputValue]="paid_amount_setting.number"
+                                        (inputValueChange)="enterPaidAmount($event)"></app-num-input>
+
+                                    <span class="fw-bold fs-4" *ngIf="paid_amount_setting.is_active">%</span>
+                                </div>
+                            </div>
+                            <div class="d-flex pb-2 flex-row align-items-center" *ngIf="paid_amount_setting.loading">
+                                <div class="py-2">
+                                    <span class="spinner-border spinner-border-sm mr-1 "></span>
+                                </div>
+                            </div>
+                            <div class="d-flex pb-2 flex-row align-items-center text-danger"
+                                *ngIf="paid_amount_setting?.error">
+                                Failed to Retrieve Status
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- discount  -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    Discount
+                                </div>
+                                <div class="td-color">
+                                    Allows applying discounts while billing, with a maximum percentage limit.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center"
+                                    *ngIf="!discount_setting.loading && !discount_setting?.error">
+                                    <app-checkbox labelText="" [showLabel]="false" classVal="form-switch form-switch-lg"
+                                        inactiveText="" activeText=""
+                                        (onCheckboxValueChanged)="handleDiscountCheckBox($event)"
+                                        [checkboxValue]="discount_setting.is_active"></app-checkbox>
+
+                                    <app-num-input *ngIf="discount_setting.is_active"
+                                        [styleVal]="'min-width: 100px;max-width: 100px'" [classVal]="'form-control fw-bold shadow rounded-3 w-100 me-3 py-1 fs-5' + 
+                                    (discount_setting.number == '' ? ' border border-danger bg-soft-danger' : '')"
+                                        [maintainLimit]="true" [limit]="100" [inputValue]="discount_setting.number"
+                                        (inputValueChange)="enterDiscount($event)"></app-num-input>
+
+                                    <span class="fw-bold fs-4" *ngIf="discount_setting.is_active">%</span>
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center" *ngIf="discount_setting.loading">
+                                    <div class="py-2">
+                                        <span class="spinner-border spinner-border-sm mr-1 "></span>
+                                    </div>
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center text-danger"
+                                    *ngIf="discount_setting?.error">
+                                    Failed to Retrieve Status
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- pharmacy discount  -->
+                    <tr *ngIf="showPharmacyDiscount">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    Pharmacy Discount
+                                </div>
+                                <div class="td-color">
+                                    Allows applying discounts while billing, with a maximum percentage limit.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center"
+                                    *ngIf="pharmacy__dis_tax">
+
+                                    <app-num-input
+                                        [styleVal]="'min-width: 100px;max-width: 100px'" [classVal]="'form-control fw-bold shadow rounded-3 w-100 me-3 py-1 fs-5'"
+                                        [maintainLimit]="true" [limit]="100" [inputValue]="pharmacy__dis_tax.discount_percentage"
+                                        (inputValueChange)="updatePharmacyDisTax('discount_percentage', $event)"></app-num-input>
+
+                                    <span class="fw-bold fs-4" >%</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- pharmacy tax  -->
+                    <tr *ngIf="showPharmacyDiscount">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    Pharmacy Tax
+                                </div>
+                                <div class="td-color">
+                                    Display Tax while billing.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center"
+                                    *ngIf="pharmacy__dis_tax">
+
+                                    <app-num-input
+                                        [styleVal]="'min-width: 100px;max-width: 100px'" [classVal]="'form-control fw-bold shadow rounded-3 w-100 me-3 py-1 fs-5'"
+                                        [maintainLimit]="true" [limit]="100" [inputValue]="pharmacy__dis_tax.tax_percentage"
+                                        (inputValueChange)="updatePharmacyDisTax('tax_percentage', $event)"></app-num-input>
+
+                                    <span class="fw-bold fs-4" >%</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    Print Due Reports
+                                </div>
+                                <div class="td-color">
+                                    Enable this option to automatically print reports that have not been paid for.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center"
+                                    *ngIf="!due_print?.loading && !due_print.error">
+                                    <app-checkbox labelText="" [showLabel]="false" classVal="form-switch form-switch-lg"
+                                        (onCheckboxValueChanged)="handleDuePrint($event)" activeText="" inactiveText=""
+                                        [checkboxValue]="due_print.is_active"></app-checkbox>
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center" *ngIf="due_print?.loading">
+                                    <div class="py-2">
+                                        <span class="spinner-border spinner-border-sm mr-1 "></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex pb-2 flex-row align-items-center text-danger"
+                                    *ngIf="due_print.error">
+                                    Failed to Retrieve Status
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="manualDateTime">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    Past Patient Registration
+                                </div>
+                                <div class="td-color">
+                                    Enable this option to set manual date at patient registration.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center">
+                                    <app-checkbox labelText="" [showLabel]="false" classVal="form-switch form-switch-lg"
+                                    inactiveText="" activeText=""
+                                    (onCheckboxValueChanged)="handleManualDateTime($event)"
+                                    [checkboxValue]="manualDateTime?.manual_date"></app-checkbox>
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+    <!-- communication settings  -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <app-datatable tableHeaderClass="bg-soft-primary">
+                <ng-container class="tableheader">
+                    <tr>
+                        <td class="py-2 logoColor fw-semibold fs-5">
+                            Communication
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-container class="tablebody">
+
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium d-flex align-items-center justify-content-between gap-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="div">
+                                            <div class="d-flex align-items-center gap-2">
+                                                WhatsApp Messaging
+                                                <i class="ri-whatsapp-line text-success fs-4 p-0"
+                                                    style="line-height: 10px"></i>
+                                            </div>
+                                            <div class="td-color">
+                                                Enables sending reports, bills, and lab information via WhatsApp.
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div>
+                                        <button
+                                            (click)="api = 'business_whatsapp_stats'; title = 'WhatsApp Messages Count'; openXl(messageCount); "
+                                            class="btn rounded-3 btn-soft-primary border border-primary shadow">
+                                            View Count
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex pb-2 flex-row align-items-center"
+                                    *ngIf="!messageStatus?.loading && !messageStatus?.error">
+                                    <app-checkbox labelText="" inactiveText="" activeText="" [showLabel]="false"
+                                        classVal="form-switch form-switch-lg"
+                                        (onCheckboxValueChanged)="handleMessageEvent('is_whatsapp_active', $event)"
+                                        [checkboxValue]="messageStatus.is_whatsapp_active"></app-checkbox>
+                                </div>
+
+                                <div class="d-flex pb-2 flex-row gap-2 align-items-center justify-content-start">
+                                    <div class="text-nowrap">
+                                        Send Test Reports :
+                                    </div>
+                                    <div class="d-flex flex-row align-items-center gap-3">
+                                        <div>
+                                            <app-radio [checkValue]="messageStatus.send_reports_by == 1" 
+                                            (checkValueChange)="handleMessageEvent('send_reports_by', 1, false)"
+                                            [labelText]="'Automatic'" labelClass="form-check-label ps-1"></app-radio>
+                                        </div>
+                                        <div>
+                                            <app-radio [checkValue]="messageStatus.send_reports_by == 2"
+                                            (checkValueChange)="handleMessageEvent('send_reports_by', 2, false)" ngbTooltip="Uses WhatsApp Web in your system to send reports with free of cost."
+                                            [labelText]="'Manual'" labelClass="form-check-label ps-1"></app-radio>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="d-flex pb-2 flex-row align-items-center" *ngIf="messageStatus?.loading">
+                                    <div class="py-2">
+                                        <span class="spinner-border spinner-border-sm mr-1 "></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex pb-2 flex-row align-items-center text-danger"
+                                    *ngIf="messageStatus?.error">
+                                    Failed to Retrieve Status
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+
+                                <div class="fw-medium d-flex align-items-center justify-content-between gap-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="div">
+                                            <div class="d-flex align-items-center gap-2">
+                                                SMS Messaging
+                                                <i class="ri-message-2-line text-primary fs-4 p-0"
+                                                    style="line-height: 10px"></i>
+
+                                            </div>
+                                            <div class="td-color">
+                                                Enables sending reports, bills, and lab information via SMS.
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div>
+                                        <button
+                                            (click)=" api = 'business_messaging_stats'; title = 'SMS Messages Count';openXl(messageCount);"
+                                            class="btn rounded-3 btn-soft-primary border border-primary shadow">
+                                            View Count
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center"
+                                    *ngIf="!messageStatus?.loading && !messageStatus?.error">
+                                    <app-checkbox labelText="" inactiveText="" activeText="" [showLabel]="false"
+                                        classVal="form-switch form-switch-lg"
+                                        (onCheckboxValueChanged)="handleMessageEvent('is_sms_active', $event)"
+                                        [checkboxValue]="messageStatus.is_sms_active"></app-checkbox>
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center" *ngIf="messageStatus?.loading">
+                                    <div class="py-2">
+                                        <span class="spinner-border spinner-border-sm mr-1 "></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex pb-2 flex-row align-items-center text-danger"
+                                    *ngIf="messageStatus?.error">
+                                    Failed to Retrieve Status
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+    <!-- other settings  -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <app-datatable tableHeaderClass="bg-soft-primary">
+                <ng-container class="tableheader">
+                    <tr>
+                        <td class="py-2 logoColor fw-semibold fs-5">
+                            Other Settings
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-container class="tablebody">
+
+                    <!-- letterhead settings  -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    Letterhead Management
+                                </div>
+                                <div class="td-color">
+                                    This section combines uploading and configuring the lab's letterhead for reports and
+                                    billing.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center">
+                                    <app-letterhead-setting [hideExtra]="true"></app-letterhead-setting>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- parameter, result, units, ref ranges font sizes -->
+                     <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    Customize Fixed Report Fonts
+                                </div>
+                                <div class="td-color">
+                                    Allows applying different font sizes, weights to Parameter, Results, Units, Ref Ranges
+                                </div>
+                                <div>
+                                    <app-test-font-sizes></app-test-font-sizes>
+                                </div>
+                            </div>
+                                
+                        </td>
+                     </tr>
+
+                    <!-- patient test report or code  -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium d-flex align-items-center">
+                                    Patient Test Report QR Code <i class="ri-qr-code-line fs-5 text-primary"></i>
+                                </div>
+                                <div class="td-color">
+                                    This setting will allow to set the height and width of the QR code in print.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center">
+                                    <div class="container-full">
+
+                                        <div class="row">
+                                            <div class="col-auto d-flex align-items-center">
+                                                <div class="border bg-dark d-flex align-items-center justify-content-center text-white"
+                                                    [style]="'width: ' + phlebotomist_settings?.qr_code_size + 'px; height: ' + phlebotomist_settings?.qr_code_size + 'px'">
+                                                    <!-- ( {{returnInt(phlebotomist_settings?.qr_code_size)}}px X  {{returnInt(phlebotomist_settings?.qr_code_size)}}px) -->
+                                                    <img [style]="'width: ' + phlebotomist_settings?.qr_code_size + 'px; height: ' + phlebotomist_settings?.qr_code_size + 'px'"
+                                                        [src]="'data:image/png;base64,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'">
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+
+                                                        <div class="row">
+                                                            <div class="col-12 mb-1">
+                                                                Size
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <select class="form-select rounded-3 fs-4 fw-bold"
+                                                                    (change)="updatePhlebotomistBarcode('qr_code_size', $event)">
+                                                                    <ng-container *ngFor="let i of heightArray">
+                                                                        <option class="fs-6" [value]="i"
+                                                                            *ngIf="i > 10 && i< 200"
+                                                                            [selected]="returnInt(phlebotomist_settings?.qr_code_size) == i">
+                                                                            {{i}} </option>
+                                                                    </ng-container>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-4 fs-4 fw-bold">
+                                                                px
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- phlebotomist test report sample bar code -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium d-flex align-items-center">
+                                    Patient Test Report Sample Barcode <i class="ri-barcode-line fs-5 text-primary"></i>
+                                </div>
+                                <div class="td-color">
+                                    This setting will allow to set the height and width of the sample bar code in
+                                    patient test report in print.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center">
+                                    <div class="container-full">
+
+                                        <div class="row">
+                                            <div class="col-auto d-flex align-items-center">
+                                                <div class="border bg-dark d-flex align-items-center justify-content-center text-white"
+                                                    [style]="'width: ' + phlebotomist_settings?.test_barcode_width + 'px; height: ' + phlebotomist_settings?.test_barcode_height + 'px'">
+                                                    <small>( {{returnInt(phlebotomist_settings?.test_barcode_width)}}px X
+                                                        {{returnInt(phlebotomist_settings?.test_barcode_height)}}px)</small>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+
+                                                        <div class="row">
+                                                            <div class="col-12 mb-1">
+                                                                Width
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <select class="form-select rounded-3 fs-4 fw-bold"
+                                                                    (change)="updatePhlebotomistBarcode('test_barcode_width', $event)">
+                                                                    <ng-container *ngFor="let i of heightArray">
+                                                                        <option class="fs-6" [value]="i"
+                                                                            [selected]="returnInt(phlebotomist_settings?.test_barcode_width) == i">
+                                                                            {{i}} </option>
+                                                                    </ng-container>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-4 fs-4 fw-bold">
+                                                                px
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-auto">
+
+                                                        <div class="row">
+                                                            <div class="col-12 mb-1">
+                                                                Height
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <select class="form-select rounded-3 fs-4 fw-bold"
+                                                                    (change)="updatePhlebotomistBarcode('test_barcode_height', $event)">
+                                                                    <ng-container *ngFor="let i of heightArray">
+                                                                        <option class="fs-6" [value]="i"
+                                                                            *ngIf="i < 50 && i > 15"
+                                                                            [selected]="returnInt(phlebotomist_settings?.test_barcode_height) == i">
+                                                                            {{i}} </option>
+                                                                    </ng-container>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-4 fs-4 fw-bold">
+                                                                px
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- phlebotomist bar code  -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium d-flex align-items-center">
+                                    Phlebotomist Sample Barcode <i class="ri-barcode-line fs-5 text-primary"></i>
+                                </div>
+                                <div class="td-color">
+                                    This setting will allow to set the height and width of the sample bar code in print.
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center">
+                                    <div class="container-full">
+
+                                        <div class="row">
+                                            <div class="col-auto d-flex align-items-center">
+                                                <div class="border bg-dark d-flex align-items-center justify-content-center text-white"
+                                                    [style]="'width: ' + phlebotomist_settings?.barcode_width + 'px; height: ' + phlebotomist_settings?.barcode_height + 'px'">
+                                                    <small>( {{returnInt(phlebotomist_settings?.barcode_width)}}px X
+                                                        {{returnInt(phlebotomist_settings?.barcode_height)}}px)</small>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-auto">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+
+                                                        <div class="row">
+                                                            <div class="col-12 mb-1">
+                                                                Width
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <select class="form-select rounded-3 fs-4 fw-bold"
+                                                                    (change)="updatePhlebotomistBarcode('barcode_width', $event)">
+                                                                    <ng-container *ngFor="let i of heightArray">
+                                                                        <option class="fs-6" [value]="i"
+                                                                            [selected]="returnInt(phlebotomist_settings?.barcode_width) == i">
+                                                                            {{i}} </option>
+                                                                    </ng-container>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-4 fs-4 fw-bold">
+                                                                px
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-auto">
+
+                                                        <div class="row">
+                                                            <div class="col-12 mb-1">
+                                                                Height
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <select class="form-select rounded-3 fs-4 fw-bold"
+                                                                    (change)="updatePhlebotomistBarcode('barcode_height', $event)">
+                                                                    <ng-container *ngFor="let i of heightArray">
+                                                                        <option class="fs-6" [value]="i"
+                                                                            *ngIf="i < 50 && i > 15"
+                                                                            [selected]="returnInt(phlebotomist_settings?.barcode_height) == i">
+                                                                            {{i}} </option>
+                                                                    </ng-container>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-4 fs-4 fw-bold">
+                                                                px
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="fw-medium">
+                                    PNDT Consulting Doctors
+                                </div>
+                                <div class="td-color">
+                                    This setting allows selecting the consulting doctors to be displayed on the PNDT
+                                    form
+                                </div>
+                                <div *ngIf="!pndt_details?.loading && !pndt_details?.error">
+                                    <div class="container-full">
+                                        <div class="row">
+                                            <div class="col-12 px-3">
+                                                <button class="text-primary bg-transparent border-0 fs-5 fw-light"
+                                                    *ngIf="!showAddDoc && pndt_details.default_pndt_doctors?.length < 2"
+                                                    (click)="showAddDoc = !showAddDoc">
+                                                    <div class="d-flex gap-3">
+                                                        <span><i class="ri-add-line"></i></span>
+                                                        <span>Add Doctor</span>
+                                                    </div>
+                                                </button>
+                                            </div>
+
+                                            <div class="col-12 d-flex flex-row align-items-center pt-2"
+                                                *ngIf="showAddDoc && pndt_details.default_pndt_doctors?.length < 2">
+                                                <div class="w-50">
+                                                    <ng-template #itemTemplate let-item>
+                                                        <div class="d-flex justify-content-between px-2 py-1">
+                                                            <span [innerHTML]="item.name"></span>
+                                                            <small class="font-DMSans">{{item.mobile_number}}</small>
+                                                        </div>
+                                                    </ng-template>
+
+                                                    <ng-template #notFoundTemplate let-notFound
+                                                        *ngIf="searchData && searchData.length!==0 && query ">
+                                                        <div [innerHTML]="notFound"></div>
+                                                    </ng-template>
+
+
+                                                    <ng-autocomplete historyHeading="" [historyListMaxNumber]="0"
+                                                        [data]="searchData" [searchKeyword]="'name'"
+                                                        placeholder="Search Doctor" (inputChanged)="getData($event)"
+                                                        (selected)="onItemSelected($event); auto_complete.clear()"
+                                                        [minQueryLength]="2" [itemTemplate]="itemTemplate"
+                                                        #auto_complete>
+                                                    </ng-autocomplete>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-12 px-3 py-1">
+                                                <div class="text-muted fw-light pt-1 pb-1">
+                                                    {{pndt_details.default_pndt_doctors.length == 0 ? 'No Doctors Selected' : 'Selected Doctors'}}</div>
+                                                <ng-container
+                                                    *ngFor="let doc of pndt_details.default_pndt_doctors; let i = index">
+                                                    <div class="d-flex align-items-center">
+                                                        <div
+                                                            class="d-flex flex-column border shadow w-100 px-3 py-1 bg-white rounded-3 mb-1">
+                                                            <span class="fw-medium">{{doc.name}}</span>
+                                                            <small class="text-muted">Ph no. <span
+                                                                    class="td-color">{{doc.mobile_number}}</span></small>
+                                                            <small class="text-muted">License Number. <span
+                                                                    class="fw-semibold text-black">{{doc.license_number}}</span></small>
+                                                        </div>
+                                                        <div>
+                                                            <button (click)="removeDoctor(doc)"
+                                                                class="border-0 bg-transparent fs-3 text-danger"><i
+                                                                    class="ri-close-line"></i></button>
+                                                        </div>
+                                                    </div>
+
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center" *ngIf="pndt_details?.loading">
+                                    <div class="py-2">
+                                        <span class="spinner-border spinner-border-sm mr-1 "></span>
+                                    </div>
+                                </div>
+                                <div class="d-flex pb-2 flex-row align-items-center text-danger"
+                                    *ngIf="pndt_details?.error">
+                                    Failed to Retrieve Status
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- lab technican consulting doctor  -->
+                    <tr *ngIf="false">
+                        <td>
+                            <div class="container-full">
+                                <div class="row">
+                                    <div class="col-12 fw-medium">
+                                        Consulting Doctor For Lab Technician Reports
+                                    </div>
+                                    <div class="col-12 td-color">
+                                        This setting allows selecting the consulting doctors to be displayed on the Lab
+                                        Technician Report
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="col-6 pt-2 pb-3">
+                                            <app-select placeHolder="Select Doctor" selectBindLabel="name"
+                                                selectBindId="id" [selectItems]="searchData"
+                                                classVal="fw-normal ng-select-container border-0 rounded-3"
+                                                [selectValue]="defaultTechDoctor || []"
+                                                (onCustomSearch)="getData($event, false)"
+                                                (onSelectionChanged)="selectCDefaultConsultingDoc($event, 1)"
+                                                [emptyFound]="false">
+                                            </app-select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-5" *ngIf="defaultTechDoctor">
+                                        <div>
+                                            Selected Doctor
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <div
+                                                class="d-flex flex-column border shadow w-100 px-3 py-1 bg-white rounded-3 mb-1">
+                                                <span class="fw-medium">{{defaultTechDoctor?.name}}</span>
+                                                <small class="text-muted">Ph no. <span
+                                                        class="td-color">{{defaultTechDoctor?.mobile_number}}</span></small>
+                                                <small class="text-muted">License Number. <span
+                                                        class="fw-semibold text-black">{{defaultTechDoctor?.license_number}}</span></small>
+                                            </div>
+                                            <div>
+                                                <button (click)="selectCDefaultConsultingDoc(null, 1)"
+                                                    class="border-0 bg-transparent fs-3 text-danger"><i
+                                                        class="ri-close-line"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- transcriptor consulting doctor  -->
+                    <tr *ngIf="false">
+                        <td>
+                            <div class="container-full">
+                                <div class="row">
+                                    <div class="col-12 fw-medium">
+                                        Consulting Doctor For Radiology Reports
+                                    </div>
+                                    <div class="col-12 td-color">
+                                        This setting allows selecting the consulting doctors to be displayed on the
+                                        Radiology Report
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="col-6 pt-2 pb-3">
+                                            <app-select placeHolder="Select Doctor" selectBindLabel="name"
+                                                selectBindId="id" [selectItems]="searchData"
+                                                classVal="fw-normal ng-select-container border-0 rounded-3"
+                                                [selectValue]="defaultRadDoctor || []"
+                                                (onCustomSearch)="getData($event, false)"
+                                                (onSelectionChanged)="selectCDefaultConsultingDoc($event, 2)"
+                                                [emptyFound]="false">
+                                            </app-select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-5" *ngIf="defaultRadDoctor">
+                                        <div>
+                                            Selected Doctor
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <div
+                                                class="d-flex flex-column border shadow w-100 px-3 py-1 bg-white rounded-3 mb-1">
+                                                <span class="fw-medium">{{defaultRadDoctor?.name}}</span>
+                                                <small class="text-muted">Ph no. <span
+                                                        class="td-color">{{defaultRadDoctor?.mobile_number}}</span></small>
+                                                <small class="text-muted">License Number. <span
+                                                        class="fw-semibold text-black">{{defaultRadDoctor?.license_number}}</span></small>
+                                            </div>
+                                            <div>
+                                                <button (click)="selectCDefaultConsultingDoc(null, 2)"
+                                                    class="border-0 bg-transparent fs-3 text-danger"><i
+                                                        class="ri-close-line"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="container-full">
+                                <div class="row mb-2">
+                                    <div class="col-12 fw-medium">
+                                        Email Address
+                                    </div>
+                                    <div class="col-12 td-color">
+                                        This email address will be considered for sending any busniess related information
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 mb-2">
+                                        <input 
+                                            type="text" 
+                                            autocomplete="off" 
+                                            (input)="enterCreditials($event, 'email')" 
+                                            placeholder="Enter Email" 
+                                            [value]="emailCredentials?.email || ''" 
+                                            class="form-control p-2 fw-semibold fs-5 rounded-3">
+                                    </div>
+                                    <div class="col-4">
+                                        <input 
+                                            type="password" 
+                                            autocomplete="new-password" 
+                                            (input)="enterCreditials($event, 'password')" 
+                                            [value]="emailCredentials?.password || ''" 
+                                            class="form-control p-2 fw-semibold fs-5 rounded-3">
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+
+    <!-- <button>send</button> -->
+
+
+</div>
+
+
+
+<ng-template #messageCount let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">{{title}}</span>
+        <div>
+
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <div class="container-full">
+
+            <div class="row mb-3">
+                <div class="col-lg-4 col-12">
+                    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)"
+                        [selectToday]="true"></app-datepicker-section>
+                </div>
+                <div class="col-8 fs-5 text-end pe-3">
+                    Total Messages : <span class="fw-semibold fs-4">{{messageStatic?.total_messages_count || 0}}</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <td>Name & Active</td>
+                            <td>Count </td>
+                            <td></td>
+                        </ng-container>
+
+                        <ng-container class="tablebody" *ngFor="let item of messageStatic?.template_wise_count || []">
+                            <ng-container *ngIf="stat_loading">
+                                <tr>
+                                    <td>
+                                        <div class="py-2">
+                                            <span class="spinner-border spinner-border-sm mr-1 "></span>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </ng-container>
+                            <ng-container *ngIf="!stat_loading">
+                                <tr>
+                                    <td class="fw-medium fs-5 py-2">
+                                         <div class="d-flex gap-2">
+                                            <div>{{item.template_name}}</div>
+                                            <div>
+                                                <!--  -->
+                                                <app-checkbox [showLabel]="false" [checkboxValue]="messages_included.templates.includes(item?.id)"
+                                                activeText="" inactiveText="" (onCheckboxValueChanged)="toggleMessagesTemplate(item, $event)"
+                                                ></app-checkbox>
+                                            </div>
+                                         </div>
+                                    </td>
+                                    <td class="fw-semibold fs-5 py-2">{{item.messages_count}}</td>
+                                    <td>
+                                        <button
+                                            [ngbTooltip]="activeAccordion == item.template_name ? 'Close Template' : 'Show '+ item.template_name + ' template'"
+                                            class="bg-transparent border-0 fs-3"
+                                            (click)="activeAccordion == item.template_name ? activeAccordion = '' : activeAccordion = item.template_name">
+                                            <span *ngIf="activeAccordion == item.template_name">
+                                                <i class="ri-arrow-up-s-line"></i>
+                                            </span>
+                                            <span *ngIf="activeAccordion != item.template_name">
+                                                <i class="ri-arrow-down-s-line"></i>
+                                            </span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="activeAccordion == item.template_name">
+                                    <td colspan="3" class="bg-soft-primary ">
+                                        <div class="px-5">
+                                            <div [innerHTML]="withoutSpecChars(item.template_content)"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+
+                    </app-datatable>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</ng-template>

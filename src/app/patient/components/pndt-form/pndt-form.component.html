@@ -1,0 +1,779 @@
+
+<div class="container-full ps-2 " *ngIf="!isLoading">
+    <div class="row justify-content-center align-items-center mb-2">
+        <div class="col-12 text-center fs-5">
+            FORM F
+        </div>
+        <div class="col-12 text-center fw-semibold fs-5">
+            FORM FOR MAINTENANCE OF RECORD IN RESPECT OF PREGNANT WOMAN BY ULTRASOUND CLINIC
+        </div>
+        <div class="col-12 text-center fw-light mb-2">
+            [See Provision to Section 4(3), Rule 9(4) and Rule 10(1A)]
+        </div>
+        <hr>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-2">
+            Date: {{timeSrvc.getTodaysDatePNDT()}}
+        </div>
+    </div>
+    <form [formGroup]="PNDTFormGroup">
+        <div class="row mb-3">
+            <div class="col-12">
+                1. Name and Address of the Ultrasound Clinic
+            </div>
+            <div class="col-12 ps-5">
+                <table class="custom-table">
+                    <tbody>
+                        <tr>
+                            <td>Clinic Name</td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5">{{hospitalName}}</td>
+                        </tr>
+                        <tr>
+                            <td>Address</td>
+                            <td>:</td>
+                            <td>
+
+                                <ng-container
+                                    *ngIf="pndtDetails?.addresses && pndtDetails?.addresses.length !== 0; else noAddresses">
+                                    <!-- Render your <app-select> component here -->
+                                    <app-select [selectItems]="pndtDetails?.addresses"
+                                        formControlName="clinic_details" selectBindLabel="address"></app-select>
+                                </ng-container>
+
+                                <ng-template #noAddresses>
+                                    <!-- Render an alternative content when addresses are empty -->
+
+                                    <app-select [selectItems]="[]" [inputDisable]="true"
+                                        placeHolder="No addresses available."
+                                        selectBindLabel="address"></app-select>
+                                </ng-template>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                2. Clinic Registration No:
+            </div>
+            <div class="col-10 fw-semibold fs-5">
+                {{this.PNDTFormGroup.value?.clinic_details?.clinic_reg_no || ''}}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        3. Patient's Name : <span class="text-danger fs-3">*</span>
+                    </div>
+                    <div class="col-8 fw-semibold fs-5">
+                        <app-input [inputDisable]="true" ngbTooltip="Auto-Filled Patient's Name"
+                            placeHolder="Enter Name" [inputValue]="ptn?.name"
+                            [removeLabel]="true"></app-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="row align-items-center">
+                    <div class="col-3 text-end">
+                        Patient Age : <span class="text-danger fs-3">*</span>
+                    </div>
+                    <div class="col-3 fw-semibold fs-5">
+                        <app-input [inputDisable]="true" ngbTooltip="Auto-Filled Patient's Age"
+                            placeHolder="Enter Age" [removeLabel]="true"
+                            [inputValue]="ptn?.age"></app-input>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4 mb-1">
+                4. Number of children with sex of each child :
+            </div>
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-3">
+                        <div class="row align-items-center">
+                            <div class="col-6 text-end">
+                                Male :
+                            </div>
+                            <div class="col-6 fw-semibold fs-5">
+                                <app-input formControlName="male_children_count" placeHolder="Enter Number"
+                                    [removeLabel]="true"></app-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="row align-items-center">
+                            <div class="col-6 text-end">
+                                Female :
+                            </div>
+                            <div class="col-6 fw-semibold fs-5">
+                                <app-input formControlName="female_children_count" placeHolder="Enter Number"
+                                    [removeLabel]="true"></app-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                5. Husband's/Father's name :
+            </div>
+            <div class="col-12 ps-5">
+                <table class="custom-table">
+                    <tbody>
+                        <tr>
+                            <td>Husband's name <span class="text-danger">*</span></td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5">
+                                <app-input (onValueChanged)="writeAttenderName(3, $event)"
+                                    [applyAllowLettersOnly]="true" [applyEmptySpace]="true" [removeLabel]="true"
+                                    formControlName="husband_name"
+                                    placeHolder="Enter Husband's Name"></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Father's name <span class="text-danger">*</span></td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5">
+                                <app-input [removeLabel]="true" (onValueChanged)="writeAttenderName(2, $event)"
+                                    [applyAllowLettersOnly]="true" [applyEmptySpace]="true"
+                                    formControlName="father_name" placeHolder="Enter Father Name"></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                6. Patient Full Address with Tel. No., if any :
+            </div>
+            <div class="col-12 ps-5">
+                <table class="custom-table">
+                    <tbody>
+                        <tr>
+                            <td>Address</td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5 w-100">
+                                <app-input (onValueChanged)="enterAddress($event)" [inputDisable]="true"
+                                    [inputValue]="ptn?.address || ''"
+                                    ngbTooltip="Auto-Filled Patient's By Information" [removeLabel]="true"
+                                    placeHolder="Enter Address"></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mobile No</td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5">
+                                <app-input [inputDisable]="true"
+                                    ngbTooltip="Auto-Filled Patient's By Information" [removeLabel]="true"
+                                    classVal="w-25 form-control fw-light rounded-3" [inputLength]="10"
+                                    [applyAutoFocus]="false" [inputValue]="ptn?.mobile_number"
+                                    [applyAllowNumbersOnly]="true"
+                                    placeHolder="Enter Mobile Number"></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Telephone No</td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5">
+                                <app-input [removeLabel]="true" classVal="w-25 form-control fw-light rounded-3"
+                                    placeHolder="Enter Telephone Number"></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                7. Referred by. (full name and address of Doctor(s) / Genetic Counseling Centre. Referral Note,
+                and Case papers in case
+                of self Referral, to be preserved carefully) :
+            </div>
+            <div class="col-12 ps-5">
+                <table class="custom-table w-50">
+                    <tbody>
+                        <tr>
+                            <td class="text-nowrap ">Ref.Doc Name </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input [inputDisable]="true"
+                                    ngbTooltip="Auto-Filled Patient's By Information" [removeLabel]="true"
+                                    placeHolder="Enter Doctor's Name"
+                                    [inputValue]="ptn?.referral_doctor?.name"></app-input>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap ">Ref Doc Address </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input [inputDisable]="true"
+                                    ngbTooltip="Auto-Filled Patient's By Information" [removeLabel]="true"
+                                    placeHolder="Enter Doctor's Name"
+                                    [inputValue]="ptn?.referral_doctor?.address || ''"></app-input>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap ">Genetic Counseling Centre </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input [inputDisable]="true"
+                                    ngbTooltip="Auto-Filled Patient's By Information" [removeLabel]="true"
+                                    placeHolder="Enter Doctor's Address"
+                                    [inputValue]="hospitalName"></app-input>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap ">Referral Note</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input [inputDisable]="true"
+                                    ngbTooltip="Auto-Filled Patient's By Information" [removeLabel]="true"
+                                    placeHolder="Enter Referral Note"></app-input>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4 text-nowrap">
+                8. Last menstrual period / weeks of Pregnancy :
+            </div>
+            <div class="col-3">
+                <app-input formControlName="last_menstrual_period" [removeLabel]="true"
+                    placeHolder="Enter Number" [inputLength]="2" [applyAutoFocus]="false"
+                    [inputValue]="ptn?.mobile_number" [applyAllowNumbersOnly]="true"></app-input>
+            </div>
+        </div>
+
+
+
+        <div class="row mb-3">
+            <div class="col-12 text-nowrap mb-2">
+                9. History of genetic/medical disease in the family (Specify) :
+            </div>
+            <div class="col-12 text-nowrap">
+                <span class="ps-3">Basis of diagnosis :</span>
+            </div>
+
+            <div class="col-12 ps-5">
+                <table class="custom-table w-100">
+                    <tbody>
+                        <tr>
+                            <td class="text-nowrap ">(A) Clinical </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="clinical_history" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap ">(B) Bio-Chemical </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="biochemical_history" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap ">(C) Cytogenetic</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="cytogenetic_history" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap" style="max-width: 132px;">(D) Other (e.g. radiological,
+                                ultrasonography etc.specify) </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="other_history" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 text-nowrap mb-2">
+                10. Indication for prenatal diagnosis :
+            </div>
+            <div class="col-12 text-nowrap">
+                <span class="ps-3">(A) Previous child/children with :</span>
+            </div>
+
+            <div class="col-12 ps-5">
+                <table class="custom-table w-50">
+                    <tbody>
+                        <tr>
+                            <td class="text-nowrap ">(i) Chromosomal disorder </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="chromosomal_disorders" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap ">(ii) Metabolic disorders </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="metabolic_disorders" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap ">(iii) Congenital anomaly </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="congenital_anomalies" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap" style="max-width: 132px;">(iv) Mental retardation</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="intellectual_disabilities" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap" style="max-width: 132px;">(v) Haemoglobinopathy</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="hemoglobinopathies" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap" style="max-width: 132px;">(vi) Sex linked disorders</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="sex_linked_disorders" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap" style="max-width: 132px;">(vii) Single gene disorders</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="single_gene_disorders" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap" style="max-width: 132px;">(viii) Any other (specify)</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="other_disorders" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-12 text-nowrap mb-2">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <span class="ps-3">(B) Advanced maternal age (35 years) :</span>
+                    </div>
+                    <div class="col-6">
+                        <app-input formControlName="maternal_age" [removeLabel]="true"
+                            placeHolder="Enter "></app-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-nowrap mb-2">
+                <div class="row align-items-center">
+                    <div class="col-5">
+                        <span class="ps-3">(C) Mother / father / sibling has genetic disease(specify) :</span>
+                    </div>
+                    <div class="col-6">
+                        <app-input formControlName="family_genetic_history" [removeLabel]="true"
+                            placeHolder="Enter "></app-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-nowrap mb-2">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <span class="ps-3">(D)Other (specify) :</span>
+                    </div>
+                    <div class="col-6">
+                        <app-input formControlName="other_information" [removeLabel]="true"
+                            placeHolder="Enter "></app-input>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                11. Procedures carried out (with name and Registration No.of Gynecologist, Radiologist/
+                Registered Medical Practitioner)
+                With performed it :
+            </div>
+            <div class="col-12 ps-5">
+                <table class="custom-table">
+                    <tbody>
+                        <tr>
+                            <td>Doctor Name <span class="text-danger fs-3">*</span></td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5">
+                                <ng-container *ngIf="pndtDetails?.show">
+                                    <app-select formControlName="doctor" [emptyFound]="true" [labelText]="false"
+                                        [selectItems]="consultingDoctors ? consultingDoctors : null"
+                                        placeHolder="Enter Doctor Name"
+                                        (onCustomSearch)="getConsultingDocs($event)"
+                                        selectBindLabel="name"></app-select>
+                                </ng-container>
+                                <ng-container *ngIf="!pndtDetails?.show">
+                                    {{pndtDetails.doctors}}
+                                </ng-container>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>REG.NO</td>
+                            <td>:</td>
+                            <td class="fw-semibold fs-5">
+                                <ng-container *ngIf="pndtDetails?.show">
+                                    <app-input formControlName="registration_number" [removeLabel]="true"
+                                        placeHolder="Enter Number"></app-input>
+                                </ng-container>
+                                <ng-container *ngIf="!pndtDetails?.show">
+                                    {{pndtDetails.lic_num}}
+                                </ng-container>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Non - Invasive(I) Ultrasound (Specify purpose for which ultrasound
+                                is done during pregnancy):</td>
+                            <!-- <td>:</td> -->
+                            <td class="fw-semibold fs-5">
+                                <app-input formControlName="ultrasound_test_purpose" [removeLabel]="true"
+                                    placeHolder="Enter Father Name"></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                TO DIAGNOSE INTRAUTERINE VIABLE PREGNANCY
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+                12. Any complication of the procedure - please specify :
+            </div>
+
+            <div class="col-8">
+                <app-input formControlName="complications" placeHolder="Enter Here"
+                    [removeLabel]="true"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 text-nowrap mb-2">
+                13. Laboratory tests recommended :
+            </div>
+
+            <div class="col-12 ps-5">
+                <table class="custom-table w-100">
+                    <tbody>
+                        <tr>
+                            <td class="text-nowrap ">(i) Chromosomal studies</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="chromosomal_studies" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap ">(ii) Biochemical studies</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="biochemical_studies" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap ">(iii) Molecular studies</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="molecular_studies" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap" style="max-width: 132px;">(iv) Pre implantation genetic
+                                diagnosis</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="pre_implantation_genetic_diagnosis"
+                                    [removeLabel]="true" placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 text-nowrap mb-2">
+                14. Result of :
+            </div>
+
+            <div class="col-12 ps-5">
+                <table class="custom-table w-100">
+                    <tbody>
+                        <tr>
+                            <td class="text-nowrap ">(a) Pre-natal diagnostic procedure (give details) </td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="prenatal_diagnostic_procedure" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-wrap ">(b) Ultrasonography Normal / Abnormal (Specify abnormality
+                                detected,if any)</td>
+                            <td>:</td>
+                            <td colspan="2">
+                                <app-input formControlName="ultrasonography_results" [removeLabel]="true"
+                                    placeHolder="Enter "></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+                15. Date(s) on which procedures carried out :
+            </div>
+
+            <div class="col-8">
+                <app-datepicker formControlName="date_procedures_carried_out" placeHolder="NOT APPLICABLE"
+                    [labelText]="''"></app-datepicker>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+                16. Date on consent obtained (In case of invasive) :
+            </div>
+
+            <div class="col-8">
+                <app-input formControlName="date_consent_obtained" placeHolder="NOT APPLICABLE"
+                    [removeLabel]="true"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 mb-1">
+                17. The Result of Pre-natal diagnostic Procedure was conveyed to Results Conveyed
+            </div>
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="row align-items-center">
+                            <div class="col-2 text-end">
+                                To :
+                            </div>
+                            <div class="col-8 fw-semibold fs-5">
+                                <app-input formControlName="results_conveyed_to" placeHolder="Enter Number"
+                                    [removeLabel]="true"></app-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="row align-items-center">
+                            <div class="col-2 text-end">
+                                On :
+                            </div>
+                            <div class="col-8 fw-semibold fs-5">
+                                <app-input formControlName="results_conveyed_on" placeHolder="NOT APPLICABLE"
+                                    [removeLabel]="true"></app-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+                18. Was MTP advised / conducted ?
+            </div>
+
+            <div class="col-8">
+                <app-input formControlName="mtp_advised_by" placeHolder="Enter Here"
+                    [removeLabel]="true"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+                19. Date of which MTP carried out :
+            </div>
+
+            <div class="col-8">
+                <app-input formControlName="mtp_advised_date" placeHolder="Enter Here"
+                    [removeLabel]="true"></app-input>
+            </div>
+
+            <div class="col-12">
+                <table class="custom-table w-100">
+                    <tbody>
+                        <tr>
+                            <td class="text-nowrap text-center">Date :</td>
+                            <td>
+                                <app-datepicker [removeIcon]="true" formControlName="date_mtp_performed"
+                                    [labelText]="''" placeHolder="NOT APPLICABLE"></app-datepicker>
+                            </td>
+                            <td class="text-nowrap text-center">MTP Done Doctor : </td>
+                            <td>
+                                <app-input formControlName="mtp_performed_by" placeHolder="Enter Here"
+                                    [removeLabel]="true"></app-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-nowrap text-center">Place :</td>
+                            <td>
+                                <app-input formControlName="place_mtp" placeHolder="Enter Here"
+                                    [removeLabel]="true"></app-input>
+                            </td>
+                            <td class="text-nowrap text-center">REG.NO :</td>
+                            <td>
+                                <app-input formControlName="mtp_registration_number" placeHolder="Enter Here"
+                                    [removeLabel]="true"></app-input>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-nowrap text-center">PNDT.NO :</td>
+                            <td>
+                                <app-input formControlName="pndt_number" placeHolder="Enter Here"
+                                    [removeLabel]="true"></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+        </div>
+
+    </form>
+
+    <div class="row justify-content-center align-items-center mb-2">
+        <div class="col-12 text-center fw-semibold mb-2 fs-5">
+            DECLARATION OF PREGNANT WOMAN
+        </div>
+        <div class="col-12 fw-light mb-2">
+            I, <span class="fw-semibold fs-5">{{getTitleName(ptn?.title)}} {{ptn?.name}}
+            </span> (name of the pregnant woman)
+            declare that by undergoing Ultrasonography / image scanning etc. I do not want to know the sex of my
+            fetus.
+
+
+        </div>
+
+        <div class="col-12 fw-light mt-5 text-end">
+            Signature / Thumb impression of pregnant woman
+        </div>
+
+        <hr>
+    </div>
+
+
+    <div class="row justify-content-center align-items-center mb-2">
+        <div class="col-12 text-center fw-semibold mb-2 fs-5">
+            DECLARATION OF DOCTOR / PERSON CONDUCTING THE ULTRASONOGRAPHY / IMAGE SCANNING
+        </div>
+        <div class="col-12 fw-light mb-2">
+            I, <span class="fw-semibold fs-5" *ngIf="pndtDetails.show">
+
+                {{(PNDTFormGroup.value?.doctor?.name?
+                PNDTFormGroup.value?.doctor?.name : '-----------------' | uppercase)}}
+
+            </span>
+
+            <span class="fw-semibold fs-5" *ngIf="!pndtDetails.show">
+
+                {{pndtDetails.doctors}}
+
+            </span>
+
+            (Name
+            of the person conducting Ultrasonography / Image Scanning) declare that
+            while conducting Ultrasonography / image scan on <span
+                class="fw-semibold fs-5">{{getTitleName(ptn?.title)}} {{ptn?.name |
+                uppercase}} </span>
+            (Name of the pregnantwoman), have neither detected nor disclosed the sex of her fetus to any body,
+            in any manner.
+        </div>
+
+        <div class="col-12 fw-light mt-5 text-end">
+            <div class="row">
+                <div class="col-12">
+                    <span class="fw-semibold fs-5">
+                        <!-- {{PNDTFormGroup.value.doctor?.name | uppercase}} -->
+                        <ng-container *ngIf="pndtDetails?.show">
+                            {{PNDTFormGroup.value.doctor?.name | uppercase}}
+                        </ng-container>
+                        <ng-container *ngIf="!pndtDetails?.show">
+                            {{pndtDetails.doctors}}
+                        </ng-container>
+
+                    </span>
+                </div>
+                <div class="col-12">
+                    Name and signature of the Radiologist conducting Ultrasonography.
+                </div>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>

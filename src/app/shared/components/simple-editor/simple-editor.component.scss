@@ -1,0 +1,94 @@
+
+:host ::ng-deep .st-area {
+    background-color: #000000; /* Set your desired background color */
+    
+  }
+
+  .st-toolbar-item select:last-child {
+    display: none;
+  }
+
+  :host ::ng-deep .st-editor-container .st-area {
+    /* Your styles */
+    overflow: hidden;
+    border: 0px solid #bdbdbd;
+    // padding: 271px 5px 5px 5px;
+    // display: flex;
+    // flex-direction: column;
+    width: 210mm;
+    min-height: 297mm;
+    align-self: center;
+    margin: 10px auto;
+    background-size: 210mm 297mm;
+    background-repeat: repeat-y;
+    font-family: "Trebuchet MS", sans-serif;
+    resize: none;
+    outline: none; /* Add this line to remove the outline color */
+
+       /* Dynamic padding based on height */
+      //  padding-top: 271px; /* Initial padding-top */
+  }
+
+//   :host ::ng-deep .st-editor-container .st-area:not(:first-of-type) {
+//     padding-top: 150px; /* Padding for subsequent elements */
+// }
+
+
+  :host ::ng-deep  .st-toolbar {
+    position: sticky;
+    top: 37px;
+    // background-color: #e05454; /* Optional: Change the background color */
+    border-top: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    z-index: 102
+
+  }
+
+  .wordreportcontent{
+    font-family: 'Trebuchet MS', sans-serif;
+  }
+
+  .st-custom-toolbar{
+    position: sticky;
+    top: 0;
+    z-index: 105
+  }
+
+  
+  .outer-container {
+    overflow: scroll;
+    width: 100%; /* Adjust as needed */
+    height: 95vh; /* Adjust as needed */
+  }
+  
+  .inner-container {
+    transform-origin: 0 0;
+  }
+  
+  :host ::ng-deep .st_area_editor {
+    font-size: 14px; /* Default font size */
+  
+    /* Font size 6 */
+    font[size="6"] {
+      line-height: 1; /* Adjust the line-height as needed */
+    }
+  
+    /* Other font sizes */
+    font[size="2"] {
+      line-height: 1.2; /* Adjust the line-height as needed */
+    }
+
+    font[size="3"] {
+      line-height: 0.6px; /* Adjust the line-height as needed */
+    }
+  
+    /* Add more font sizes as needed */
+  }
+
+
+  br{
+    // line-height: 20px;
+    padding: 20px 0px;
+  }
+  

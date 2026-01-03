@@ -1,0 +1,288 @@
+
+<app-layout [showMap]="false" [showNav]="false" [showPageTitle]="false" [displayInformation]="!ref_lab" [labPackage]="false"
+    [showNav]="false" [extraFilter]="false" [extraFilterSecond]="false" [showSelectPrint]="false">
+
+      <ng-container class="displayInformation" *ngIf="!ref_lab">
+        <div class="col-12">Select Sourcing Lab<span class="text-danger">*</span></div>
+        <div class="col-5">
+          <app-select [selectItems]="collabs" [labelText]="''" [selectValue]="ref_lab || ''"
+          selectBindLabel="organizationName" [multipleSelect]="false" [inputDisable]="ref_lab"
+          placeHolder='Select Lab' (onSelectionChanged)="selectCollab($event)"></app-select>
+        </div>
+      </ng-container>
+
+      <ng-container class="searchbox">
+
+          <app-searchbox *ngIf="sourcing_lab" placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+          (searchTermChange)="searchQuery($event)"></app-searchbox>
+
+      </ng-container>
+    
+      <ng-container class="datepicker">
+
+        <app-datepicker-section *ngIf="sourcing_lab"  (dateRangeSelected)="getRangeValue($event)" [selectToday]="true"></app-datepicker-section>
+      </ng-container>
+    
+      <ng-container class="showing">
+        <span class="fw-light" *ngIf="sourcing_lab" >Showing</span>
+      </ng-container>
+    
+      <ng-container class="entries">
+        <select *ngIf="sourcing_lab"  class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+          name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option [value]="all_count">All</option>
+        </select>
+      </ng-container>
+    
+      <ng-container class="entriesLabel">
+        <span *ngIf="sourcing_lab"  class="fw-light">Entries</span>
+      </ng-container>
+    
+      <ng-container class="TableDisplay">
+        <app-datatable *ngIf="sourcing_lab" >
+          <ng-container class="tableheader">
+            <th class="text-nowrap text-black">Sno.</th>
+            <th>
+              <div class="d-flex gap-5 align-items-center justify-content-start">
+                <div>Patients</div>
+                <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="patients && patients.length != 0">
+                  <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                      class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                  <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                      class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                </div>
+              </div>
+            </th>
+            <th class="text-nowrap">Lab Test</th>
+            <th class="text-nowrap">Patient IDs</th>
+            <th class="text-nowrap">Amount Due</th>
+            <th>User</th>
+            <th class="text-nowrap" *ngIf="sourcing_lab?.is_referral_lab && sourcing_lab?.initiator != null">Upload File</th>
+    
+          </ng-container>
+    
+          <ng-container class="tablebody"  *ngFor="let item of patients; let i = index">
+            <tr class=" td-color cursor-pointer">
+              <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+              <td >
+                <app-patient-details [title]="item.title.name" [name]="item.name" [query]="query"
+                  [time]="timeSrvc.decodeTimestamp(item.added_on)"></app-patient-details>
+              </td>
+    
+              <td>
+                <div (click)="toggleAccordionnn(item.visit_id)"
+                  class="d-flex flex-row justify-content-between align-items-center" style="max-width: 200px;">
+                  <div class="d-flex flex-column">
+                    <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                      <ngb-highlight [result]="concatenateShortCodes(item)" [term]="query"></ngb-highlight>
+                    </small>
+                    <small>Total:
+                      {{ item.lab_tests.lab_tests.length + getPackagesLength(item.lab_packages) }}
+                    </small>
+                  </div>
+                  <div class="div">
+                    <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === item.mr_no}"
+                      class="fas fa-chevron-down text-black"></i>
+                  </div>
+                </div>
+              </td>
+    
+              <td>
+                <app-patient-ids mr_no="{{item.mr_no}}" visit_id="{{item.visit_id}}" [query]="query"></app-patient-ids>
+              </td>
+    
+              <td class="text-black fw-medium text-nowrap">
+                <ng-container *ngIf="item.invoice; else noInvoice">
+                  <ng-container *ngIf="item.invoice.total_due === 0 || item.invoice.total_due == '0.00'; else notFullyPaid">
+                    <span class="td-color">Fully paid</span>
+                  </ng-container>
+                  <ng-template #notFullyPaid>
+                    {{ 'Rs. ' + item.invoice.total_due }}
+                  </ng-template>
+                </ng-container>
+                <ng-template #noInvoice>Rs. ---</ng-template>
+              </td>
+    
+              <td class="text-nowrap">
+                {{item.created_by}}
+              </td>
+
+              <td *ngIf="sourcing_lab?.is_referral_lab && sourcing_lab?.initiator != null">
+                <button (click)="selected_patient = item ; openModal(uploadFile, { size: 'lg', centered: true})"
+                class="btn btn-primary rounded-3 btn-sm">Upload</button>
+              </td>
+
+            </tr>
+
+            <tr  *ngIf="activeId === item.visit_id" class="cursor-pointer">
+              <td colspan="8" class="bg-light-blue">
+                <div aria-labelledby="tableDropdown" [ngClass]="{'active': activeId === item.visit_id}"
+                  class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+                  <table class="table">
+                    <thead class="fw-medium">
+                      <tr class=" fs-6 text-white bg-black">
+                        <th style="width: 10px">#</th>
+                        <th class="text-nowrap">Lab Test</th>
+                        <th>Status</th>
+                        <th>User</th>
+                        <th *ngIf="sourcing_lab?.is_referral_lab && sourcing_lab?.initiator != null">Report</th>
+                        <th>Print</th>
+                        <th>Download</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngFor="let test of item.lab_tests.lab_tests; let i = index">
+                        <tr>
+                          <td class="text-nowrap fw-semibold py-2">{{i + 1}}.</td>
+                          <td class="text-nowrap fw-semibold py-2">{{ test.name }}</td>
+                          <td>
+                            <span [class.text-danger]="checkEmergency(test.status_id)">{{test.status_id}}</span>
+                          </td>
+                          <td class="text-nowrap">{{ item.created_by }}</td>
+
+                          <td *ngIf="sourcing_lab?.is_referral_lab && sourcing_lab?.initiator != null">
+                            <ng-container *ngIf="test.status_id.includes('Sample Collected')">
+                              <button class="btn btn-primary rounded-3 btn-sm" (click)="createReport(test)" [disabled]="test?.isLoading">
+                                <span *ngIf="!test?.isLoading">Create Report</span>
+                                <span *ngIf="test?.isLoading" class="spinner-border spinner-border-sm mr-1 "></span>
+                              </button>
+                            </ng-container>
+
+                            <ng-container *ngIf="test.status_id.includes('Processing')">
+                              <button class="btn btn-warning rounded-3 btn-sm" (click)="draftReport(test)" [disabled]="test?.isLoading">
+                                <span *ngIf="!test?.isLoading">Draft Report</span>
+                                <span *ngIf="test?.isLoading" class="spinner-border spinner-border-sm mr-1 "></span>
+                              </button>
+                            </ng-container>
+
+                            <ng-container *ngIf="test.status_id.includes('Completed')">
+                              <button class="btn btn-success rounded-3 btn-sm" (click)="draftReport(test)">Reported</button>
+                            </ng-container>
+
+                          </td>
+
+                          <td>
+
+                            <div class="d-flex gap-2">
+                                <button (click)="printReport(item, test, true, false)"
+                                *ngIf="test.status_id.includes('Completed')" class="btn btn-sm btn-success rounded-3" [disabled]="test?.printLoading">
+                                <span>With Header</span>
+                                <!-- <span *ngIf="test?.printLoading" class="spinner-border spinner-border-sm mr-1 "></span> -->
+                              </button>
+
+                              <button (click)="printReport(item, test, false, false)"
+                              *ngIf="test.status_id.includes('Completed')" class="btn btn-sm btn-success rounded-3" [disabled]="test?.printLoading">
+                                <span>Without Header</span>
+                                <!-- <span *ngIf="test?.printLoading" class="spinner-border spinner-border-sm mr-1 "></span> -->
+                              </button>
+                            </div>
+
+                          </td>
+
+                          <td>
+
+                            <div class="d-flex gap-2">
+                                <button (click)="printReport(item, test, true, true)"
+                                *ngIf="test.status_id.includes('Completed')" class="btn btn-sm btn-primary rounded-3" [disabled]="test?.printLoading">
+                                <span>With Header</span>
+                                <!-- <span *ngIf="test?.printLoading" class="spinner-border spinner-border-sm mr-1 "></span> -->
+                              </button>
+
+                              <button (click)="printReport(item, test, false, true)"
+                              *ngIf="test.status_id.includes('Completed')" class="btn btn-sm btn-primary rounded-3" [disabled]="test?.printLoading">
+                                <span>Without Header</span>
+                                <!-- <span *ngIf="test?.printLoading" class="spinner-border spinner-border-sm mr-1 "></span> -->
+                              </button>
+                            </div>
+
+                          </td>
+                        </tr>
+    
+                      </ng-container>
+    
+                      <ng-container *ngIf="item.lab_packages && item.lab_packages.length !== 0">
+                        <ng-container *ngFor="let package of item.lab_packages; let j = index">
+                          <tr>
+                            <td colspan="3" class="py-2 fw-normal fs-6 td-color">{{package.name}}</td>
+                          </tr>
+                          <ng-container *ngFor="let pkg of package.lab_tests; let k = index">
+                            <tr>
+                              <td class="text-nowrap fw-semibold py-1 ps-5">- {{ pkg.name }}</td>
+                              <td class="text-center">
+                                <span [class.text-danger]="checkEmergency(pkg.status_id)">{{pkg.status_id}}</span>
+                              </td>
+                              <td class="text-nowrap text-center">{{ package.created_by }}</td>
+                            </tr>
+                          </ng-container>
+                        </ng-container>
+                      </ng-container>
+                    </tbody>
+    
+                  </table>
+                </div>
+              </td>
+            </tr>
+    
+          </ng-container>
+    
+          <ng-container class="tablebody">
+            <tr *ngIf="!patients || patients.length === 0">
+              <td colspan="8">
+                <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                  style="vertical-align: middle;min-height: 100px;">
+    
+                  <span *ngIf="query!==''">
+                    No Data Found with Search Query " <span class="fw-bold text-black">{{query}}</span> "
+                  </span>
+    
+                  <span *ngIf="query==='' && !pageLoading">
+                    No patients registered on this day.
+                  </span>
+    
+                  <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                    <div class="spinner-border" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="text-black pt-2 fw-light">Loading</div>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </app-datatable>
+      </ng-container>
+    
+      <ng-container class="paginationEntries">
+        <span *ngIf="sourcing_lab"  class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+            all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+      </ng-container>
+    
+      <ng-container class="pager">
+        <app-pagination *ngIf="sourcing_lab"  [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </ng-container>
+
+  <app-labtechnician #labTechnician [is_sourcing]="true" (reportSaved)="reportSaved($event)"></app-labtechnician>
+</app-layout>
+
+
+
+
+
+
+
+
+<ng-template #uploadFile let-modal>
+  <div class="modal-header align-items-center modal-bg">
+      <span class="modal-title fs-4">{{selected_patient?.name}} | Files</span>
+      <button (click)="modalService.dismissAll()" class="btn-close"></button>
+  </div>
+
+  <div class="modal-body container-full modal-bg">
+      <app-upload-patient-files [patient]="selected_patient"></app-upload-patient-files>
+  </div>
+</ng-template>

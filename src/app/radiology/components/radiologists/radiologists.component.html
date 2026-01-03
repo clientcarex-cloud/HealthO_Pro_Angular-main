@@ -1,0 +1,717 @@
+<app-layout [showMap]="false" [showPageTitle]="false" [displayInformation]="false" [labPackage]="false"
+    [extraFilter]="true" [showSelectPrint]="false" [extraFilterSecond]="true">
+    <ng-container class="tabsNavigation">
+        <div class="btn-group d-flex flex-wrap rounded-pill font-inter">
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'All' }"
+                (click)="setStatus('All')">
+                All
+            </button>
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'pending' }"
+                (click)="setStatus('pending')">
+                Pending
+            </button>
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'emergency' }"
+                (click)="setStatus('emergency')">
+                Emergency <span class="bg-danger rounded-pill btn-sm border-0 text-white"
+                    *ngIf="emergencyCount && emergencyCount !==0">{{emergencyCount}}</span>
+            </button>
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton == 'reported' }"
+                (click)="setStatus('reported')">
+                Reported
+            </button>
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'cancelled' }"
+                (click)="setStatus('cancelled')">
+                Cancelled
+            </button>
+        </div>
+    </ng-container>
+
+    <ng-container class="addNewoptions">
+
+        <button class="btn btn-primary rounded-3"
+        (click)="canGivePrint ? openModal(multiPrintModal, {size: 'lg'}) : showError()"
+        >Multi-Print</button>
+
+        <div ngbDropdown #myDrop="ngbDropdown" (click)="$event.stopPropagation(); myDrop.open()">
+          <button type="button" class="btn d-flex align-items-center" id="dropdownBasic1" ngbDropdownToggle>
+              <i class="ri-settings-4-line fs-4"></i>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="font-Readex">
+            <span class="px-3 text-center">Options</span>
+              <span ngbDropdownItem>
+                  <app-checkbox activeText="Auto-Print Reports" inactiveText="Auto-Print Reports"
+                  [checkboxValue]="print_permissons?.radiology_print" (onCheckboxValueChanged)="UpdatePrintControls($event)" 
+                      [showLabel]="false"></app-checkbox>
+              </span>
+            </div>
+          </div>
+
+        <app-info-btn></app-info-btn>
+      </ng-container>
+
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker">
+        <span *ngIf="dept===''">
+            <app-datepicker #datePicker datePickerFormat="Y-m-d" dateMode="range" placeHolder="No Radiology Tests"
+                [disableDate]="true" (dateValueChange)="getRangeValue($event)"></app-datepicker>
+        </span>
+
+
+        <span *ngIf="dept!==''">
+            <app-datepicker-section (dateRangeSelected)="getRangeValue($event)"
+                [selectToday]="true"></app-datepicker-section>
+        </span>
+
+    </ng-container>
+
+    <ng-container class="extraFilter">
+        <app-select [selectItems]="ultraDept" [labelText]="''" selectBindLabel="name" [multipleSelect]="true"
+            placeHolder='Select Department' (onSelectionChanged)="selectDepartment($event)"></app-select>
+    </ng-container>
+
+    <ng-container class="extraFilterSecond">
+        <app-select [selectItems]="searchTerm && searchTerm !='' ? refDoctors : patientRefDoctors" [labelText]="''"
+            selectBindLabel="name" [multipleSelect]="false"
+            (onCustomSearch)="getDoctorSearches($event, 'lab_get_referral_doctors')" placeHolder='Select Ref. Doctor'
+            [isLoading]="refDoctorQueryloading" (onSelectionChanged)="selectRefDoc($event)"></app-select>
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-nowrap text-black">Sno.</th>
+                <th class="sort1 text-nowrap fullWidthColumn " sortable="name">
+                    <div class="d-flex gap-5 align-items-center justify-content-start">
+                        <div>Patients</div>
+                        <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+                            *ngIf="patients && patients.length != 0">
+                            <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                            <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                        </div>
+                    </div>
+                </th>
+                <th class="sort1 text-nowrap">Age & Gender</th>
+
+                <th class="sort1 text-nowrap" style="min-width: 100px">Patient IDs</th>
+                <th class="sort1 text-nowrap">Ref. Doc</th>
+                <th class="sort1 text-nowrap"><span>Lab Test</span></th>
+                <th><span>Status</span></th>
+                <th>Report</th>
+                <th class="text-center" *ngIf="(activeButton==='reported' || activeButton==='All')">
+                    Action
+                </th>
+            </ng-container>
+            <ng-container class="tablebody" *ngFor="let item of patients; let i = index">
+                <tr class="font-Readex td-color">
+                    <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+                    <td>
+                        <div class="d-flex flex-row gap-1">
+                            <small class="text-black text-nowrap fw-semibold"
+                                *ngIf="item.title!== null">{{item.LabPatientTestID.patient.title}}</small>
+                            <small class="text-black text-nowrap fw-semibold">
+                                <ngb-highlight [result]="item.LabPatientTestID.patient.name"
+                                    [term]="query"></ngb-highlight>
+                            </small>
+                        </div>
+                        <small class="text-nowrap">
+                            {{timeSrvc.decodeTimestamp(item.added_on)}}
+                            <ng-container *ngIf="item.LabPatientTestID.patient.total_due > 0">
+                                <span class="border-3 border-start border-danger text-danger px-1">
+                                    <span class="fw-light">₹</span> {{item.LabPatientTestID.patient.total_due}} Due</span>
+                            </ng-container>
+
+                            <ng-container *ngIf="item.LabPatientTestID.patient.total_due <= 0">
+                                <span class="border-3 border-start border-success text-success px-1">Paid</span>
+                            </ng-container>
+                        </small>
+                    </td>
+
+                    <td>
+                        <div class="d-flex flex-column">
+                            <small class="text-nowrap">
+                                {{item?.LabPatientTestID?.patient?.ULabPatientAge == 'DOB' ?
+                                item?.LabPatientTestID?.patient.dob + " " +
+                                item?.LabPatientTestID?.patient?.ULabPatientAge : item?.LabPatientTestID?.patient.age +
+                                " " + item?.LabPatientTestID?.patient?.ULabPatientAge }}
+                            </small>
+                            <small class="td-color text-nowrap">{{item?.LabPatientTestID?.patient?.gender}}</small>
+                        </div>
+                    </td>
+
+                    <td>
+                        <app-patient-ids [query]="query" mr_no="{{item.LabPatientTestID.patient.mr_no}}" visit_id="{{item.LabPatientTestID.patient.visit_id}}"></app-patient-ids>
+                    </td>
+
+                    <td class="text-black text-wrap fw-medium">
+                        <small>
+                            <ngb-highlight [result]="item?.LabPatientTestID?.patient?.referral_doctor ? item?.LabPatientTestID?.patient?.referral_doctor : 'SELF'" [term]="query"></ngb-highlight>
+                        </small>
+                    </td>
+
+                    <td class="text-black text-wrap fw-semibold">
+                        <small>
+                            <ngb-highlight [result]="item.LabPatientTestID.name" [term]="query"></ngb-highlight>
+                        </small>
+                    </td>
+
+                    <td class="text-wrap">
+                        <span
+                            *ngIf="item.LabPatientTestID.status_id.includes('Emergency') || item.LabPatientTestID.status_id.includes('Urgent')">
+                            <span class="text-danger rounded-3 px-1 py-1">{{item.LabPatientTestID.status_id}}</span>
+                        </span>
+                        <span
+                            *ngIf="!item.LabPatientTestID.status_id.includes('Emergency') && !item.LabPatientTestID.status_id.includes('Urgent')">
+                            <span class="rounded-3 px-1 py-1">{{item.LabPatientTestID.status_id}}</span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <ng-container *ngIf="!item.LabPatientTestID.status_id.includes('Cancelled')">
+                            <ng-container
+                                *ngIf="!item.phlebotomist && !item.LabPatientTestID.status_id.includes('Completed') && !item.LabPatientTestID.status_id.includes('Authorization')">
+
+                                <button class="btn btn-sm btn-primary text-nowrap rounded-3" *ngIf="!item.is_report_generated"
+                                (click)="sendUltraCreateReportStatus(item)" >
+                                    <div *ngIf="item?.loading" class="spinner-border" role="status" style="height: 13px; width: 13px" >
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <span *ngIf="!item?.loading">Create Report</span>
+                                </button>
+
+                                <app-draftreport *ngIf="item.is_report_generated" [isLoading]="item?.loading"
+                                    (click)="reportModal(content, item)"></app-draftreport>
+
+                            </ng-container>
+
+                            <ng-container
+                                *ngIf="item.LabPatientTestID.status_id.includes('Completed') || item.LabPatientTestID.status_id.includes('Authorization Pending') || activeButton=='reported'">
+                                    <app-draftreport *ngIf="item.is_report_generated" [buttonText]="item?.is_report_printed ? 'Printed' : 'Reported'"
+                                    classVal="btn btn-sm {{item?.is_report_printed ? 'btn-success' : 'btn-primary'}} rounded-3 text-nowrap" [isLoading]="item?.loading"
+                                    (click)="reportModal(content, item, true)"></app-draftreport>
+                            </ng-container>
+                        </ng-container>
+
+                    </td>
+                    <td class="text-center" *ngIf="(activeButton==='reported' || activeButton==='All')">
+                        <ng-container *ngIf="!item.LabPatientTestID.status_id.includes('Cancelled')">
+                            <button class="btn btn-success btn-sm rounded-3 px-3"
+                                *ngIf="item.LabPatientTestID.status_id.includes('Completed') || item.LabPatientTestID.status_id.includes('Authorization Pending')"
+                                (click)="printReportForEdit(item, true, true, false)" [disabled]="item.printLoading">
+                                <span *ngIf="!item.printLoading">Print</span>
+                                <span *ngIf="item.printLoading" class="spinner-border spinner-border-sm mr-1"></span>
+                            </button>
+                        </ng-container>
+
+                    </td>
+                </tr>
+            </ng-container>
+
+            <ng-container class="tablebody" *ngIf="this.dept!==''">
+                <tr *ngIf="!patients || patients.length === 0">
+                    <td colspan="9">
+                        <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                            style="vertical-align: middle;min-height: 100px;">
+                            <!-- NO PATIENTS -->
+                            <span *ngIf="query!=='' && !pageLoading">
+                                No Data Found with Search Query "<span class="fw-bold text-black">{{query}}</span>"
+                            </span>
+
+                            <span *ngIf="query =='' && !pageLoading" >
+                                No patients registered on this day
+                            </span>
+
+                            <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text-black pt-2 fw-light">Loading</div>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+
+            <ng-container class="tablebody" *ngIf="this.dept===''">
+                <tr *ngIf="!patients || patients.length === 0">
+                    <td colspan="9">
+                        <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                            style="vertical-align: middle;min-height: 100px;">
+                            <!-- NO PATIENTS -->
+                            <span *ngIf="query!==''">
+                                No Data Found with Search Query "<span class="fw-bold text-black">{{query}}</span>"
+                            </span>
+
+                            <span *ngIf="query==='' && !pageLoading">
+                                No Radiology Tests
+                            </span>
+
+                            <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text-black pt-2 fw-light">Loading</div>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+        (pageChange)="onPageChange($event)"></app-pagination>
+    </ng-container>
+
+
+</app-layout>
+
+
+<ng-template #content let-modal>
+    <div
+        class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex flex-lg-row flex-column gap-2  justify-content-between align-items-center">
+
+        <app-patient-title [title]="title" [patient]="patient"></app-patient-title>
+
+        <div class="d-flex align-items-center justify-content-end gap-2">
+            <div style="width: 175px" *ngIf="!patient.printed">
+                <app-select placeHolder="Select Doctor" selectBindLabel="name" [selectValue]="doc" selectBindId="id"
+                    [selectItems]="refDoctors" [applyAutoFocus]="false" (onSelectionChanged)="doctorSelected($event)"
+                    (onCustomSearch)="getDoctorSearches($event, 'lab_get_consulting_doctors')" [isLoading]="docLoading"
+                    [emptyFound]="true"  classVal="ng-select-container border-0  rounded-3"></app-select>
+            </div>
+
+            <div *ngIf="patient.printed" class="d-flex flex-row gap-2">
+                <button class="btn bg-white border rounded-3 d-flex flex-row gap-1 text-nowrap"
+                    (click)=" modal.dismiss('Cross click'); reportModal(content, patient)" *ngIf="is_superadmin">
+                    Edit <i class="ri-edit-2-line fs-5"></i>
+                </button>
+            </div>
+
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="submitted=false;changesMade ? openModalWarning(warningModal, '') : modal.dismiss('Cross click');resetRemark()"></button>
+        </div>
+    </div>
+    <div class="modal-body pb-1"
+        [style]="'background-color: #F8FAFC;' + (saveLoading || saveAuthLoading ? 'cursor: wait;' : '')">
+
+        <app-fixed-reporting #fixedComponent [reportTableData]="reportTableData" [saveAuthLoading]="saveAuthLoading"
+        [saveLoading]="saveLoading" [lab_remark]="lab_remark" [patient]="patient"
+        (saved)="onSubmitForFixed($event)" (FullScreen)="ToggleFullScreenForFixed(content, $event)"></app-fixed-reporting>
+
+
+        <div class="container-full pb-3" style="height: 75vh !important;" *ngIf="false">
+
+            <!-- MODAL TABLE  -->
+            <div class="row font-DMSans mb-3" *ngFor="let report of reportTableData; let i = index">
+
+                <div class="col-12 mb-1 text-center">
+                    <span class="fs-4 font-Readex">
+                        {{report.groupname}}
+                    </span>
+                </div>
+
+                <app-datatable tableClass="table table-striped" tableHeaderClass="bg-dark text-white" class="mb-3">
+                    <ng-container class="tableheader">
+                        <th class="border-end border-white">Parameter</th>
+                        <th class="text-center border-end border-white"
+                            style="min-width: 210px;max-width: 210px;width: 210px">Value</th>
+                        <th class="text-center border-end border-white">Unit</th>
+                        <th class="text-center border-end border-white">Reference Range</th>
+                        <th class="text-center border-end border-white">Bold</th>
+                    </ng-container>
+
+                    <ng-container class="tablebody">
+
+                        <tr class="bg-white font-Readex" *ngFor="let item of report.parameters">
+
+                            <td class="border-end">
+                                <div class="d-flex flex-column ">
+                                    <span class="fs-5 fw-medium">
+                                        {{item.parameter}}
+                                    </span>
+                                    <small class="font-italic td-color">
+                                        <i>{{item?.method ? item?.method : ''}}</i>
+                                    </small>
+                                </div>
+                            </td>
+                            <td colspan="1" class="py-2 border-end text-center">
+                                <div style="min-width: 200px;resize: horizontal; max-width: 450px" class="overflow-auto shadow rounded-3" *ngIf="!item.select" >
+                                    <input id="report-input-{{item.id}}"
+                                    [class]="item.is_value_bold ? 'form-control rounded-3 border-1 py-1 fw-bold border-danger bg-soft-danger fs-5' : 'form-control rounded-3 border-1 py-1 fw-semibold fs-5'"
+                                    [disabled]="patient.printed || saveLoading || saveAuthLoading"
+                                    [ngbTooltip]="item?.formula && item?.formula != '' ? 'Value Computed Through Formula ' + item?.formula : ''"
+                                    [style]="patient.printed || (item?.formula && item?.formula != '') ? 'cursor: not-allowed;' : ''"
+                                    [value]="item.value" [ngbTypeahead]="search" [readOnly]="item.formula && item?.formula != ''"
+                                    (input)="onReportValueChange($event, item)" (focus)="checkFormula(item)"
+                                    [focusFirst]="true" (selectItem)="onReportValueSelected($event, item.id)">
+                                </div>
+
+                                <div style="min-width: 200px;" *ngIf="item.select">
+                                    <select [disabled]="patient.printed || saveLoading || saveAuthLoading" 
+                                    [class]="item.is_value_bold ? 'form-select rounded-3 border-1 py-1 fw-bold border-danger bg-soft-danger fs-5' : 'form-select rounded-3 border-1 py-1 fw-semibold fs-5'"
+
+                                     (change)="onReportValueChange($event, item)">
+                                        <ng-container *ngFor="let val of item.selectOptions">
+                                            <option [selected]="item.value == val" [value]="val">{{val}}</option>
+                                        </ng-container>
+                                    </select>
+                                </div>
+
+
+                                <div class=" text-start">
+                                    <small class="td-color">
+                                        <small>{{item?.formula}}</small>
+                                    </small>
+                                </div>
+                              </td>
+                            <td class="fs-6 text-center border-end">{{item.units}}</td>
+
+                            <td class="text-center border-end">
+                                <div [innerHTML]="withoutSpecChars(item.referral_range)"></div>
+                            </td>
+                            <td class="text-center border-end">
+                                <div class="d-flex justify-content-center ">
+                                    <app-checkbox activeText="" inactiveText="" [showLabel]="false"
+                                        classVal="form-check" [checkboxValue]="item.is_value_bold" [inputDisabled]="patient.printed || saveLoading || saveAuthLoading"
+                                        (onCheckboxValueChanged)="checkBold($event, item.id, item)"></app-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+
+                    <ng-container class="tablebody">
+                        <tr *ngIf="!reportTableData || reportTableData.length === 0">
+                            <td colspan="4">
+                                <div class="td-color fs-6 py-5 font-monsterract fw-medium d-flex flex-column align-items-center justify-content-center"
+                                    style="vertical-align: middle;min-height: 100px;">
+                                    <!-- NO PATIENTS -->
+                                    <!-- <img src="/assets/images/file.png" style="width:17%"> -->
+                                    <!-- <span>NO DATA</span> -->
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+
+                </app-datatable>
+            </div>
+
+            <div class="row" *ngIf="lab_remark && lab_remark !== '<p></p>' && lab_remark !== ''">
+                <div class="col-12 fs-4 fw-medium">
+                    Remarks
+                </div>
+                <div class="col-12 ps-3" style="line-height: 10px;">
+                    <div [innerHTML]="lab_remark"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="bg-light-blue px-2 py-1 rounded-bottom overflow-hidden border-top" >
+        <div class="row g-2 justify-content-between" *ngIf="!patient.printed">
+            <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12">
+                <div class="d-flex">
+                    <button (click)="openModal(RemarkModal, { size: 'lg' })"
+                    class="btn btn-info w-100 shadow rounded-3 ">Remarks</button>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 ">
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-primary px-3 rounded-3 shadow" (click)="fixedComponent.getFixedData(false); "
+                        [disabled]="saveLoading || saveAuthLoading">
+                        <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="saveLoading">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Save
+                    </button>
+                    <button class="btn btn-success rounded-3 shadow" (click)="fixedComponent.getFixedData(true);"
+                        [disabled]="saveLoading || saveAuthLoading">
+                        <div class="spinner-border" role="status" style="height: 13px; width: 13px"
+                            *ngIf="saveAuthLoading">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        {{ isAuth ? "Send for Dr.Authorization" : "Mark as Complete"}}
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="row"  *ngIf="patient.printed">
+            <ng-template *ngTemplateOutlet="printDownloadOptions"></ng-template>
+        </div>
+        
+    </div>
+</ng-template>
+
+
+<ng-template #wordReport let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+
+        <app-patient-title [techPage]="false" [patient]="patient" [title]="title"></app-patient-title>
+
+        <div class="d-flex align-items-center gap-2">
+
+            <div style="width: 175px" *ngIf="!patient.printed">
+                <app-select  classVal="ng-select-container border-0  rounded-3" placeHolder="Select Doctor" selectBindLabel="name" [selectValue]="doc" selectBindId="id"
+                    [selectItems]="refDoctors" [applyAutoFocus]="false" (onSelectionChanged)="doctorSelected($event)"
+                    (onCustomSearch)="getDoctorSearches($event, 'lab_get_consulting_doctors')" [isLoading]="docLoading"
+                    [emptyFound]="true"></app-select>
+            </div>
+
+            <div style="width: 175px" *ngIf="patient.printed && is_superadmin">
+                <app-select  classVal="ng-select-container border-0  rounded-3" placeHolder="Select Doctor" selectBindLabel="name" [selectValue]="doc" selectBindId="id"
+                    [selectItems]="refDoctors" [applyAutoFocus]="false" (onSelectionChanged)="doctorSelected($event)"
+                    (onCustomSearch)="getDoctorSearches($event, 'lab_get_consulting_doctors')" [isLoading]="docLoading"
+                    [emptyFound]="true"></app-select>
+            </div>
+
+            <button class="btn d-flex align-items-center gap-2 border rounded-3 text-nowrap border-black"
+            (click)="devRichEdit?.fullscreen()" *ngIf="!(patient.printed && !is_superadmin)"
+            [class.bg-dark]="!fullScreen" [class.text-white]="!fullScreen" [class.bg-soft-primary]="fullScreen">
+            <i [class]="'ri-' + (!fullScreen ? 'fullscreen' : 'fullscreen-exit') + '-line'"></i>
+            <span class="text-nowrap">{{fullScreen ? 'Exit FS' : 'FS'}}</span>
+          </button>
+
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="submitted=false;fullScreen= false;changesMade ? openModalWarning(warningModal, '') : modal.dismiss('Cross click');resetRemark()"></button>
+        </div>
+    </div>
+
+
+    <div class="modal-body p-0 h-100">
+        <app-dev-rich #devRichEdit 
+        [isDisabled]="patient.printed && !is_superadmin"
+        [rtf_content]="reportTableData[0]?.rtf_content_report"
+        [blankDocumentWithHeader]="reportTableData[0]?.rtf_content_header"
+        [content]="reportTableData[0].report" 
+        [header_to_diplay_in_every_page]="htmlHeader"
+        [sampleSignature]="reportTableData[0]?.signature_content || ''"
+        [patient]="patient"
+        [content]="htmlData" 
+        [loadRTF]="true" 
+        [fullScreen]="fullScreen"
+        [showHeader]="true"
+        (fullscreenClicked)="handleFullscreenClickIframe($event)" 
+        (extractedContentChange)="handleExtractedContentChange($event)">
+    </app-dev-rich>
+    </div>
+
+    <div class="modal-footer d-flex flex-row aligns-items-center p-0">
+        <div  *ngIf="!(patient.printed && !is_superadmin)" class="bg-white border-bottom-0 w-100 px-2 py-1 d-flex flex-row gap-2 justify-content-between align-items-center">
+            <div class="d-flex flex-row gap-2">
+                <div style="width: 200px" class="shadow rounded-3">
+                    
+                    <app-select #appSelect placeHolder="Routine Templates" selectBindLabel="name" selectBindId="id"
+                        [selectItems]="routineTemplates" [applyAutoFocus]="false" #routineSelect classVal="ng-select-container border-0  rounded-3"
+                        (onSelectionChanged)="devRichEdit.changeTestTemplate($event);appSelect.clearInput(); appSelect.selectValue = null"
+                        [emptyFound]="true"></app-select>
+                    </div>
+            
+                    <div style="width: 200px" class="shadow rounded-3">
+                    <app-select placeHolder="Test Templates" selectBindLabel="name" selectBindId="id"
+                        [selectItems]="TestTemplates" [applyAutoFocus]="false" classVal="ng-select-container border-0  rounded-3"
+                        (onSelectionChanged)="devRichEdit.changeTestTemplate($event);appSelect.clearInput(); appSelect.selectValue = null"
+                        [emptyFound]="true"></app-select>
+                    </div>
+
+                    <div style="width: 200px" class="shadow rounded-3">
+                    <app-select placeHolder="Report History" initTypingPlaceHolder="" selectBindLabel="visit_id" selectBindId="id"
+                    [selectItems]="pastReports" [applyAutoFocus]="false" classVal="ng-select-container border-0  rounded-3"
+                    (onSelectionChanged)="openPastPastReportPDF($event)" [isLoading]="pastReports_loading"
+                    [emptyFound]="true"></app-select>
+                    </div>
+            </div>
+
+            <div class="d-flex flex-row gap-2 ">
+
+                <button (click)="devRichEdit.insertSignature(); " *ngIf="reportTableData[0]?.signature_content"
+                    class="btn btn-sm bg-dark text-white fs-6 rounded-3">Add Dr Sign.</button>
+
+                <button class="btn btn-sm fs-4 p-0 bg-transparent" ngbTooltip="Preview Print" (click)="devRichEdit.openPreview()">
+                    <i class="ri-printer-line"></i>
+                  </button>
+
+                <button [disabled]="saveLoading || saveAuthLoading" (click)="devRichEdit.saveReport(false)"
+                class="btn btn-primary d-flex align-items-center gap-2 border rounded-3" placement="top">
+                    <span *ngIf="!saveLoading">Save</span>
+                    <span *ngIf="saveLoading">Saving..</span>
+                </button>
+
+                <button [disabled]="saveLoading || saveAuthLoading" (click)="devRichEdit.saveReport(true)"
+                class="btn btn-success d-flex align-items-center gap-2 border rounded-3 text-nowrap" 
+                placement="top"
+                [ngbTooltip]="isAuth ? 'Save & Send for Dr.Authorization' : 'Mark as Complete'">
+                <span *ngIf="!saveAuthLoading">{{isAuth ? "Send for Dr.Authorization" : 'Mark as Complete'}}</span>
+                <span *ngIf="saveAuthLoading">Saving & Sending..</span>
+            </button>
+            </div>
+        </div>
+
+        <div class="row w-100" *ngIf="patient.printed">
+            <ng-template *ngTemplateOutlet="printDownloadOptions"></ng-template>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #printDownloadOptions>
+    <div class="col-lg-4 col-12 d-flex align-items-center fw-semibold fs-5">
+        <span class="td-color">No. of times reviewed : </span>
+        <span class="logoColor"> {{patient?.review_count}}</span>
+    </div>
+    <div class="col-lg-8 col-12 d-flex justify-content-end gap-2 text-nowrap">
+
+        <button class="btn btn-success rounded-3 shadow" [disabled]="patient.loading"
+            (click)="printReportForEdit(patient, true, true, false)">
+            <span *ngIf="!print_with_header">Print Header</span>
+            <span *ngIf="print_with_header" class="spinner-border spinner-border-sm mr-1"></span>
+        </button>
+
+        <button class="btn btn-success rounded-3 shadow"  [disabled]="patient.loading"
+            (click)="printReportForEdit(patient,true, false, false)">
+            <span *ngIf="!print_without_header">Print Without Header</span>
+            <span *ngIf="print_without_header" class="spinner-border spinner-border-sm mr-1"></span>
+        </button>
+
+        <button class="btn btn-primary rounded-3 shadow"  [disabled]="patient.loading"
+        (click)="printReportForEdit(patient, true, true, true)">
+        <span *ngIf="!download_with_header">Download With Header</span>
+        <span *ngIf="download_with_header" class="spinner-border spinner-border-sm mr-1"></span>
+    </button>
+
+        <button class="btn btn-primary rounded-3 shadow"  [disabled]="patient.loading"
+            (click)="printReportForEdit(patient, true, false, true)">
+            <span *ngIf="!download_without_header">Download Without Header</span>
+            <span *ngIf="download_without_header" class="spinner-border spinner-border-sm mr-1"></span>
+        </button>
+
+    </div>
+</ng-template>
+
+
+<!-- close modal  -->
+<ng-template #warningModal let-modal>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 fs-5">
+                    Are you sure you want to exit without saving ?
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer py-1 px-3  d-flex justify-content-end">
+        <button class="btn btn-danger rounded-3" (click)="submitted=false;modal.dismiss('Cross click')">
+            No, Stay
+        </button>
+
+        <button class="btn btn-success rounded-3"
+            (click)="changesMade=false;modalService.dismissAll(); lab_remark = ''">
+            Yes, Exit
+        </button>
+    </div>
+</ng-template>
+
+
+<ng-template #RemarkModal let-modal>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 fs-5 text-center fw-semibold lh-1">
+                   Remarks 
+                </div>
+                <div class="col-12 mb-2 fw-light text-center">
+                    <small>{{title}}</small>
+                </div>
+
+                <div class="col-12">
+                    <app-mini-editor [html]="lab_remark || ''"
+                        (extractedContentChange)="writeRemark($event)"></app-mini-editor>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer py-1 px-3  d-flex justify-content-end modal-bg">
+        <button class="btn btn-success shadow rounded-3" (click)="modal.dismiss('Cross click');">
+            Save & Close
+        </button>
+    </div>
+</ng-template>
+
+
+<ng-template #TPAModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex flex-row">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #multiPrintModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Multi Print</span>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <app-multi-print [date]="date" [from_date]="from_date" [to_date]="to_date" [flow_type]="2"
+        [ultraText]="ultraText" [ages]="ages" [departments]="departments" [canGivePrint]="is_superadmin ? true : canGivePrint" [duePrint]="is_superadmin ? true: due_print"
+        ></app-multi-print>
+    </div>
+</ng-template>

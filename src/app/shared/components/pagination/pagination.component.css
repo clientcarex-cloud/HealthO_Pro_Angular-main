@@ -1,0 +1,24 @@
+::ng-deep .listjs-pagination .pagination {
+  gap: 0px;
+}
+
+::ng-deep .page-item {
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+::ng-deep .page-item a {
+  text-decoration: none !important;
+  width: 38px !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  font-size: large !important;
+  font-weight: bold !important;
+}
+
+::ng-deep .page-link {
+  margin: 0px !important;
+  padding: 6px !important;
+  border: 1px solid lightblue !important;
+  vertical-align: middle !important;
+}/*# sourceMappingURL=pagination.component.css.map */

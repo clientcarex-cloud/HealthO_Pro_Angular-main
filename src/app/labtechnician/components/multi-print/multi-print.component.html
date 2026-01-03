@@ -1,0 +1,169 @@
+<!-- <p>multi-print works!</p> -->
+<div class="container-full" style="min-height: 30vh">
+
+    <div class="row mb-3">
+        <div class="col-3">
+            <div class="row">
+                <div class="col-12">
+                    Select Date <span class="text-danger">*</span>
+                </div>
+                <div class="col-12">
+                    <app-datepicker classVal="form-control font-Readex flatpickr-input rounded-3 " #datePicker (dateValueChange)="selectDate($event, datePicker, ngSelect)"
+                    [labelText]="''" [setMax]="true" [selectToday]="true" datePickerFormat="Y-m-d"></app-datepicker>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="row">
+                <div class="col-12">
+                    Select Patient <span class="text-danger">*</span>
+                </div>
+        
+                <div class="col-12">
+                    <ng-select [items]="patients" #ngSelect bindLabel="name" (change)="selectPatient($event)"
+                    bindValue="name" placeholder="Select Patient" >
+                        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                            <div class="d-flex flex-column">
+                                <!-- {{returnAgesName(item.gender)}} -->
+                                <span class="fw-medium">{{item.title.name}} {{item.name}}</span>
+                                <span class="td-color">
+                                    <small>MR No. {{item.mr_no}} | Visit Id. {{item.visit_id}}</small>
+                                </span>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <div class="row mb-2" *ngIf="ptn">
+            <div class="col-4">
+                <app-select [selectItems]="printDepts" selectBindLabel="name" placeHolder="Select Department"
+                    (onSelectionChanged)="selectDeptForPrint($event)"></app-select>
+            </div>
+            <div class="col-2">
+                <div class="d-flex flex-row align-items-center gap-2">
+                    <button  class="btn btn-success rounded-3 w-100" [disabled]="ptn.printLoading"
+                     (click)="printMultiplePrints(false)">
+                        <!-- <ng-container *ngIf="ptn.printLoading">
+                            <span class="spinner-border spinner-border-sm mr-1 "></span>
+                        </ng-container> -->
+                        <ng-container >
+                            Print
+                        </ng-container>   
+                    </button>
+
+                    <button  class="btn btn-success rounded-3 w-100" [disabled]="ptn.printLoading"
+                    (click)="printMultiplePrints(true)">
+                       <!-- <ng-container *ngIf="ptn.printLoading">
+                           <span class="spinner-border spinner-border-sm mr-1 "></span>
+                       </ng-container> -->
+                       <ng-container>
+                           Download
+                       </ng-container>   
+                   </button>
+                </div>
+
+
+
+            </div>
+        </div>
+
+        <div class="row mb-2" *ngIf="ptn">
+            <div class="col-12">
+                <div class=" bg-soft-primary border border-primary rounded-3 p-2">
+                <span class="logoColor">Note: Please ensure test reports are arranged by department before printing. Use the drag-and-drop feature for easy reorganization.</span>
+            </div></div>
+        </div>
+
+        <div class="row" *ngIf="ptn" >
+            <div class="col-12">
+                <div class="d-flex pb-2 flex-row gap-3 align-items-center justify-content-start">
+                    <div>
+                        Want to download report ?
+                    </div>
+                    <div class="d-flex flex-row align-items-center gap-3">
+                        <div>
+                            <app-radio [checkValue]="download_letterhead == '&lh=true'" 
+                            (checkValueChange)="toggleDownloadLetterhead(true)"
+                            [labelText]="'With Letterhead'" labelClass="form-check-label ps-1"></app-radio>
+                        </div>
+                        <div>
+                            <app-radio [checkValue]="download_letterhead == '&lh=false'"
+                            (checkValueChange)="toggleDownloadLetterhead(false)" 
+                            [labelText]="'Without Letterhead'" labelClass="form-check-label ps-1"></app-radio>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="ptn">
+            <div class="col-12">
+                <table class="table-subscribe">
+                    <thead class="fw-light">
+                        <tr>
+                            <th *ngIf="!printReports && filteredMultiPrints.length > 1">
+                                <div class="d-flex flex-column" ngbTooltip="Set order of tests in print by doing drag and drop" placement="right">
+                                    <span>Sort</span>
+                                    <span > <i class="ri-arrow-up-down-line"></i></span>
+                                </div>
+                            </th>
+                            <th>
+                               <div class="d-flex flex-column">
+                                <small>All</small>
+                                    <span class="fs-5">
+                                        <input type="checkbox" [checked]="filteredMultiPrints.length == selected_tests_for_prints.length && selected_tests_for_prints.length !== 0"
+                                        (change)="selectAllTests($event)">
+
+                                        <!-- <app-checkbox [showLabel]="false" classVal="" activeText="" inactiveText=""
+                                        [removeLabel]="true" [removeActInc]="true" [checkboxValue]="filteredMultiPrints.length == selected_tests_for_prints.length && selected_tests_for_prints.length !== 0"
+                                        (onCheckboxValueChanged)="selectAllTests($event)" ></app-checkbox> -->
+                                    </span>
+                               </div>
+                            </th>
+                            <th>Name</th>
+                            <th>Department</th>
+                        </tr>
+                    </thead>
+                    <tbody cdkDropList (cdkDropListDropped)="drop($event)"> 
+                        <ng-container *ngFor="let test of filteredMultiPrints">
+                            <tr class="bg-white my-2 border shadow" cdkDrag>
+
+                                <td  class="fs-4 cursor-move" style="cursor: move;" cdkDragHandle 
+                                *ngIf="!printReports && filteredMultiPrints.length > 1">: :</td>
+                                <td>
+                                    <div>
+                                        <input type="checkbox" [checked]="isTestSelectedForPrint(test)"
+                                            (change)="Handle_print_report($event,test)">
+                                        
+                                            <!-- <app-checkbox [showLabel]="false" classVal="" activeText="" inactiveText=""
+                                            [removeLabel]="true" [removeActInc]="true" [checkboxValue]="isTestSelectedForPrint(test)"
+                                            (onCheckboxValueChanged)="Handle_print_report($event,test)" ></app-checkbox> -->
+                                    </div>
+                                </td>
+                                <td class=" py-1">
+                                    <div class="border-end d-flex flex-column">
+                                        <span class=" fs-5">{{test.name}}</span>
+                                        <small class="text-muted fw-light">
+                                            {{test.packageTest ? timeSrvc.decodeTimestamp(test.added_on) : test.date}}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td class=" py-1">
+                                    <div class="border-end">
+                                        {{test.department}}
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                    </tbody>
+                </table>
+            </div>
+        </div> 
+
+
+
+</div>

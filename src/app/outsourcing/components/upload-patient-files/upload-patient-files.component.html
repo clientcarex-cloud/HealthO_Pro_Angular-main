@@ -1,0 +1,162 @@
+
+<div class="container-full">
+
+    <div class="row">
+        <div class="col-12">
+            <table class="table-subscribe">
+                <thead class="fw-light">
+                    <tr>
+
+                        <th>
+                            <div class="d-flex flex-column">
+                                <small>All</small>
+
+                                <app-checkbox [removeActInc]="true" [removeLabel]="true" (onCheckboxValueChanged)="selectAllFiles($event)"
+                                [showLabel]="false" classVal="" activeText="" inactiveText="" [checkboxValue]="selected_tests?.length == patient?.lab_tests"
+                                ></app-checkbox>
+
+                            </div>
+                        </th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th *ngIf="false">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let test of patient.lab_tests">
+                        <tr class="bg-white my-2 border shadow">
+                            
+                            <td >
+                                <div>
+                                    <app-checkbox [removeActInc]="true" [removeLabel]="true" [checkboxValue]="isTestAdded(test)"
+                                    [showLabel]="false" classVal="" activeText="" inactiveText="" (onCheckboxValueChanged)="manageTest($event, test)"
+                                    ></app-checkbox>
+                                </div>
+                            </td>
+                            <td class=" py-1">
+                                <div class="border-end d-flex flex-column">
+                                    <span class=" fs-6">{{test.name}}</span>
+                                    <small class="text-muted fw-light">
+                                       {{ timeSrvc.decodeTimestamp(test.added_on) }}
+                                    </small>
+                                </div>
+                            </td>
+                            <td class=" py-1">
+                                <!-- class="border-end" -->
+                                <div>
+                                    {{test.department}}
+                                </div>
+                            </td>
+
+                            <td *ngIf="false">
+                                <div [ngbTooltip]="selected_tests.length > 0 ? 'Remove Checkbox and Upload Individually' : 'Upload From Storage'">
+                                    <!-- <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                                        class="form-control bg-soft-primary rounded-5 d-none" 
+                                        (change)="onFileChanged($event, test)" name="fileUpload" id="fileUpload"
+                                        accept="image/png, image/gif, image/jpeg"> -->
+    
+                                    <button type="button" (keydown.enter)="$event.stopPropagation()" 
+                                     [disabled]="selected_tests.length > 0"
+                                        class="btn border px-1 py-0 rounded-3 bg-white shadow" (click)="file.click()">
+                                        <i class="ri-upload-2-line fs-4"></i>
+                                    </button>
+        
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div>
+                <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                    class="form-control bg-soft-primary rounded-5 d-none" 
+                    (change)="onFileChanged($event)" name="fileUpload" id="fileUpload">
+
+                <button type="button" (keydown.enter)="$event.stopPropagation()" ngbTooltip="Upload From Storage"
+                    class="btn border px-3 py-0 rounded-3 bg-white shadow d-flex align-items-center gap-2" 
+                    (click)="bulkSelect(file)">Upload File
+                    <i class="ri-upload-2-line fs-4"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-12 fs-5 fw-light">
+           {{uploaded_files.length != 0 ? 'Uploaded Files'  : 'No Files Uploaded Yet'}} 
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <ng-container *ngFor="let file of uploaded_files; let i = index">
+                
+                <div class="d-flex align-items-center gap-2 mb-1 border-bottom fw-light">
+                    <div class="fs-5">{{ i+1 }}. </div>
+
+                    <div class="d-flex flex-row align-items-center cursor-pointer gap-2" (click)="openFile(concatenateShortCodes(file.tests) + ' | ' + timeSrvc.dateAsString(file.added_on, true, true), file.pdf_file)">
+                        <div><i [ngClass]="getFileIconClass(file.pdf_file)"></i></div>
+                        <div class="d-flex flex-column">
+                            <app-patient-details nameClass="text-black text-nowrap fs-6 fw-light"
+                            name="{{concatenateShortCodes(file.tests)}}{{ getFileExtension(file.pdf_file) }}" 
+                            time="{{timeSrvc.dateAsString(file.added_on, true, true)}}"></app-patient-details>
+                        </div>
+
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+<ng-template let-modal #viewPdf>
+    <div class="modal-header align-items-center py-2" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-6">
+            {{openedFile}}
+        </span>
+        <div class="d-flex">
+            <!-- <button (click)="downloadFile(openedFile, selected_file)">Download</button> -->
+            <button (click)="modalService.dismissAll()" class="btn-close"></button>
+        </div>
+    </div>
+
+    <div class="modal-body container-full p-0" style="background-color: #F8FAFC;">
+        <div class="row mb-3">
+            <div class="col-12">
+                <iframe [src]="safeUrl" width="100%" height="550" frameborder="0" style="border:0"
+                    allowfullscreen></iframe>
+                <div id="container"></div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #viewImage>
+    <div class="modal-header align-items-center py-2" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-6">
+            {{openedFile}}
+        </span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <div class="row mb-3">
+            <div class="col-12 d-flex justify-content-center">
+                <img [src]="safeUrl" style="width: 500px; height: 500px; object-fit: contain">
+            </div>
+        </div>
+    </div>
+</ng-template>

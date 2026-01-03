@@ -1,0 +1,278 @@
+<div class="container-full">
+  <div class="row fs-5 fw-light mb-3">
+    <div class="col-12">
+      Step 1:  Select The organization in In-Active Section and Mark as Ready to Delete.
+    </div>
+    <div class="col-12">
+      Step 2:  Click the delete button.
+    </div>
+  </div>
+    <div class="row mb-2">
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs-custom" [activeId]="activeTab">
+                <li ngbNavItem [ngbNavItem]="1" (click)="activeTab=1;getData()">
+                    <a ngbNavLink>In-Active</a>
+                    <ng-template ngbNavContent>
+                        <ng-template *ngTemplateOutlet="organizations"></ng-template>
+                    </ng-template>
+                </li>
+                <li ngbNavItem [ngbNavItem]="2" (click)="activeTab=2;getData()">
+                    <a ngbNavLink>Ready to delete</a>
+                    <ng-template ngbNavContent>
+                        <ng-template *ngTemplateOutlet="organizations"></ng-template>
+                    </ng-template>
+                </li>
+            </ul>
+        </div>
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav" ></div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #organizations>
+    <div class="container-full">
+
+
+
+        <div class="row mt-2 mb-5" *ngIf="activeTab == 1">
+            <div class="col-12">
+                <div class="ng-autocomplete font-Readex">
+                    <ng-template #notFoundTemplate let-notFound>
+                        <div [innerHTML]="notFound" *ngIf="searchData.length!==0" class="text-danger"></div>
+                    </ng-template>
+
+                    <ng-template #orgTemplate let-item>
+                        <a class="py-1 px-2 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div>
+                              <img class="me-2 rounded-circle" style="width:27px; height: 27px; object-fit: contain;"
+                                    [src]="item?.b_logo && item?.b_logo != '' ? item?.b_logo : '/assets/images/no-profile-picture-icon.svg'">      
+                                </div>
+                               <div>
+                                <span [innerHTML]="item.organization_name"></span>
+                               </div>
+                            </div>
+                        </a>
+                    </ng-template>
+
+                    <ng-autocomplete historyHeading="" [historyListMaxNumber]="1" [data]="searchData"
+                        [searchKeyword]="'organization_name'" [spellcheck]="false" [isLoading]="searchLoading"
+                        placeholder="Search .." [itemTemplate]="orgTemplate"
+                        (inputChanged)="getClients($event); auto_complete.clear()"
+                        (selected)="selectOrganization($event, 'inactive')" [notFoundTemplate]="notFoundTemplate" #auto_complete
+                        [minQueryLength]="2">
+                    </ng-autocomplete>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 mb-5" *ngIf="activeTab == 1 && item">
+            <div class="col-12">
+                <app-datatable>
+                    <ng-container class="tableheader">
+                      <th class="text-nowrap text-black">Sno.</th>
+                      <th>
+                        <div class="d-flex gap-5 align-items-center justify-content-start">
+                          <div>Name & Joined Date</div>
+                          <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+                            *ngIf="clients && clients.length != 0">
+                            <!-- <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                            <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small> -->
+                          </div>
+                        </div>
+                      </th>
+                      <th>Last Activity On</th>
+                      <th>Curr. Plan Expiry Date</th>
+                      <th>Contact Person</th>
+                      <th>SMS</th>
+                      <th>Whats App</th>
+                      <!-- <th class="text-center">Action</th> -->
+                      <!-- <th>Address</th> -->
+
+                    </ng-container>
+              
+                    <ng-container class="tablebody">
+                      <tr *ngFor="let item of [item]; let i=index">
+                        <td class="fw-semibold text-black">{{ i + 1 }}.</td>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <img class="me-2 rounded-circle" style="width:27px; height: 27px; object-fit: contain;"
+                                [src]="item?.b_logo && item?.b_logo != '' ? item?.b_logo : '/assets/images/no-profile-picture-icon.svg'">
+              
+                            </div>
+                            <app-patient-details [name]="item?.organization_name"
+                              [time]="timeSrvc.dateAsString(item?.added_on, true, true)"></app-patient-details>
+                          </div>
+                        </td>
+                        <td>
+                          <app-patient-details *ngIf="item?.last_activity_at"
+                            [time]="timeSrvc.dateAsString(item?.last_activity_at, true, true)"
+                            [name]="timeSrvc.howManyDaysBack(item?.last_activity_at) != 0 ? timeSrvc.howManyDaysBack(item?.last_activity_at) + ' days back' : timeSrvc.decodeTimestamp(item?.last_activity_at)"></app-patient-details>
+                          <span *ngIf="!item?.last_activity_at" class="text-danger fw-medium">No Activity</span>
+                        </td>
+                        <td>
+                          <app-patient-details *ngIf="item?.subscription_status"
+                            [name]="timeSrvc.dateAsString(item?.subscription_status?.validity, true, true)"
+                            [insertTime]="returnHtml(item?.subscription_status?.validity)"></app-patient-details>
+                        </td>
+                        <td>
+                          <app-patient-details [name]="item?.owner || ''" [time]="'+91' + item?.phone_number"></app-patient-details>
+                        </td>
+                        <td>
+                          <span class="fw-bold fs-6" [class.text-success]="item?.business_settings.is_sms_active"
+                            [class.text-danger]="!item?.business_settings.is_sms_active">
+                            {{item?.business_settings.is_sms_active ? 'ON' : 'OFF'}}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="fw-bold fs-6" [class.text-success]="item?.business_settings.is_whatsapp_active"
+                            [class.text-danger]="!item?.business_settings.is_whatsapp_active">
+                            {{item?.business_settings.is_whatsapp_active ? 'ON' : 'OFF'}}
+                          </span>
+                        </td>
+              
+                        <!-- <td>
+                              <div class="d-flex flex-column">
+                                  <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                                      {{item?.addresses && item?.addresses.length == 1 ? item?.addresses[0].address : ''}}
+                                  </small>
+                              </div>
+                          </td> -->
+                        <!-- <td>
+                          <div class="d-flex align-items-center justify-content-center fs-5">
+                            <button (click)="selectOrganization(item, 'active')">Remove</button>
+                          </div>
+                        </td> -->
+                      </tr>
+                      <tr>
+                        <td colspan="8">
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-danger rounded-3" (click)="takeAction('inactive', item)">Mark as Ready to Delete</button>
+                            </div>
+                        </td>
+                      </tr>
+                      <tr *ngIf="pageLoading">
+                        <td colspan="8">
+                          <div class="p-3 text-center">
+                            Loading..
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </app-datatable>
+            </div>
+        </div>
+
+
+        <div class="row my-3" *ngIf="activeTab == 2">
+          <div class="col-12 fs-5 fw-semibold">
+            Note: You cannot reverse the deletion once you have clicked the "Delete" button.
+          </div>
+        </div>
+
+        <div class="row my-2" *ngIf="activeTab == 2">
+            <div class="col-12">
+                <app-datatable>
+                    <ng-container class="tableheader">
+                      <th class="text-nowrap text-black">Sno.</th>
+                      <th>
+                        <div class="d-flex gap-5 align-items-center justify-content-start">
+                          <div>Name & Joined Date</div>
+                          <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+                            *ngIf="clients && clients.length != 0">
+                            <!-- <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                            <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small> -->
+                          </div>
+                        </div>
+                      </th>
+                      <th>Last Activity On</th>
+                      <th>Curr. Plan Expiry Date</th>
+                      <th>Contact Person</th>
+                      <th>SMS</th>
+                      <th>Whats App</th>
+                      <th></th>
+                      <th class="text-center">Action</th>
+                      <!-- <th>Address</th> -->
+
+                    </ng-container>
+              
+                    <ng-container class="tablebody">
+                      <tr *ngFor="let item of clients; let i=index">
+                        <td class="fw-semibold text-black">{{ i + 1 }}.</td>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <div>
+                              <img class="me-2 rounded-circle" style="width:27px; height: 27px; object-fit: contain;"
+                                [src]="item?.b_logo && item?.b_logo != '' ? item?.b_logo : '/assets/images/no-profile-picture-icon.svg'">
+              
+                            </div>
+                            <app-patient-details [name]="item?.organization_name"
+                              [time]="timeSrvc.dateAsString(item?.added_on, true, true)"></app-patient-details>
+                          </div>
+                        </td>
+                        <td>
+                          <app-patient-details *ngIf="item?.last_activity_at"
+                            [time]="timeSrvc.dateAsString(item?.last_activity_at, true, true)"
+                            [name]="timeSrvc.howManyDaysBack(item?.last_activity_at) != 0 ? timeSrvc.howManyDaysBack(item?.last_activity_at) + ' days back' : timeSrvc.decodeTimestamp(item?.last_activity_at)"></app-patient-details>
+                          <span *ngIf="!item?.last_activity_at" class="text-danger fw-medium">No Activity</span>
+                        </td>
+                        <td>
+                          <app-patient-details *ngIf="item?.subscription_status"
+                            [name]="timeSrvc.dateAsString(item?.subscription_status?.validity, true, true)"
+                            [insertTime]="returnHtml(item?.subscription_status?.validity)"></app-patient-details>
+                        </td>
+                        <td>
+                          <app-patient-details [name]="item?.owner || ''" [time]="'+91' + item?.phone_number"></app-patient-details>
+                        </td>
+                        <td>
+                          <span class="fw-bold fs-6" [class.text-success]="item?.business_settings.is_sms_active"
+                            [class.text-danger]="!item?.business_settings.is_sms_active">
+                            {{item?.business_settings.is_sms_active ? 'ON' : 'OFF'}}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="fw-bold fs-6" [class.text-success]="item?.business_settings.is_whatsapp_active"
+                            [class.text-danger]="!item?.business_settings.is_whatsapp_active">
+                            {{item?.business_settings.is_whatsapp_active ? 'ON' : 'OFF'}}
+                          </span>
+                        </td>
+              
+                        <!-- <td>
+                              <div class="d-flex flex-column">
+                                  <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                                      {{item?.addresses && item?.addresses.length == 1 ? item?.addresses[0].address : ''}}
+                                  </small>
+                              </div>
+                          </td> -->
+                          <td>
+                            <div class="d-flex justify-content-center">
+                              <button class="btn btn-success rounded-3" (click)="takeAction('active', item)">Cancel Deletion</button>
+                            </div>
+                          </td>
+
+                        <td>
+                          <div class="d-flex align-items-center justify-content-center fs-5">
+                            <button  class="btn btn-danger rounded-3" (click)="takeAction('delete', item)">Delete</button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr *ngIf="pageLoading">
+                        <td colspan="8">
+                          <div class="p-3 text-center">
+                            Loading..
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </app-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>

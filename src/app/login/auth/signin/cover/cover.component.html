@@ -1,0 +1,268 @@
+<!-- auth-page wrapper -->
+<div class="auth-page-wrapper py-5 d-flex justify-content-center align-items-center min-vh-100"
+    style="background-color: #F8FAFC;">
+    <!-- <div class="bg-overlay"></div> -->
+    <!-- auth-page content -->
+    <div class="auth-page-content overflow-hidden p-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card overflow-hidden shadow-none border" style="border-radius:12px">
+                        <div class="row g-0 flex-column-reverse flex-lg-row">
+
+                            <div class="col-lg-6 font-Readex">
+                                <div class="p-lg-5 p-3">
+                                    <!-- Logo  -->
+                                    <div class="mb-3">
+                                        <a routerLink="/" class="d-block">
+                                            <img src="assets/images/HealthO.svg" alt="" height="32">
+                                        </a>
+                                    </div>
+
+                                    <ng-container *ngIf="showOtpComponent">
+                                        <!-- Intro Text  -->
+                                        <div class="mb-2 d-flex flex-row gap-2 ">
+                                            <span class="fs-5 fw-medium logoColor">
+                                                All Your Operations In One Place
+                                            </span>
+
+                                            <!-- <span class="fs-5 logoColor">
+                                            LIMS SaaS Product
+                                        </span> -->
+                                        </div>
+
+                                        <div class="mb-2 d-flex flex-row gap-2">
+                                            <span class="fs-5 fw-bold logoColor pb-0"
+                                                style=" border-bottom: 2px solid #1e336a; ">
+                                                Login
+                                            </span>
+                                        </div>
+
+                                        <div class="mb-2 d-flex fs-5">
+                                            <span class="mb-0">Don't have an account ? <a routerLink="/auth/signup"
+                                                    class="fw-normal Link"> Create account</a>
+                                            </span>
+                                        </div>
+
+                                        <!-- <button (click)="test()">Test</button> -->
+                                        <!-- login  -->
+                                        <div class="">
+                                            <form [formGroup]="loginForm"
+                                                (ngSubmit)="showNumberInput ? loginWithPassword() : onSubmit()">
+
+
+                                                <!-- first mobile input -->
+                                                <div class="mb-3 d-flex flex-column gap-1">
+                                                    <div>
+                                                        Enter Mobile Number <span class="text-danger">*</span>
+                                                    </div>
+                                                    <div class="font-DMSans fw-bold d-flex flex-row align-items-center">
+                                                        <div
+                                                            class="indianFlagText ps-2 d-flex flex-row gap-2 align-items-center">
+                                                            <div class="d-flex align-items-center">
+                                                                <img src="assets/images/india-flag-icon.svg"
+                                                                    class="rounded-1" height="16" alt="">
+                                                            </div>
+                                                            <div class="fw-bold fs-5">
+                                                                + 91
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <app-input [removeLabel]="true" placeHolder=""
+                                                                formControlName="phone_number" inputId="loginMobile"
+                                                                (onValueChanged)="showNumberInput? automatePassword($event) : automateSend($event)"
+                                                                [formSubmitted]="submitted" [inputLength]="10"
+                                                                classVal="form-control rounded-3 fw-bold fs-5"
+                                                                styleVal="padding-left:75px; padding: 0.65rem 0.75rem"
+                                                                [applyAutoFocus]="true" [inputDisable]="inProgress"
+                                                                [applyAllowNumbersOnly]="true">
+                                                            </app-input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- <ng-container *ngIf="showNumberInput"> -->
+
+                                                <div class="row mb-3"
+                                                    [@collapseExpand]="showNumberInput ? 'open' : 'closed'">
+                                                    <div class="col-12">
+                                                        Enter Password <span class="text-danger">*</span>
+                                                    </div>
+
+                                                    <div class="col-12 mb-2 d-flex align-items-center">
+                                                        <input [type]="fieldTextType ? 'text' : 'password'"
+                                                            [disabled]="!showNumberInput || inProgress"
+                                                            class="form-control rounded-3 fw-bold fs-5"
+                                                            [class.border-danger]="submitted&&firstPassword==''"
+                                                            style="padding-left:75px; padding: 0.65rem 0.75rem"
+                                                            placeholder="" id="password-input-one"
+                                                            (input)="setPasswordInput($event, true)">
+                                                        <button class="btn pe-3 end-0 top-0 position-absolute  "
+                                                            [class.text-danger]="submitted&&firstPassword==''"
+                                                            type="button" id="password-addon">
+                                                            <i class="mdi align-middle fs-4" [ngClass]="{'mdi-eye-off-outline': !fieldTextType, 'mdi-eye-outline': fieldTextType
+                                                                }" (click)="toggleFieldTextType()"></i></button>
+                                                    </div>
+
+                                                    <!-- <div class="col-12 text-end Link cursor-pointer">
+                                                                Forgot Password ?
+                                                            </div> -->
+
+                                                </div>
+
+
+                                                <!-- send otp button first  -->
+
+                                                <div class="mb-3">
+                                                    <button
+                                                        class="btn bg-logoColor d-flex align-items-center justify-content-center gap-2 rounded-3 text-white w-100 fs-5"
+                                                        type="submit" [disabled]="inProgress"
+                                                        style="padding: 0.65rem 0.75rem;background-color: #1e336a;">
+                                                        <span *ngIf="inProgress"
+                                                            class="spinner-border spinner-border-sm mr-1">
+                                                        </span>
+                                                        <span *ngIf="!inProgress">
+                                                            {{!showNumberInput ? 'Get OTP' : 'Login'}}
+                                                        </span>
+
+                                                    </button>
+                                                </div>
+
+                                                <!-- or line here  -->
+                                                <button type="button"
+                                                    class="d-flex align-items-center mb-3 border-0 p-0 bg-transparent"
+                                                    (click)="toggleLoginSystem()">
+
+                                                    <div class="col-12 p-0 Link cursor-pointer fs-5">
+                                                        {{!showNumberInput ? "Sign in using Password" : "Sign in using mobile OTP"}}
+
+                                                    </div>
+                                                    <!-- <div class="col-4">
+                                                        <hr class="m-0">
+                                                    </div> -->
+                                                </button>
+
+
+                                            </form>
+                                        </div>
+
+                                        <app-dwnld></app-dwnld>
+                                    </ng-container>
+
+
+
+
+
+                                    <!-- CHOOSE TENENT ACCOUNT COMPONENT  -->
+                                    <ng-container *ngIf="!showOtpComponent">
+                                        <div class="pt-2">
+                                            <span class="fs-5 text-muted fw-light">Choose an account</span>
+                                        </div>
+                                        <div class="d-flex  flex-column flex-nowrap gap-3 mt-2 p-3 overflow-auto"
+                                            style="border-radius: 10px; max-height: 320px">
+                                            <div *ngFor="let profile of profiles"
+                                                class="border p-2 cursor-pointer card-animate"
+                                                style="border-radius: 10px;" (click)="saveTenent(profile)">
+                                                <div class="d-flex  flex-row gap-3 align-items-center"
+                                                    data-aos="fade-right">
+                                                    <div>
+                                                        <div class="rounded-3 bg-white overflow-hidden"
+                                                            style="width:50px; height: 50px">
+                                                            <ng-container *ngIf="profile.business_logo">
+                                                                <img style="width:50px; height: 50px; object-fit: contain;"
+                                                                    [src]="profile.business_logo">
+                                                            </ng-container>
+
+                                                            <ng-container *ngIf="!profile.business_logo">
+                                                                <img style="width:50px; height: 50px; object-fit: contain;"
+                                                                    src="/assets/images/no-profile-picture-icon.svg">
+                                                            </ng-container>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row flex-nowrap align-items-center justify-content-between"
+                                                        style="width:300px">
+                                                        <div class="d-flex flex-column">
+                                                            <small
+                                                                class="font-Readex text-black fw-light">{{profile.business_name}}</small>
+                                                            <small
+                                                                class=" fs-6 fw-medium inactive">{{profile.is_superadmin
+                                                                ? "Super Admin" : profile.lab_staff_role}}</small>
+
+                                                        </div>
+
+                                                        <ng-container *ngIf="!profile.is_account_disabled">
+                                                            <span class="fw-light d-flex flex-row gap-1 fs-3" *ngIf="!profile?.loading"
+                                                                [class.text-success]="(profile.is_login_access || profile.is_superadmin)"
+                                                                [class.text-danger]="!(profile.is_login_access || profile.is_superadmin)">
+
+                                                                <i class="ri-check-line"
+                                                                    *ngIf="(profile.is_login_access || profile.is_superadmin)"></i>
+                                                                <i class="ri-close-line"
+                                                                    *ngIf="!(profile.is_login_access || profile.is_superadmin)"></i>
+                                                        
+                                                                </span>
+                                                                <span class="fw-light d-flex flex-row gap-1 fs-3" *ngIf="profile?.loading">
+                                                                    <span class="spinner-border spinner-border-sm mr-1 text-primary"></span>
+                                                                </span>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="profile.is_account_disabled">
+                                                            <span class="fw-light fs-3 text-danger"  ngbTooltip="Account suspended for violating privacy terms and conditions, please contact admin.">
+                                                                <i class="ri-spam-line"></i>
+                                                            </span>
+                                                        </ng-container>
+
+
+                                                    </div>
+
+
+                                                </div>
+                                                <ng-container *ngIf="profile.is_account_disabled">
+                                                    <small class="fw-normal text-danger" *ngIf="profile.is_superadmin">
+                                                        Account suspended for violating privacy terms and conditions, please contact admin.
+                                                    </small>
+                                                    <small class="fw-normal text-danger" *ngIf="!profile.is_superadmin">
+                                                        Account is disabled, please contact admin.
+                                                    </small>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+
+
+                                </div>
+
+
+                            </div>
+
+
+                            <!-- end col -->
+
+                            <div class="col-lg-6 d-lg-flex d-none justify-content-end">
+                                <div class="float-end bg-light-blue d-flex align-items-center">
+                                    <app-carousel></app-carousel>
+                                </div>
+                            </div>
+
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </div>
+    <!-- end auth page content -->
+
+    <!-- footer -->
+    <app-auth-footer></app-auth-footer>
+    <!-- end Footer -->
+</div>
+<!-- end auth-page-wrapper -->

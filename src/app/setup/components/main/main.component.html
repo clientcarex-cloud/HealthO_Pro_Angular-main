@@ -1,0 +1,51 @@
+
+<div class="container-full font-Readex">
+
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="tabsNavigation d-flex">
+                <ul ngbNav #nav="ngbNav"
+                    class="nav nav-section-custom mb-2 font-inter d-flex flex-sm-wrap flex-md-nowrap flex-sm-nowrap flex-lg-nowrap justify-content-sm-start justify-content-md-center justify-content-lg-center justify-content-xl-center justify-content-center align-items-center">
+                    <li ngbNavItem>
+                        <a ngbNavLink>Master</a>
+                        <ng-template ngbNavContent>
+                            <app-masterrr></app-masterrr>
+                            <!-- <app-setup></app-setup> -->
+                        </ng-template>
+                    </li>
+                    <li ngbNavItem>
+                        <a ngbNavLink>Tweaks</a>
+                        <ng-template ngbNavContent>
+                            <app-tweaks></app-tweaks>
+                        </ng-template>
+                    </li>
+                    <li ngbNavItem>
+                        <a ngbNavLink>Business Profile</a>
+                        <ng-template ngbNavContent>
+                            <app-setup></app-setup>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-12 col-lg-4 col-sm-12">
+            <div class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+                <app-info-btn></app-info-btn>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+
+
+</div>

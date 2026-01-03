@@ -1,0 +1,239 @@
+<!-- SETUP COMPONENT  -->
+<div class="container-full bg-white p-3 border rounded-3">
+
+  <div class="row mb-3 g-2">
+    <div class="col-lg-8 col-12 text-muted">
+      These information will be displayed on invoices/estimates/payments and other documents where company info is
+      required
+    </div>
+
+    <div class="col-lg-4 col-12 d-flex justify-content-end">
+      <button type="submit" (click)="onSubmit()" class="btn btn-success px-5 shadow rounded-3">Save</button>
+    </div>
+  </div>
+
+  <div class="row mb-3 justify-content-between">
+    <form class="col-lg-8 col-12" [formGroup]="organizationForm">
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+        <app-input formControlName="organization_name" [imp]="true" [formSubmitted]="submitted" [inputDisable]="true"
+          labelText="" [removeLabel]="true" placeHolder="Enter Name" classVal="form-control bg-transparent border-0 p-0 fs-3 fw-bold rounded-3"></app-input>
+      </div>
+
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3 fs-5" *ngIf="is_salogin">
+        <app-checkbox labelText="" [showLabel]="false" activeText="Allow Multiple Branches Access" [checkboxValue]="organization?.multiple_branches?.multiple_branches"
+         inactiveText="Allow Multiple Branches Access" classVal="" (onCheckboxValueChanged)="multipleAccess(warning, $event)"></app-checkbox>
+      </div>
+
+      <!-- address row here  -->
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+        <ng-container *ngIf="organization?.addresses && organization.addresses.length > 0; ">
+          <ng-container *ngFor="let item of organization.addresses; let i = index">
+            <div class="row mb-3 g-3">
+              <div class="col-lg-7 col-12">
+                <app-input [inputValue]="item.address" [formSubmitted]="submitted" (onValueChanged)="writeAddress(item, 'address', $event)"
+                [labelText]="'Address ' + (i + 1)" placeHolder="Enter Address"></app-input>
+              </div>
+              <div class="col-lg-3 col-12">
+                <app-input [inputDisable]="!item?.address || item.address == ''"  (onValueChanged)="writeAddress(item, 'clinic_reg_no', $event)" [inputValue]="item.clinic_reg_no" [formSubmitted]="submitted"  (onValueChanged)="writeAddress(item, 'clinic_reg_no', $event)"
+                labelText="Clinic Reg. No."[removeCloseIcon]="true" classVal="form-control fw-bold rounded-3" placeHolder=""></app-input>
+              </div>
+              <div class="col-lg-2 col-12">
+                <app-checkbox labelText="" [checkboxValue]="item.is_head_branch" (onCheckboxValueChanged)="writeAddress(item, 'is_head_branch', $event)" [showLabel]="true" activeText="Head Branch" inactiveText="Head Branch"
+                classVal="d-flex pt-2"></app-checkbox>
+              </div>
+
+
+            </div>
+
+          </ng-container>
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3 mt-3">
+            <div class="col-12 px-3">
+              <button class="text-primary bg-transparent border-0 fs-5 fw-light" (click)="addAddress()">
+                  <div class="d-flex gap-3">
+                      <span><i class="ri-add-line"></i></span>
+                      <span>Add Branches</span>
+                  </div>
+              </button>
+          </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+        <app-input formControlName="address2" [formSubmitted]="submitted" 
+          labelText="Address 2" placeHolder="Enter Address"></app-input>
+      </div> -->
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+        <div class="row">
+          
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+            <label for="country">Country</label>
+            <select name="country" (input)="getCountry($event)" class="form-select w-100 rounded-3 fw-light"
+              formControlName="country">
+              <option inputDisable>Select Country</option>
+              <option class="py-3 fs-6" *ngFor="let item of  countries; index as i" [value]="item.id">
+                {{item.name}}</option>
+            </select>
+          </div>
+
+
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+            <label for="state">State</label>
+            <select name="state" class="form-select w-100 rounded-3 fw-light" formControlName="state">
+              <option inputDisable>Select State</option>
+              <option class="py-3 fs-6" *ngFor="let item of filteredStates()" [value]="item.id">
+                {{item.name}}
+              </option>
+            </select>
+
+          </div>
+
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+            <label for="city">City</label>
+            <select name="city" class="form-select w-100 rounded-3 fw-light" formControlName="city">
+              <option inputDisable>Select City</option>
+              <option class="py-3 fs-6" *ngFor="let item of filteredCities()" [value]="item.id">
+                {{item.name}}
+              </option>
+            </select>
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+        <div class="row">
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+            <app-input [formSubmitted]="submitted"  labelText="GSTIN"
+              placeHolder="Enter GSTIN" formControlName="gst"></app-input>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+            <app-input formControlName="phone_number" [imp]="true"  [inputDisable]="true" labelText="Phone" placeHolder="Enter Phone"></app-input>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+            <app-input formControlName="pin_code" labelText="Pincode" placeHolder="Enter Pincode"></app-input>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+        <div class="row">
+          <div class="col-8">
+            <app-input formControlName="website" [formSubmitted]="submitted" 
+            labelText="Website" placeHolder="Enter Organization Website"></app-input>
+          </div>
+        </div>
+      </div>
+      
+    </form>
+
+    <div class="col-lg-3 col-12">
+      <div class="row mb-3">
+        <div class="col-12 float-end d-flex justify-content-start">
+          <img style="height: 200px; width: 200px; object-fit: contain;" class="shadow border rounded-3" [src]="organizationForm.get('b_logo')?.value" >
+        </div>        
+      </div>
+
+      <div class="row align-items-end">
+        <div class="col-8" *ngIf="!organizationForm.get('b_logo')?.value">
+          <label for="logo">Select Logo</label>
+          <input name="logo" type="file" class="form-control" accept="image/png, image/gif, image/jpeg" (change)="onFileChanged($event,'b_logo')">
+        </div>
+        <div *ngIf="organizationForm.get('b_logo')?.value"
+        [class.col-8]="organizationForm.get('b_logo')?.value"
+         [class.col-4]="!organizationForm.get('b_logo')?.value">
+          <button name="removeBtn" (click)="clearLogo('b_logo')" class="btn btn-soft-danger rounded-3 w-100 text-nowrap">Remove Logo & Select New</button>
+        </div>
+      </div>
+
+      <div class="row mb-3"  *ngIf="false">
+        <div class="col-12 float-start d-flex justify-content-start">
+          <img style="height: 105mm; width: 147.5mm; object-fit: contain;" [src]="organizationForm.get('b_letterhead')?.value" >
+        </div>        
+      </div>
+
+      <div class="row align-items-end" *ngIf="false">
+        <div class="col-8">
+          <label for="logo">Select Business Letterhead</label>
+          <input name="logo" type="file" class="form-control" accept="image/png, image/gif, image/jpeg" (change)="onFileChanged($event,'b_letterhead')">
+        </div>
+        <div class="col-4">
+          <button name="removeBtn" (click)="clearLogo('b_letterhead')" class="btn btn-soft-danger rounded-3">Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="row mb-3">
+    Add Your Organization Branches
+  </div> -->
+
+  <!-- <div class="row mb-3">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 d-flex gap-1 flex-wrap">
+      <div *ngFor="let item of branches" class="d-flex gap-2 d-flex flex-row ">
+        <div class="d-flex flex-column">
+          <div>{{item.label}}</div>
+          <div>
+            <div class="p-3 border rounded-3 d-flex flex-column justify-content-end align-items-center bg-white"
+              style="width:200px; height:120px;">
+              <span>{{item.company}}</span>
+              <span class="text-nowrap">{{item.location}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+        
+      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+        <div class="bg-white d-flex flex-column">
+          <div class="text-left">Add more</div>
+          <div>
+            <button class="border-0">
+              <div class="border bg-white rounded-3 d-flex flex-column justify-content-center align-items-center"
+              style="width:200px; height:120px; font-size:50px">
+              +
+              </div>
+            </button>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+    </div> -->
+</div>
+
+
+<ng-template #warning let-modal>
+  <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-4 " id="modal-basic-title"></span>
+      <div>
+
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+  </div>
+  <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+      <div class="container-full">
+        <div class="row mb-3">
+          <div class="col-12 bg-soft-primary border border-primary rounded-3 p-1">
+            This should only be activated for new accounts; please do not enable it for any existing accounts
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-12">
+            Are you sure to allow multiple branches ?
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12 d-flex flex-row gap-2">
+            <button class="btn btn-success rounded-3 shadow" (click)="updateMultipleBranches(true)">Save</button>
+            <button class="btn btn-danger rounded-3 shadow" (click)="modal.dismiss('Cross click')">Go Back</button>
+          </div>
+        </div>
+      </div>
+  </div>
+</ng-template>

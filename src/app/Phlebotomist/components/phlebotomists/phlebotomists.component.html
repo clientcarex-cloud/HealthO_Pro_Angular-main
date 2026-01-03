@@ -1,0 +1,289 @@
+<!-- PHLEBOTOMIST COMPONENT  -->
+<app-layout [showMap]="false" [showPageTitle]="false" [displayInformation]="false" 
+[labPackage]="false" [extraFilter]="true" [showSelectPrint]="false">
+
+  <ng-container class="tabsNavigation">
+    <div class="btn-group d-flex flex-wrap rounded-pill font-inter">
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'All' }" (click)="setStatus('All')">
+        All
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'pending' }"
+        (click)="setStatus('pending')">
+        Pending
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'samplecollected' }"
+        (click)="setStatus('samplecollected')">
+        Sample Collected
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'emergency' }"
+        (click)="setStatus('emergency')">
+        Emergency <span class="bg-danger rounded-pill btn-sm border-0 text-white"
+          *ngIf="emergencyCount && emergencyCount !==0">{{emergencyCount}}</span>
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+      [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'cancelled' }"
+      (click)="setStatus('cancelled')">
+      Cancelled
+    </button>
+    </div>
+  </ng-container>
+
+  <ng-container class="addNewoptions">
+    <div ngbDropdown #myDrop="ngbDropdown" (click)="$event.stopPropagation(); myDrop.open()">
+      <button type="button" class="btn d-flex align-items-center" id="dropdownBasic1" ngbDropdownToggle>
+          <i class="ri-settings-4-line fs-4"></i>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="font-Readex">
+        <span class="px-3 text-center">Options</span>
+          <span ngbDropdownItem>
+              <app-checkbox activeText="Auto-Print Samples" inactiveText="Auto-Print Samples"
+              [checkboxValue]="print_permissons?.phlebotomist_print" (onCheckboxValueChanged)="UpdatePrintControls($event)" 
+                  [showLabel]="false"></app-checkbox>
+          </span>
+
+        </div>
+      </div>
+    <app-info-btn></app-info-btn>
+  </ng-container>
+
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)" [selectToday]="true"></app-datepicker-section>
+  </ng-container>
+
+  <ng-container class="extraFilter">
+    <app-select [selectItems]="departments" [labelText]="''" selectBindLabel="name" [multipleSelect]="true"
+      placeHolder='Select Department' (onSelectionChanged)="selectDepartment($event)"></app-select>
+  </ng-container>
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="text-nowrap text-black">Sno.</th>
+        <th class="sort1 text-nowrap fullWidthColumn " sortable="name">
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Patients</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="patients && patients.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th class="sort1 text-nowrap fullWidthColumn"><span>Lab Test</span></th>
+        <th class="sort1 text-nowrap" style="min-width: 100px">Patient IDs</th>
+        <th class="sort1 text-nowrap "><span>Status</span></th>
+        <th class="sort1 text-nowrap "><span>User</span></th>
+        <th class="sort1 text-nowrap " *ngIf="activeButton!=='pending'"><span>Accession No</span></th>
+        <th class="sort1 text-nowrap "><span>Collection</span></th>
+        <th class="sort1 text-nowrap" *ngIf="activeButton !== 'pending' && activeButton !== 'cancelled'">
+          <span>Action</span>
+        </th>
+        
+      </ng-container>
+
+      <ng-container class="tablebody" *ngIf="patients && patients.length !== 0">
+        <tr class="font-Readex td-color" *ngFor="let item of patients; let i = index">
+          <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+          <td>
+            <div class="d-flex flex-column">
+              <div class="d-flex flex-row gap-1">
+                <span class="text-black text-nowrap fs-6 fw-medium"
+                  *ngIf="item.title!== null">{{item.patient.title}}</span>
+                <span class="text-black text-nowrap fs-6 fw-medium">
+                  <ngb-highlight [result]="item.patient.name" [term]="query"></ngb-highlight>
+                </span>
+              </div>
+              <small class="text-nowrap">
+                {{timeSrvc.decodeTimestamp(item.added_on)}}
+              </small>
+            </div>
+          </td>
+
+          <td class=" text-wrap text-black">
+            <ngb-highlight [result]="item.name" [term]="query"></ngb-highlight>
+          </td>
+
+          <td>
+            <div class="container-full flex-column IDs" style=" min-width: 180px">
+              <div class="row IDs g-0 d-flex flex-nowrap align-items-end justify-content-between">
+                <div class="col-4 px-0 d-flex flex-row flex-nowrap" style="vertical-align: bottom;">
+                  <small style="vertical-align: bottom;">
+                    <small class="d-flex flex-row text-nowrap" style="vertical-align: bottom;">
+                      MR NO :
+                    </small>
+                  </small>
+                </div>
+                <div class="col-8 ps-0 d-flex flex-row">
+                  <ngb-highlight [result]="item.patient.mr_no" [term]="query"></ngb-highlight>
+                </div>
+              </div>
+              <div class="row IDs g-0 d-flex flex-nowrap align-items-center">
+                <div class="col-4 px-0">
+                  <small>
+                    <small class="d-flex flex-row text-nowrap">
+                      VISIT ID :
+                    </small>
+                  </small>
+                </div>
+                <div class="col-8 ps-0">
+                  <ngb-highlight [result]="item.patient.visit_id" [term]="query"></ngb-highlight>
+                </div>
+              </div>
+            </div>
+          </td>
+
+
+          <td class="text-nowrap">
+            <!-- <small>{{item.status_id}}</small> -->
+            <span *ngIf="item?.status_id.includes('Emergency') || item?.status_id.includes('Urgent')">
+              <span class="text-danger rounded-3 px-1 py-1">{{item?.status_id}}</span>
+            </span>
+            <span *ngIf="!item?.status_id.includes('Emergency') && !item?.status_id.includes('Urgent')">
+              <span class="rounded-3 px-1 py-1">{{item?.status_id}}</span>
+            </span>
+          </td>
+          <td class=" text-nowrap text-nowrap">{{item.patient.created_by}}</td>
+          <td class=" text-nowrap text-nowrap" *ngIf="activeButton!=='pending'">
+            <ng-container *ngIf="item.phlebotomist !== null ">
+              <ng-container *ngIf="item.phlebotomist?.assession_number!==null">
+                <ngb-highlight [result]="item.phlebotomist.assession_number" [term]="query"></ngb-highlight>
+              </ng-container>
+              <ng-container
+                *ngIf="item.phlebotomist.assession_number===null || item.phlebotomist.assession_number===''">
+                --
+              </ng-container>
+
+            </ng-container>
+            <ng-container *ngIf="item.phlebotomist===null">--</ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="(item.phlebotomist === null || !item.phlebotomist.is_collected) && !item.status_id.includes('Cancel')">
+              <button class="rounded-3 btn btn-sm btn-primary text-nowrap" (click)="collectPrint(item)"
+                [disabled]="item?.loading">
+                <!-- <span></span> -->
+                <span *ngIf="item?.loading" class="px-3"><span
+                    class="spinner-border spinner-border-sm mr-1 "></span></span>
+
+                <span *ngIf="!item?.loading">
+                  <span *ngIf="!print_permissons?.phlebotomist_print">Collect</span>
+                  <span *ngIf="print_permissons?.phlebotomist_print">Collect & Print</span>
+                </span>
+              </button>
+            </ng-container>
+            <div class="d-flex flex-column" *ngIf="item.phlebotomist && item.phlebotomist.is_collected">
+              <span>
+                <small class="text-nowrap">Sample Collected !</small>
+              </span>
+              <span>
+                <small class="text-nowrap">
+                  {{ timeSrvc.decodeTimestamp(item.phlebotomist.collected_at) }}
+                </small>
+              </span>
+            </div>
+          </td>
+          <td *ngIf="activeButton!=='pending' && activeButton !== 'cancelled'">
+            <ng-container *ngIf="!item?.status_id.includes('Cancelled')">
+                <button class="btn btn-success px-3 btn-sm rounded-3" (click)="printReport(item)"
+                *ngIf="item.phlebotomist && item.phlebotomist.is_collected">
+                Print
+              </button>
+            </ng-container>
+
+          </td>
+          <!-- <td>
+
+                        <div>
+                            <button class="btn btn-success btn-sm btn-sm rounded-3"  *ngIf="item.phlebotomist && item.phlebotomist.is_collected && !item.phlebotomist.is_received">
+                                Received
+                            </button>
+                        </div>
+                        <div class="d-flex flex-column" *ngIf="item.phlebotomist && item.phlebotomist.is_received">
+                            <span>
+                                <small class="text-nowrap">Received !</small>
+                            </span>
+                            <span>
+                                <small class="text-nowrap">
+                                    {{ timeSrvc.decodeTimestamp(item.phlebotomist.received_at) }}
+                                </small>
+                            </span>
+                        </div>
+
+                    </td> -->
+          <!-- <td class=" text-nowrap text-nowrap">
+                        <app-editbutton [textRemove]="true" classVal="bg-transparent border-0 "
+                            icon="bi bi-pencil-fill"></app-editbutton>
+                    </td> -->
+        </tr>
+      </ng-container>
+
+
+      <ng-container class="tablebody">
+        <tr *ngIf="!patients || patients.length === 0">
+          <td colspan="9">
+            <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+              style="vertical-align: middle;min-height: 100px;">
+              <!-- NO PATIENTS -->
+              <span *ngIf="query!==''">
+                No Data Found with Search Query " <span class="fw-bold text-black">{{query}}</span> "
+              </span>
+
+              <span *ngIf="query==='' && !pageLoading">
+                No patients registered on this day.
+              </span>
+
+              <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="text-black pt-2 fw-light">Loading</div>
+              </span>
+              <!-- <img *ngIf="query===''" src="/assets/images/file.png" style="width:17%">
+              <span *ngIf="query===''">NO DATA</span> -->
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </ng-container>
+
+</app-layout>

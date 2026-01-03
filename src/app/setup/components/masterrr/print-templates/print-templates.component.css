@@ -1,0 +1,25 @@
+/* print-templates.component.css */
+
+/* Custom styles for CKEditor content */
+.cke_contents {
+    font-family: Arial, sans-serif !important;
+    font-size: 140px !important;
+    color: #ff0000 !important; /* Text color */
+  }
+  
+  /* Custom styles for CKEditor toolbar */
+  .cke_toolbar {
+    background-color: #ea3d11 !important; /* Toolbar background color */
+  }
+  
+  /* Custom styles for CKEditor toolbar buttons */
+  .cke_button {
+    color: #000; /* Button color */
+  }
+  
+  /* Custom styles for CKEditor selected toolbar buttons */
+  .cke_button__selected {
+    background-color: #ccc; /* Selected button background color */
+  }
+  
+  

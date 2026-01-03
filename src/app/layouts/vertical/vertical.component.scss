@@ -1,0 +1,5 @@
+
+.blur-effect {
+    filter: blur(8px); /* Initial blur amount */
+    transition: filter 0.3s, color 0.3s, transform 0.3s; /* Transition for filter, color, and transform */
+  }

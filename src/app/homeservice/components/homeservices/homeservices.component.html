@@ -1,0 +1,190 @@
+
+<div class="container-full">
+
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row g-1 mb-2 align-items-center justify-content-between">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-6 col-sm-12">
+            <div class="d-flex">
+                <!-- <ng-content select=".tabsNavigation" *ngIf="!showNav"></ng-content> -->
+                <div class="nav-section-custom">
+                    <div class="btn-group d-flex flex-wrap rounded-pill font-inter">
+                        <button type="button" class="btn rounded-pill ms-1 border-0 inactive px-3"
+                          [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'All' }"
+                          (click)="setActiveButton('All')">
+                          All
+                        </button>
+                        <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+                          [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'button2' }"
+                          (click)="setActiveButton('button2')">
+                          Pending
+                        </button>
+                        <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+                          [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'button3' }"
+                          (click)="setActiveButton('button3')">
+                          Re-Test
+                        </button>
+                        <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+                          [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'button4' }"
+                          (click)="setActiveButton('button4')">
+                          Emergency <span class="bg-danger rounded-circle btn-sm border-0 text-white" >2</span>
+                        </button>
+                        <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+                          [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'button5' }"
+                          (click)="setActiveButton('button5')">
+                          Authorized
+                        </button>
+                      </div>
+
+                </div>
+                <!-- <ul ngbNav #nav="ngbNav" 
+                    class="nav nav-section-custom mb-2 font-inter d-flex flex-sm-wrap flex-md-nowrap flex-sm-nowrap flex-lg-nowrap justify-content-sm-start justify-content-md-center justify-content-lg-center justify-content-xl-center justify-content-center align-items-center">
+                    <ng-content select=".tabsNavigation"></ng-content>
+                </ul> -->
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-6 col-lg-4 col-sm-12">
+            <div
+                class="addNewInfoOptions font-Readex d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-end justify-content-xs-center justify-md-content-end align-items-center gap-1">
+                <ng-content select=".addNewoptions"></ng-content>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAP  -->
+    <div class="row mb-2">
+        <div class="d-flex">
+            <div id="map" #map class="rounded-3" style="height: 300px;"></div>
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH AND SORT OPTIONS  -->
+    <div class="row g-1 mb-2 font-Readex">
+        <div class="col-md-12 col-lg-12 col-xl-9">
+            <div class="row g-1">
+                <div class="searchSort col-xl-3 col-lg-3">
+                    <app-searchbox placeholder="Search Patients"></app-searchbox>
+                </div>
+                <div class="col-xl-2 col-lg-2 ">
+                    <ng-content select=".datepicker"></ng-content>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-lg-3 col-xl-3">
+            <!-- <div class="d-flex align-items-center gap-1 d-flex align-items-end justify-content-end"> -->
+
+            <div class="row mx-0 g-1 align-items-center justify-content-end">
+                <div class="col-3 d-flex justify-content-end">
+                    <span class="fw-light">Showing</span>
+                </div>
+                <div class="col-4">
+                    <select class="form-select w-100 font-DMSans" style="width: auto" name="pageSize" placeholder="Select">
+                        <option >2</option>
+                        <option >5</option>
+                        <option >8</option>
+                        <option >12</option>
+                        <option >15</option>
+                        <option >20</option>
+                      </select>
+                </div>
+                <div class="col-2">
+                    <span class="fw-light">Entries</span>
+                </div>
+            </div>
+            <!-- </div> -->
+        </div>
+    </div>
+
+    <!-- TABLE SECTION  -->
+    <div class="row mb-2 font-Readex">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-black">#</th>
+                <th><i class="bi bi-filter me-2"></i><span>Patient Name</span></th>
+                <th><i class="bi bi-filter me-2"></i><span>Age</span></th>
+                <th class="text-center"><i class="bi bi-filter me-2"></i><span>Sample Collection</span></th>
+                <th class="text-center"><i class="bi bi-filter me-2"></i><span>Area</span></th>
+                <th class="text-center"><i class="bi bi-filter me-2"></i><span>Mobile Number</span></th>
+                <th class="text-center"><i class="bi bi-filter me-2"></i><span>Address</span></th>
+                <th class="text-center"><i class="bi bi-filter me-2"></i><span>Executive</span></th>
+                <th class="text-center"><i class="bi bi-filter me-2"></i><span>Action</span></th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let item of dataList" class="font-Readex  fw-light">
+                    <td class="text-black fs-5 fw-medium">{{item.sno}}</td>
+                    <td class="d-flex flex-column text-black">
+                        <span class="fw-medium fs-6">{{item.Name}}</span>
+                        <span class="fs-6">{{item.gender}}</span>
+                    </td>
+                    <td>
+                        <span>{{item.Age}} Years</span> 
+                    </td>
+                    <td class="text-center">
+                        <select class="border-0 w-25 bg-transparent">
+                            <option>{{item.sample}}</option>
+                        </select>
+                        <!-- <app-select [placeHolder]="'Select'" [selectValue]="item.sample"></app-select> -->
+                    </td>
+                    <td>
+                        {{item.area}}
+                    </td>
+                    <td class="text-center">+91 {{item.mobilenumber}}</td>
+                    <td class="text-center text-wrap">
+                       {{item.address}}
+                    </td>
+                    <td class="text-center">
+                        {{item.executive}}
+                     </td>
+                    <td class="text-center">
+                        <div>
+                            <app-addnewbutton *ngIf="item.Action == 'Start'" classVal="btn btn-danger rounded-3"
+                             [buttonText]="item.Action" content="content">
+                            </app-addnewbutton>
+                            
+                            <app-addnewbutton *ngIf="item.Action == 'Collected'" classVal="btn btn-darker rounded-3"
+                             [buttonText]="item.Action" content="content">
+                            </app-addnewbutton>
+
+                            <app-addnewbutton *ngIf="item.Action == 'Submitted'" classVal="btn btn-success rounded-3"
+                             [buttonText]="item.Action" content="content">
+                            </app-addnewbutton>
+
+                            <app-addnewbutton *ngIf="item.Action == 'Re-start'" classVal="btn btn-primary rounded-3"
+                             [buttonText]="item.Action" content="content">
+                            </app-addnewbutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+
+    </div>
+
+    <!-- PAGINATION  -->
+    <div class="row g-1 justify-content-md-between align-items-md-center font-DMSans">
+        <div class="col col-sm-6 text-sm-right ">
+            <span class="text-nowrap">Showing 1 to 6 of 06 Entries</span>
+        </div>
+        <div class="col col-sm-6">
+            <div class="text-sm-right float-end text-black">
+                <ngb-pagination [collectionSize]="20" [(page)]="service.page"
+                [maxSize]="5" [pageSize]="service.pageSize" [rotate]="true" [boundaryLinks]="true"
+                class="custom-pagination" ></ngb-pagination>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="row ">
+            <div class="col-lg-12">
+                <div [ngbNavOutlet]="nav"></div>
+            </div>
+        </div> -->
+
+</div>

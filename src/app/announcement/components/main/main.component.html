@@ -1,0 +1,183 @@
+
+<div class="container-full">
+
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row g-lg-2 g-2  align-items-center justify-content-between">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="tabsNavigation d-flex">
+                <ul ngbNav #nav="ngbNav"
+                    class="nav nav-section-custom mb-2 font-inter" [activeId]="activeTab">
+                    <li [ngbNavItem]="1"  (click)="activeTab = 1">
+                        <a ngbNavLink>SMS</a>
+                        <ng-template ngbNavContent>
+                            <app-sms></app-sms>
+                        </ng-template>
+                    </li>
+                    <li  [ngbNavItem]="2"  (click)="activeTab = 2">
+                        <a ngbNavLink>Whatsapp</a>
+                        <ng-template ngbNavContent >
+                            <app-sms [sms]="false"></app-sms>
+                        </ng-template>
+                    </li>
+
+                    <li  [ngbNavItem]="4">
+                        <a ngbNavLink >App Notify</a>
+                        <ng-template ngbNavContent >
+                            <div>
+                                <div class="container-full">
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <div style="height: 50vh" class="d-flex justify-content-center align-items-center fs-4 logoColor fw-light">
+                                                <span>Feature Under Development</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-12 col-lg-4 col-sm-12">
+            <div class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+              <button class="btn bg-white border rounded-3" (click)="showHistory(senthistory, false );">Sent History</button>  
+              <button class="btn bg-white border rounded-3" (click)="showHistory(historyModal);">Purchase History</button>
+              <app-info-btn></app-info-btn>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<ng-template let-modal #senthistory>
+  <div class="modal-header py-1 align-items-center" style="background-color: #F8FAFC;">
+      <span class="modal-title fs-4">Sent History</span>
+      <button (click)="modalService.dismissAll()" class="btn-close"></button>
+  </div>
+
+  <div class="modal-body">
+    <app-bulk-history [activeTab]="activeTab" [msg_type]="msg_type"></app-bulk-history>
+  </div>
+
+</ng-template>
+
+
+<ng-template let-modal #historyModal>
+    <div class="modal-header py-1 align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Purchase History</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <div class="container-full">
+
+            <!-- SEARCH AND SORT OPTIONS  -->
+            <div class="row g-2 mb-2">
+              <div class="col-lg-3 col-12">
+
+                <app-select classVal="fw-normal fs-5 ng-select-container border-0  rounded-3" labelText="" [selectItems]="types" placeHolder="Select Type"  selectBindLabel="name"
+                [selectValue]="msg_type ? types[msg_type - 1] : types[2]" (onSelectionChanged)="selectType($event)"
+                ></app-select>
+              </div>
+
+              <div class="col-lg-5">
+
+              </div>
+          
+              <div class="col-lg-4 col-12">
+          
+                <div class="row mx-0 g-1 align-items-center justify-content-end">
+                  <div class="col-3 d-flex justify-content-end">
+                    <span class="fw-light">Showing</span>
+                  </div>
+                  <div class="col-3">
+                    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+                      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option [value]="all_count">All</option>
+                    </select>
+                  </div>
+                  <div class="col-2 justify-content-end pe-0">
+                    <span class="fw-light">Entries</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+          
+            <div class="row mb-2">
+              <div class="col-12">
+                <app-datatable>
+                  <ng-container class="tableheader">
+                    <th style="width:10px">S.no</th>
+                    <th>Purchased on</th>
+                    <th>Type</th>
+                    <th>Credits</th>
+
+
+                  </ng-container>
+          
+                  <ng-container class="tablebody">
+                    <tr *ngFor="let item of history;let i = index">
+                      <td class="fw-semibold text-black py-1">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+                      <td  class="fw-semibold text-black py-1">
+                        {{timeSrvc.dateAsString(item.added_on)}}
+                      </td>
+                      <td>
+                        {{item.messaging_service_types}}
+                      </td>
+                      <td class="fw-semibold text-black">
+                        {{item.new_credits}}
+                      </td>
+
+                    </tr>
+                  </ng-container>
+                </app-datatable>
+              </div>
+            </div>
+          
+            <!-- PAGINATION  -->
+            <div class="row g-1 justify-content-md-between align-items-md-center font-DMSans">
+              <div class="col col-sm-6 text-sm-right ">
+                <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                    all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+              </div>
+              <div class="col col-sm-6">
+                <div class="text-sm-right float-end text-black">
+                  <div class="d-flex">
+                    <ngb-pagination [collectionSize]="all_count ? all_count : 0" [(page)]="page_number" [maxSize]="3"
+                      (pageChange)="onPageChange($event)" [pageSize]="page_size" [rotate]="true" [boundaryLinks]="true"
+                      class="custom-pagination">
+                      <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+                      <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+                    </ngb-pagination>
+          
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+          </div>
+
+    </div>
+</ng-template>
+
+
+ 

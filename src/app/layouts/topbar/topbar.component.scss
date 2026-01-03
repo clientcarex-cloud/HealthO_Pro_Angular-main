@@ -1,0 +1,34 @@
+// .ng-autocomplete {
+//     width: 100px;
+// }
+.autocomplete-container .input-container input {
+    // your styles here
+    font-size: 30px !important;
+}
+
+.z-100{
+    z-index: 1103210;
+  }
+
+  .search-input {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMSAyMSI+PHBhdGggZmlsbD0ibm9uZSIgZD0iTTEgMTAuOTVsNC40MyA0LjQzIDEuNjkgMS42OSA0LjQzLTQuNDMgNC40M3oiLz48L3N2Zz4=');
+    background-repeat: no-repeat;
+    background-position: right center;
+    padding-right: 30px; /* Adjust padding to ensure text doesn't overlap with the icon */
+  }
+
+
+  .visitButton{
+    padding: 5px;
+    height: 27px;
+  }
+
+
+  .autocomplete-container .suggestions-container ul li {
+    position: relative;
+    list-style: none;
+    padding: 5px 0px !important;
+    margin: 0;
+    cursor: pointer;
+  }
+  

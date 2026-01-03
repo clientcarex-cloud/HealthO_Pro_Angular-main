@@ -1,0 +1,213 @@
+'Log files:
+/Users/fahadahmed/Django/HealthO_Pro_Angular-main/.npm-cache/_logs/2026-01-03T07_26_29_234Z-debug-0.log
+
+# npm resolution error report
+
+While resolving: @agm/core@1.1.0
+Found: @angular/common@17.3.1
+node_modules/@angular/common
+  peer @angular/common@"^17.1.1" from @angular-slider/ngx-slider@17.0.2
+  node_modules/@angular-slider/ngx-slider
+    @angular-slider/ngx-slider@"^17.0.2" from the root project
+  peer @angular/common@"^17.0.0 || ^18.0.0" from @angular/cdk@17.3.1
+  node_modules/@angular/cdk
+    peer @angular/cdk@">=17.0.0" from ng2-charts@6.0.0
+    node_modules/ng2-charts
+      ng2-charts@"^6.0.0" from the root project
+    @angular/cdk@"^17.3.1" from the root project
+  peer @angular/common@"17.3.1" from @angular/forms@17.3.1
+  node_modules/@angular/forms
+    peer @angular/forms@"^17.1.1" from @angular-slider/ngx-slider@17.0.2
+    node_modules/@angular-slider/ngx-slider
+      @angular-slider/ngx-slider@"^17.0.2" from the root project
+    peer @angular/forms@"^17.0.0" from @ng-bootstrap/ng-bootstrap@16.0.0
+    node_modules/@ng-bootstrap/ng-bootstrap
+      @ng-bootstrap/ng-bootstrap@"^16.0.0" from the root project
+    peer @angular/forms@"^17.0.0-rc.0" from @ng-select/ng-select@12.0.7
+    node_modules/@ng-select/ng-select
+      @ng-select/ng-select@"^12.0.7" from the root project
+    peer @angular/forms@">=5.0.0" from angularx-flatpickr@7.3.0
+    node_modules/angularx-flatpickr
+      angularx-flatpickr@"^7.3.0" from the root project
+    peer @angular/forms@">=13.4.0" from ckeditor4-angular@4.0.1
+    node_modules/ckeditor4-angular
+      ckeditor4-angular@"^4.0.1" from the root project
+    peer @angular/forms@">=16.0.0" from devextreme-angular@24.1.5
+    node_modules/devextreme-angular
+      devextreme-angular@"24.1.5" from the root project
+    peer @angular/forms@">=9.0.0" from ngx-color-picker@16.0.0
+    node_modules/ngx-color-picker
+      ngx-color-picker@"^16.0.0" from the root project
+    peer @angular/forms@">=17.1.0" from ngx-editor@17.0.2
+    node_modules/ngx-editor
+      ngx-editor@"^17.0.2" from the root project
+    peer @angular/forms@">=14.0.0" from ngx-mask@17.0.4
+    node_modules/ngx-mask
+      ngx-mask@"^17.0.4" from the root project
+    peer @angular/forms@">=10.0.0" from ngx-ui-switch@15.0.0
+    node_modules/ngx-ui-switch
+      ngx-ui-switch@"^15.0.0" from the root project
+    @angular/forms@"^17.3.1" from the root project
+  peer @angular/common@"17.3.1" from @angular/platform-browser@17.3.1
+  node_modules/@angular/platform-browser
+    peer @angular/platform-browser@"17.3.1" from @angular/forms@17.3.1
+    node_modules/@angular/forms
+      peer @angular/forms@"^17.1.1" from @angular-slider/ngx-slider@17.0.2
+      node_modules/@angular-slider/ngx-slider
+        @angular-slider/ngx-slider@"^17.0.2" from the root project
+      peer @angular/forms@"^17.0.0" from @ng-bootstrap/ng-bootstrap@16.0.0
+      node_modules/@ng-bootstrap/ng-bootstrap
+        @ng-bootstrap/ng-bootstrap@"^16.0.0" from the root project
+      peer @angular/forms@"^17.0.0-rc.0" from @ng-select/ng-select@12.0.7
+      node_modules/@ng-select/ng-select
+        @ng-select/ng-select@"^12.0.7" from the root project
+      peer @angular/forms@">=5.0.0" from angularx-flatpickr@7.3.0
+      node_modules/angularx-flatpickr
+        angularx-flatpickr@"^7.3.0" from the root project
+      peer @angular/forms@">=13.4.0" from ckeditor4-angular@4.0.1
+      node_modules/ckeditor4-angular
+        ckeditor4-angular@"^4.0.1" from the root project
+      peer @angular/forms@">=16.0.0" from devextreme-angular@24.1.5
+      node_modules/devextreme-angular
+        devextreme-angular@"24.1.5" from the root project
+      peer @angular/forms@">=9.0.0" from ngx-color-picker@16.0.0
+      node_modules/ngx-color-picker
+        ngx-color-picker@"^16.0.0" from the root project
+      peer @angular/forms@">=17.1.0" from ngx-editor@17.0.2
+      node_modules/ngx-editor
+        ngx-editor@"^17.0.2" from the root project
+      peer @angular/forms@">=14.0.0" from ngx-mask@17.0.4
+      node_modules/ngx-mask
+        ngx-mask@"^17.0.4" from the root project
+      peer @angular/forms@">=10.0.0" from ngx-ui-switch@15.0.0
+      node_modules/ngx-ui-switch
+        ngx-ui-switch@"^15.0.0" from the root project
+      @angular/forms@"^17.3.1" from the root project
+    peer @angular/platform-browser@"17.3.1" from @angular/platform-browser-dynamic@17.3.1
+    node_modules/@angular/platform-browser-dynamic
+      @angular/platform-browser-dynamic@"^17.3.1" from the root project
+    peer @angular/platform-browser@"17.3.1" from @angular/router@17.3.1
+    node_modules/@angular/router
+      peer @angular/router@">=5.0.0" from angular-gtag@1.0.4
+      node_modules/angular-gtag
+        angular-gtag@"^1.0.4" from the root project
+      @angular/router@"^17.3.1" from the root project
+    peer @angular/platform-browser@">=17.0.0" from ng2-charts@6.0.0
+    node_modules/ng2-charts
+      ng2-charts@"^6.0.0" from the root project
+    peer @angular/platform-browser@">=17.1.0" from ngx-editor@17.0.2
+    node_modules/ngx-editor
+      ngx-editor@"^17.0.2" from the root project
+    peer @angular/platform-browser@">=16.0.0-0" from ngx-toastr@18.0.0
+    node_modules/ngx-toastr
+      ngx-toastr@"^18.0.0" from the root project
+    peer @angular/platform-browser@">=10.0.0" from ngx-ui-switch@15.0.0
+    node_modules/ngx-ui-switch
+      ngx-ui-switch@"^15.0.0" from the root project
+    @angular/platform-browser@"^17.3.1" from the root project
+  peer @angular/common@"17.3.1" from @angular/platform-browser-dynamic@17.3.1
+  node_modules/@angular/platform-browser-dynamic
+    @angular/platform-browser-dynamic@"^17.3.1" from the root project
+  peer @angular/common@"17.3.1" from @angular/router@17.3.1
+  node_modules/@angular/router
+    peer @angular/router@">=5.0.0" from angular-gtag@1.0.4
+    node_modules/angular-gtag
+      angular-gtag@"^1.0.4" from the root project
+    @angular/router@"^17.3.1" from the root project
+  peer @angular/common@"17" from @asymmetrik/ngx-leaflet@17.0.0
+  node_modules/@asymmetrik/ngx-leaflet
+    @asymmetrik/ngx-leaflet@"^17.0.0" from the root project
+  peer @angular/common@"12 - 17" from @fullcalendar/angular@6.1.10
+  node_modules/@fullcalendar/angular
+    @fullcalendar/angular@"^6.1.10" from the root project
+  peer @angular/common@"^17.0.0" from @ng-bootstrap/ng-bootstrap@16.0.0
+  node_modules/@ng-bootstrap/ng-bootstrap
+    @ng-bootstrap/ng-bootstrap@"^16.0.0" from the root project
+  peer @angular/common@"^17.0.0-rc.0" from @ng-select/ng-select@12.0.7
+  node_modules/@ng-select/ng-select
+    @ng-select/ng-select@"^12.0.7" from the root project
+  peer @angular/common@">=16.0.0" from @ngx-translate/core@15.0.0
+  node_modules/@ngx-translate/core
+    peer @ngx-translate/core@">=15.0.0" from @ngx-translate/http-loader@8.0.0
+    node_modules/@ngx-translate/http-loader
+      @ngx-translate/http-loader@"^8.0.0" from the root project
+    @ngx-translate/core@"^15.0.0" from the root project
+  peer @angular/common@">=16.0.0" from @ngx-translate/http-loader@8.0.0
+  node_modules/@ngx-translate/http-loader
+    @ngx-translate/http-loader@"^8.0.0" from the root project
+  peer @angular/common@">= 4.1.0" from angular-count-to@0.0.3
+  node_modules/angular-count-to
+    angular-count-to@"0.0.3" from the root project
+  peer @angular/common@">=5.0.0" from angular-gtag@1.0.4
+  node_modules/angular-gtag
+    angular-gtag@"^1.0.4" from the root project
+  peer @angular/common@"*" from angular-ng-autocomplete@2.0.12
+  node_modules/angular-ng-autocomplete
+    angular-ng-autocomplete@"^2.0.12" from the root project
+  peer @angular/common@"^17.0.4" from angular-shepherd@17.0.0
+  node_modules/angular-shepherd
+    angular-shepherd@"^17.0.0" from the root project
+  peer @angular/common@">=13.4.0" from ckeditor4-angular@4.0.1
+  node_modules/ckeditor4-angular
+    ckeditor4-angular@"^4.0.1" from the root project
+  peer @angular/common@">=16.0.0" from devextreme-angular@24.1.5
+  node_modules/devextreme-angular
+    devextreme-angular@"24.1.5" from the root project
+  peer @angular/common@"^17.0.2" from ng-apexcharts@1.9.0
+  node_modules/ng-apexcharts
+    ng-apexcharts@"^1.9.0" from the root project
+  peer @angular/common@">=6.0.0" from ng-otp-input@1.9.3
+  node_modules/ng-otp-input
+    ng-otp-input@"^1.9.3" from the root project
+  peer @angular/common@">=17.0.0" from ng2-charts@6.0.0
+  node_modules/ng2-charts
+    ng2-charts@"^6.0.0" from the root project
+  peer @angular/common@">=9.0.0" from ngx-color-picker@16.0.0
+  node_modules/ngx-color-picker
+    ngx-color-picker@"^16.0.0" from the root project
+  peer @angular/common@"^17.0.0" from ngx-cookie-service@17.1.0
+  node_modules/ngx-cookie-service
+    ngx-cookie-service@"^17.1.0" from the root project
+  peer @angular/common@"^17.0.0" from ngx-drag-drop@17.0.0
+  node_modules/ngx-drag-drop
+    ngx-drag-drop@"^17.0.0" from the root project
+  peer @angular/common@">=9.0.0" from ngx-dropzone-wrapper@16.0.0
+  node_modules/ngx-dropzone-wrapper
+    ngx-dropzone-wrapper@"^16.0.0" from the root project
+  peer @angular/common@">=17.1.0" from ngx-editor@17.0.2
+  node_modules/ngx-editor
+    ngx-editor@"^17.0.2" from the root project
+  peer @angular/common@">=14.0.0" from ngx-mask@17.0.4
+  node_modules/ngx-mask
+    ngx-mask@"^17.0.4" from the root project
+  peer @angular/common@">=17.0.0" from ngx-simple-text-editor@5.0.0
+  node_modules/ngx-simple-text-editor
+    ngx-simple-text-editor@"^5.0.0" from the root project
+  peer @angular/common@">=15.0.0" from ngx-spinner@16.0.2
+  node_modules/ngx-spinner
+    ngx-spinner@"^16.0.2" from the root project
+  peer @angular/common@">=16.0.0-0" from ngx-toastr@18.0.0
+  node_modules/ngx-toastr
+    ngx-toastr@"^18.0.0" from the root project
+  peer @angular/common@">=10.0.0" from ngx-ui-switch@15.0.0
+  node_modules/ngx-ui-switch
+    ngx-ui-switch@"^15.0.0" from the root project
+  peer @angular/common@">=12.0.0" from simplebar-angular@3.2.4
+  node_modules/simplebar-angular
+    simplebar-angular@"^3.2.4" from the root project
+  @angular/common@"^17.3.1" from the root project
+
+Could not resolve dependency:
+peer @angular/common@"^6.0.0 || ^7.0.0 || ^8.0.0" from @agm/core@1.1.0
+node_modules/@agm/core
+  @agm/core@"^1.1.0" from the root project
+
+Conflicting peer dependency: @angular/common@8.2.14
+node_modules/@angular/common
+  peer @angular/common@"^6.0.0 || ^7.0.0 || ^8.0.0" from @agm/core@1.1.0
+  node_modules/@agm/core
+    @agm/core@"^1.1.0" from the root project
+
+Fix the upstream dependency conflict, or retry
+this command with --force or --legacy-peer-deps
+to accept an incorrect (and potentially broken) dependency resolution.

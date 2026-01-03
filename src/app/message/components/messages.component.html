@@ -1,0 +1,1124 @@
+<div class="container-full">
+    <div class="row gap-1 flex-row flex-nowrap">
+
+        <div class="col-3 bg-white rounded-3 p-3 border">
+            <div class="row mb-2 py-0">
+                <div class="col-10">
+                    <!-- Messages -->
+                    <div class="d-flex flex-column">
+                        <div class="border border-primary bg-soft-primary shadow p-1 rounded-pill d-flex flex-row align-items-center gap-1 cursor-pointer"
+                            (click)="openXl(changeProfile, 'sm', true)">
+                            <img style="width: 25px; height: 25px"
+                                [src]=" mySelf && mySelf.dp && mySelf != '' ? mySelf.dp : '/assets/images/no-profile-picture-icon.svg'"
+                                class="rounded-circle object-cover ">
+
+                            <div class="d-flex flex-column ">
+                                <small class="text-truncate fw-semibold"
+                                    style="line-height: 15px; width: 170px">{{mySelf?.username}}</small>
+                                <small style="line-height: 10px;">
+                                    <small class="text-muted fw-light">My Profile</small>
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row mb-1 align-items-center">
+                <div class="col-10">
+                    <!-- (searchTermChange)="getCombinedChats($event)" -->
+                    <app-searchbox classVal="form-control search fw-light rounded-3 py-2 border"
+                       ></app-searchbox>
+                </div>
+
+                <div class="col-1" *ngIf="false">
+                    <button ngbTooltip="Invite Users" class="btn bg-transparent p-0 fs-4" (click)="openXl(addChat)">
+                        <i class="ri-user-add-fill"></i>
+                    </button>
+                </div>
+
+                <div class="col-1" *ngIf="false">
+                    <button ngbTooltip="Create Group" class="btn bg-transparent p-0 fs-4" (click)="openXl(createGroup)">
+                        <!-- <i class="ri-group-fill"></i> -->
+                        <i class="ri-edit-box-line"></i>
+                    </button>
+                </div>
+
+                <div class="col-2">
+                    <div ngbDropdown>
+                        <button type="button" class="btn bg-transparent fs-4 border-0" id="dropdownBasic1"
+                            ngbDropdownToggle>
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                            <button ngbDropdownItem>
+                                <button ngbTooltip="Invite Users"
+                                    class="btn bg-transparent p-0 d-flex align-items-center gap-2"
+                                    (click)="openXl(addChat)">
+                                    <!-- <i class="ri-user-add-fill"></i> -->
+                                    <span><i class="ri-user-add-fill"></i> </span>
+                                    <span>Invite Person</span>
+                                </button>
+                            </button>
+
+                            <button ngbDropdownItem>
+                                <button ngbTooltip="Create Group"
+                                    class="btn bg-transparent p-0  d-flex align-items-center gap-2"
+                                    (click)="openXl(createGroup); getUserSearchToStartConvo('')">
+                                    <!-- <i class="ri-group-fill"></i> -->
+                                    <span><i class="ri-edit-box-line"></i></span>
+                                    <span>Create Group</span>
+                                </button>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- normal chats header  -->
+            <div class="row">
+                <div class="col-12 text-muted fw-light d-flex justify-content-between align-items-center px-3 py-1">
+                    <div>All Chats (<small>{{messages?.length || 0}}</small>)</div>
+                    <div *ngIf="false">
+                        <small>
+                            Show All
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- normal chats  -->
+
+            <div class="row overflow-auto" style="height: 70vh; min-height: 70vh; max-height: 70vh;">
+                <div class="col-12">
+                    <div class="w-100 mb-2" *ngFor="let msg of messages">
+                        <!-- (click)="getChattings(msg)"> -->
+                        <div class="w-100 p-2 rounded-3 cursor-pointer shadow card-animate" [ngClass]="{
+                            'bg-soft-primary': (msg?.group && msg.group_data?.room_group_name == this.active_id) || (!msg?.group && msg?.chat_data?.room_group_name == this.active_id)
+                        }" (click)="!msg.group ? getPersonalConversations(msg) : getGroupConversations(msg)">
+                            <div class="w-100 d-flex flex-row gap-3">
+                                <div class="">
+                                    <img style="width: 40px; height: 40px" *ngIf="msg.group"
+                                        [src]="msg.group ? msg.group_data.dp && msg.group_data.dp!='' ? msg.group_data.dp : '/assets/images/no-profile-picture-icon.svg': '/assets/images/no-profile-picture-icon.svg'"
+                                        class="rounded-circle object-cover shadow">
+
+                                    <img style="width: 40px; height: 40px" *ngIf="!msg.group"
+                                        [src]="!msg.group ? msg.chat_data?.partner?.dp && msg.chat_data?.partner?.dp !='' ? msg.chat_data?.partner?.dp : '/assets/images/no-profile-picture-icon.svg': '/assets/images/no-profile-picture-icon.svg'"
+                                        class="rounded-circle object-cover shadow">
+                                </div>
+                                <div class="d-flex flex-column w-100">
+                                    <div class="d-flex justify-content-between w-100">
+                                        <div>
+                                            <div style="max-width: 110px" class="text-truncate fw-semibold">
+                                                {{ msg.group ? msg?.name : msg?.chat_data?.partner?.username }}</div>
+                                        </div>
+
+                                        <div *ngIf="!msg.latest_message?.is_read">
+                                            <ng-container
+                                                *ngIf="!msg.group && msg?.chat_data?.self_unread_messages != 0">
+                                                <div style="width: 17px; height: 17px"
+                                                    class="bg-logoColor text-white d-flex align-items-center justify-content-center rounded-pill text-center font-DMSans">
+                                                    <small>
+                                                        <small>
+                                                            <ng-container *ngIf="!msg.group">
+                                                                <ng-container
+                                                                    *ngIf="msg?.chat_data?.self_unread_messages != 0">
+                                                                    {{msg?.chat_data?.self_unread_messages}}
+                                                                     <!-- {{msg.chat_data?.last_message.chat}} -->
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </small>
+                                                    </small>
+                                                </div>
+                                            </ng-container>
+
+                                            <ng-container
+                                                *ngIf="msg.group && msg?.group_data?.current_user_unread_messages_count != 0">
+                                                <div style="width: 17px; height: 17px"
+                                                    class="bg-logoColor text-white d-flex align-items-center justify-content-center rounded-pill text-center font-DMSans">
+                                                    <small>
+                                                        <small>
+                                                            <ng-container *ngIf="msg.group">
+                                                                <ng-container
+                                                                    *ngIf="msg?.group_data?.current_user_unread_messages_count != 0">
+                                                                    {{msg?.group_data?.current_user_unread_messages_count}}
+                                                                </ng-container>
+                                                            </ng-container>
+                                                        </small>
+                                                    </small>
+                                                </div>
+                                            </ng-container>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="text-truncate text-muted" style="max-width: 130px">
+                                            <small>
+                                                <ng-container *ngIf="msg.group">
+                                                    <small
+                                                        [class.fw-medium]="msg?.group_data?.current_user_unread_messages_count >= 1"
+                                                        [class.text-black]="msg?.group_data?.current_user_unread_messages_count >= 1">
+                                                        {{msg?.group_data?.latest_message?.text != '' ? msg?.group_data?.latest_message?.text :
+                                                        msg.latest_message?.attachment[0]?.file_name}}
+                                                    </small>
+                                                </ng-container>
+                                                <ng-container *ngIf="!msg.group">
+                                                    <small [class.fw-medium]="msg?.chat_data?.self_unread_messages >= 1"
+                                                        [class.text-black]="msg?.chat_data?.self_unread_messages >= 1">
+                                                        {{msg?.chat_data?.latest_message?.text != '' ? msg?.chat_data?.latest_message?.text :
+                                                        msg.latest_message?.attachment[0]?.file_name}}
+                                                    </small>
+                                                </ng-container>
+
+                                            </small>
+                                        </div>
+
+                                        <span class="text-muted fw-light">
+                                            <small *ngIf="msg?.latest_message_time">
+                                                <small>
+                                                    <ng-container
+                                                        *ngIf="timeSrvc.decodeTimestampWithSlash(msg?.latest_message_time).includes('Today')">
+                                                        {{timeSrvc.decodeTimestampWithSlash(msg?.latest_message_time)}}
+                                                    </ng-container>
+                                                    <ng-container
+                                                        *ngIf="timeSrvc.decodeTimestampWithSlash(msg?.latest_message_time).includes('Yesterday')">
+                                                        Yesterday
+                                                    </ng-container>
+                                                    <ng-container
+                                                        *ngIf="!timeSrvc.decodeTimestampWithSlash(msg?.latest_message_time).includes('Yesterday') && !timeSrvc.decodeTimestampWithSlash(msg?.latest_message_time).includes('Today')">
+                                                        {{timeSrvc.formatDateWithDiv(msg?.latest_message_time)}}
+                                                    </ng-container>
+                                                </small>
+                                            </small>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- chat screen  -->
+        <div class="bg-white rounded-3 border" [class.col-6]="closeProfile" [class.col-9]="!closeProfile">
+            <div class="chat overflow-auto" *ngIf="personalConvoData || groupConvo">
+                <div class="chat-header clearfix">
+                    <div class="row">
+                        <div class="col-lg-6 d-flex align-items-center cursor-pointer"
+                            (click)="closeProfile = !closeProfile; closeProfile ? this.sortGroupConvo() : ''">
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                                <img [src]="group ? groupConvo?.group_data?.dp || '/assets/images/no-profile-picture-icon.svg' : personalConvoData && personalConvoData?.chat_data?.partner?.dp ? personalConvoData?.chat_data?.partner?.dp : 'https://bootdey.com/img/Content/avatar/avatar2.png' "
+                                    alt="avatar" style="object-fit: cover;width: 27px; height: 27px">
+                            </a>
+                            <div class="chat-about d-flex flex-column">
+                                <span class="m-b-0 fs-5 fw-semibold">{{!group ? personalConvoData?.chat_data?.partner?.username : groupConvo?.name}}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-6 d-flex justify-content-end align-items-center">
+
+                            <button class="border-0 bg-transparent d-flex align-items-center gap-2 fs-4"
+                                ngbTooltip="Info"
+                                (click)="closeProfile = !closeProfile; closeProfile ? this.sortGroupConvo() : ''">
+                                <i class="ri-information-line"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="mesgs rounded-3">
+   
+                    <div class="msg_history " #scrollMe (scroll)="chatscroll()">
+                        <ng-container *ngIf="!group">
+                            <ng-container *ngFor="let chat of chattings">
+                                <div class="incoming_msg my-1 d-flex align-items-center"
+                                    *ngIf="chat.sender != mySelf.id">
+
+                                    <div class="received_msg">
+                                        <div class="received_withd_msg">
+
+
+                                            <div class="chat-message d-flex flex-column">
+
+                                                <div
+                                                    class="d-flex flex-row flex-nowrap align-items-center justify-content-between">
+                                                    <small class="text-muted fw-light">
+                                                        {{timeSrvc.decodeTimestampWithSlash(chat.timestamp)}}
+                                                    </small>
+
+                                                    <span
+                                                        class="fs-5 float-right d-flex justify-content-end align-items-center pe-3">
+                                                        <app-morefeatures [chat]="chat"
+                                                            (forwardMessageEvent)="forwardMessageToChat($event);openXl(forwardMessage, '')"></app-morefeatures>
+                                                    </span>
+                                                </div>
+
+                                                <ng-container *ngFor="let f of chat.attachment">
+                                                    <span class="d-flex">
+                                                        <div
+                                                            class="card-animate bg-white border d-flex flex-row align-items-center logoColor shadow mb-1 px-3 py-1 rounded-pill gap-2">
+                                                            <span class="d-flex flex-row align-items-center gap-2">
+                                                                <span class="logoColor fs-5">
+                                                                    <i *ngIf="f.file_name.includes('.xls')"
+                                                                        class="ri-file-excel-2-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.pdf')"
+                                                                        class="ri-file-pdf-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.doc')"
+                                                                        class="ri-file-word-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.png')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.jpg') || f.file_name.includes('.jpeg')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.gif')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.bmp')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.html')"
+                                                                        class="ri-html5-line"></i>
+
+                                                                </span>
+                                                                <span class="logoColor">{{f.file_name}}</span>
+                                                            </span>
+                                                            <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                                [ngbTooltip]="'Open ' + f.file_name"
+                                                                (click)="openFile(f, viewPdf)">
+                                                                <i class="ri-eye-line"></i>
+                                                            </button>
+
+                                                            <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                                [ngbTooltip]="'Download ' + f.file_name"
+                                                                (click)="downloadFile(f.file, f.file_name)">
+                                                                <i class="ri-download-cloud-line"></i>
+                                                            </button>
+
+                                                        </div>
+                                                    </span>
+                                                </ng-container>
+                                                <span [innerHTML]="chat.text"
+                                                    *ngIf="chat.text && chat.text != ''"></span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="outgoing_msg my-2" *ngIf="chat.sender == mySelf.id">
+                                    <div class="sent_msg">
+
+                                        <div class="normalChat d-flex flex-column">
+
+                                            <div
+                                                class="d-flex flex-row flex-nowrap align-items-center justify-content-between">
+                                                <small class="text-muted fw-light">
+                                                    {{timeSrvc.decodeTimestampWithSlash(chat.timestamp)}}
+                                                </small>
+
+                                                <div class="d-flex flex-row">
+
+                                                    <span
+                                                        class="fs-5 float-right d-flex justify-content-end align-items-center pe-3">
+                                                        <span ngbTooltip="Message Sent" *ngIf="!chat.is_read"
+                                                            class="d-flex gap-1 align-items-center text-success">
+                                                            <i class="ri-check-line"></i>
+                                                            <!-- <span class="fs-6 fw-light">Sent</span> -->
+                                                        </span>
+                                                        <i *ngIf="chat.is_read" ngbTooltip="Seen"
+                                                            class="ri-check-double-line text-success"></i>
+                                                    </span>
+                                                    <span
+                                                        class="fs-5 float-right d-flex justify-content-end align-items-center pe-3">
+                                                        <app-morefeatures [chat]="chat"
+                                                            (forwardMessageEvent)="forwardMessageToChat($event);openXl(forwardMessage, '')"></app-morefeatures>
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <ng-container *ngFor="let f of chat.attachment">
+                                                <span class="d-flex">
+                                                    <div
+                                                        class="card-animate bg-white border d-flex flex-row align-items-center logoColor shadow mb-1 px-3 py-1 rounded-pill gap-2">
+                                                        <span class="d-flex flex-row align-items-center gap-2">
+                                                            <span class="logoColor fs-5">
+                                                                <i *ngIf="f.file_name.includes('.xls')"
+                                                                    class="ri-file-excel-2-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.pdf')"
+                                                                    class="ri-file-pdf-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.doc')"
+                                                                    class="ri-file-word-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.png')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.jpg') || f.file_name.includes('.jpeg')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.gif')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.bmp')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.html')"
+                                                                    class="ri-html5-line"></i>
+
+                                                            </span>
+                                                            <div style="max-width: 110px"
+                                                                class="logoColor text-truncate">{{f.file_name}}</div>
+                                                        </span>
+                                                        <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                            [ngbTooltip]="'Open ' + f.file_name"
+                                                            (click)="openFile(f, viewPdf)">
+                                                            <i class="ri-eye-line"></i>
+                                                        </button>
+
+                                                        <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                            [ngbTooltip]="'Download ' + f.file_name"
+                                                            (click)="downloadFile(f.file, f.file_name)">
+                                                            <i class="ri-download-cloud-line"></i>
+                                                        </button>
+                                                    </div>
+                                                </span>
+                                            </ng-container>
+
+                                            <div [innerHTML]="chat.text" *ngIf="chat.text && chat.text != ''"></div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
+
+                        <!-- group chats here  -->
+                        <ng-container *ngIf="group">
+                            <ng-container *ngFor="let chat of chattings">
+                                <div class="incoming_msg my-1 d-flex ">
+                                    <div class="incoming_msg_img" *ngIf="chat.sender != mySelf.id">
+                                        <img [src]="getGroupConvoUserDp(chat.sender)" alt="sunil"
+                                            style="height: 40px; width: 40px; object-fit: cover;"
+                                            class="rounded-circle">
+                                    </div>
+                                    <div class="received_msg" *ngIf="chat.sender != mySelf.id">
+
+                                        <div class="received_withd_msg">
+
+
+                                            <div class="groupChat d-flex flex-column">
+                                                <div
+                                                    class="time_date mb-2 d-flex flex-row align-items-center justify-content-between">
+                                                    <div class="d-flex flex-row align-items-center">
+                                                        <span class="fw-bold text-black pe-3 font-DMSans fs-6">
+                                                            {{chat.sender_name}}
+                                                        </span>
+
+                                                        <small class="text-muted fw-light">
+                                                            {{timeSrvc.decodeTimestampWithSlash(chat.timestamp)}}
+                                                        </small>
+                                                    </div>
+                                                    <div>
+                                                        <app-morefeatures [chat]="chat"
+                                                            (forwardMessageEvent)="forwardMessageToChat($event);openXl(forwardMessage, '')"></app-morefeatures>
+                                                    </div>
+                                                </div>
+
+
+                                                <ng-container *ngFor="let f of chat.attachment">
+                                                    <span class="d-flex">
+                                                        <div
+                                                            class="card-animate bg-white border d-flex flex-row align-items-center logoColor shadow mb-1 px-3 py-1 rounded-pill gap-2">
+                                                            <span class="d-flex flex-row align-items-center gap-2">
+                                                                <span class="logoColor fs-5">
+                                                                    <i *ngIf="f.file_name.includes('.xls')"
+                                                                        class="ri-file-excel-2-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.pdf')"
+                                                                        class="ri-file-pdf-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.doc')"
+                                                                        class="ri-file-word-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.png')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.jpg') || f.file_name.includes('.jpeg')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.gif')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.bmp')"
+                                                                        class="ri-image-line"></i>
+                                                                    <i *ngIf="f.file_name.includes('.html')"
+                                                                        class="ri-html5-line"></i>
+
+                                                                </span>
+                                                                <div style="max-width: 150px"
+                                                                    class="logoColor text-truncate">{{f.file_name}}
+                                                                </div>
+                                                            </span>
+                                                            <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                                [ngbTooltip]="'Open ' + f.file_name"
+                                                                (click)="openFile(f, viewPdf)">
+                                                                <i class="ri-eye-line"></i>
+                                                            </button>
+
+                                                            <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                                [ngbTooltip]="'Download ' + f.file_name"
+                                                                (click)="downloadFile(f.file, f.file_name)">
+                                                                <i class="ri-download-cloud-line"></i>
+                                                            </button>
+                                                        </div>
+                                                    </span>
+                                                </ng-container>
+
+                                                <div class="" [innerHTML]="chat.text"
+                                                    *ngIf="chat.text && chat.text != ''"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="outgoing_msg my-1" *ngIf="chat.sender == mySelf.id">
+                                    <div class="sent_msg">
+
+                                        <div class="normalChat d-flex flex-column">
+                                            <div
+                                                class="time_date mb-2 d-flex flex-row align-items-center justify-content-between">
+                                                <div class="d-flex flex-row align-items-center">
+                                                    <!-- <span class="fw-bold text-black pe-3 font-DMSans fs-5">
+                                                        {{chat.sender_name}}
+                                                    </span> -->
+
+                                                    <small class="text-muted fw-light">
+                                                        {{timeSrvc.decodeTimestampWithSlash(chat.timestamp)}}
+                                                    </small>
+                                                </div>
+                                                <div>
+                                                    <app-morefeatures [chat]="chat"
+                                                        (forwardMessageEvent)="forwardMessageToChat($event);openXl(forwardMessage, '')"></app-morefeatures>
+                                                </div>
+                                            </div>
+
+
+                                            <ng-container *ngFor="let f of chat.attachment">
+                                                <span class="d-flex">
+                                                    <div
+                                                        class="card-animate bg-white border d-flex flex-row align-items-center logoColor shadow mb-1 px-3 py-1 rounded-pill gap-2">
+                                                        <span class="d-flex flex-row align-items-center gap-2">
+                                                            <span class="logoColor fs-5">
+                                                                <i *ngIf="f.file_name.includes('.xls')"
+                                                                    class="ri-file-excel-2-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.pdf')"
+                                                                    class="ri-file-pdf-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.doc')"
+                                                                    class="ri-file-word-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.png')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.jpg') || f.file_name.includes('.jpeg')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.gif')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.bmp')"
+                                                                    class="ri-image-line"></i>
+                                                                <i *ngIf="f.file_name.includes('.html')"
+                                                                    class="ri-html5-line"></i>
+
+                                                            </span>
+                                                            <div style="max-width: 110px"
+                                                                class="logoColor text-truncate">{{f.file_name}}</div>
+                                                        </span>
+                                                        <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                            [ngbTooltip]="'Open ' + f.file_name"
+                                                            (click)="openFile(f, viewPdf)">
+                                                            <i class="ri-eye-line"></i>
+                                                        </button>
+
+                                                        <button class="p-0 border-0 bg-transparent logoColor fs-5"
+                                                            [ngbTooltip]="'Download ' + f.file_name"
+                                                            (click)="downloadFile(f.file, f.file_name)">
+                                                            <i class="ri-download-cloud-line"></i>
+                                                        </button>
+                                                    </div>
+                                                </span>
+                                            </ng-container>
+                                            <div [innerHTML]="chat.text" *ngIf="chat.text && chat.text != ''"></div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+
+
+                    <div class="bg-white border pe-3 form-control">
+                        <div class="d-flex flex-row overflow-auto">
+                            <ng-container *ngFor="let f of files; let i = index">
+                                <div
+                                    class="bg-dark text-white px-3 rounded-pill border shadow d-flex flex-row align-items-center gap-3">
+                                    <small class="text-nowrap">{{f.file_name}}</small>
+                                    <button class="p-0 border-0 bg-transparent text-white"
+                                        [ngbTooltip]="'Open ' + f.file_name" (click)="openFile(f, viewPdf)">
+                                        <i class="ri-eye-line"></i>
+                                    </button>
+                                    <button class="p-0 border-0 bg-transparent text-white"
+                                        [ngbTooltip]="'Remove ' + f.file_name" (click)="removeFile(f.file_name)">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- <app-mini-editor></app-mini-editor> -->
+                            <!-- <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu> -->
+                            <!-- <div class="NgxEditor__Wrapper">
+                                <ngx-editor class="NgxEditor" [editor]="editor" (ngModelChange)="writeMessage($event)"
+                                    [ngModel]="msg_text" [disabled]="false" [placeholder]="'Type here...'"></ngx-editor>
+                            </div> -->
+                            <input type="file" #fileInput style="display: none" multiple
+                                (change)="onFileSelected($event)">
+                            <input autofocus id="messageInput"
+                                (keydown.enter)="sendMessage(group ? 'send_messages_in_group' : 'send_messages_in_conversation')" [(ngModel)]="msg_text"
+                                class="border-0 bg-white p-3 w-100" placeholder="Type here..." style="outline: none">
+
+                            <div class="d-flex flex-row">
+                                <button ngbTooltip="Attach Files" type="button"
+                                    class="btn rounded-3 d-flex align-items-center p-2" (click)="fileInput.click()">
+                                    <i class="ri-attachment-2 fs-3 text-black"></i>
+                                </button>
+                                <button ngbTooltip="Send Message" (click)="sendMessage(group ? 'send_messages_in_group' : 'send_messages_in_conversation')"
+                                    type="button" class="btn rounded-3 d-flex align-items-center gap-2 p-2">
+                                    <i class="ri-send-plane-2-line fs-3 text-black"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="chat-message clearfix">
+                    <div class="input-group mb-0">
+                        <div class="NgxEditor__Wrapper w-100">
+                            <ngx-editor-menu [editor]="editor"> </ngx-editor-menu>
+                            <ngx-editor [editor]="editor" [ngModel]="html" [disabled]="false" [placeholder]="'Type here...'"></ngx-editor>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <!-- chat screen end here  -->
+
+
+        <ng-container *ngIf="closeProfile">
+
+
+            <div class="col-3 rounded-3 bg-white align-items-center border" *ngIf="groupConvo && group">
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                        <button class="border-0 bg-transparent fs-3" (click)="closeProfile = false" ngbTooltip="Close">
+                            <i class="ri-arrow-left-line"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-5 pt-1">
+                    <div class="col-12 d-flex justify-content-center">
+                        <img [src]="groupConvo?.group_data?.dp || '/assets/images/no-profile-picture-icon.svg'"
+                            class="bg-light-blue rounded-circle" style="object-fit: cover;width: 90px; height: 90px">
+                    </div>
+                </div>
+
+                <div class="row justify-content-center pt-3" *ngIf="editGrpName">
+                    <div class="col-6">
+                        <div class="font-DMSans d-flex flex-row gap-2 rounded-3">
+                            <!-- Hidden file input -->
+                            <label for="fileUpload" class="visually-hidden">Upload Image</label>
+                            <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                                class="form-control bg-soft-primary rounded-5 d-none"
+                                (change)="onFileChanged($event, 'group')" name="fileUpload" id="fileUpload"
+                                accept="image/png, image/gif, image/jpeg">
+
+                            <!-- Button for uploading images -->
+                            <button type="button" (keydown.enter)="$event.stopPropagation()"
+                                class="input-group-text btn bg-white border border-light-blue rounded-3 d-flex gap-2 form-control align-items-center"
+                                (click)="file.click()">
+                                <i class="ri-upload-2-line"></i> Upload Image
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3">
+                    <div
+                        class="col-12 fs-4 fw-semibold text-center d-flex align-items-center justify-content-center gap-2">
+                        <span *ngIf="!editGrpName">
+                            {{!group ? chat.partner?.username : groupConvo?.group_data?.name}}
+                        </span>
+                        <span *ngIf="editGrpName">
+                            <input [(ngModel)]="groupConvo.group_data.name"
+                                class="form-control rounded-3 fw-bold shadow">
+                        </span>
+                        <span *ngIf="!editGrpName">
+                            <button class="text-muted p-0 bg-transparent border-0 fs-5" (click)="groupNameEdit(true)">
+                                <i class="ri-edit-2-line"></i>
+                            </button>
+                        </span>
+
+                        <span *ngIf="editGrpName">
+                            <button class="text-muted p-0 bg-transparent border-0 fs-5" (click)="groupNameEdit(false)">
+                                <i class="ri-close-line text-danger"></i>
+                            </button>
+                            <button class="text-muted p-0 bg-transparent border-0 fs-5" (click)="saveGroupName()">
+                                <i class="ri-check-line text-success"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3" *ngIf="!groupConvo.group_data?.admin?.includes(mySelf.id)">
+                    <div class="col-12 d-flex justify-content-center">
+                        <button (click)="removeMemFromGroup(mySelf, true)"
+                            class="btn bg-transparent text-danger d-flex align-items-center gap-2 rounded-3 btn-sm">
+                            Exit Group <i class="ri-logout-box-r-line"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- <div class="row justify-content-center text-muted">
+                    <div class="col-5 fs-5 font-DMSans fw-bold">Members</div>
+                    <div class="col-5 d-flex justify-content-end">
+                        <i class="ri-arrow-down-s-line fs-3"></i>
+                    </div>
+                </div> -->
+
+                <div class="row">
+                    <div class="col-12 rounded-3 py-2" [class.bg-soft-primary]="hideAddMem">
+                        <button class=" btn bg-transparent border-0 fw-medium ps-3" [class.text-primary]="!hideAddMem"
+                            [class.text-danger]="hideAddMem" (click)="hideAddMem = !hideAddMem">
+                            <span>
+                                {{hideAddMem ? "x Cancel Add" : '+ Add Member'}}
+                            </span>
+                        </button>
+
+                        <div *ngIf="hideAddMem">
+                            <ng-template #itemTemplate let-item>
+                                <div class="d-flex justify-content-between px-2 py-1">
+                                    <span [innerHTML]="item.name"></span>
+                                    <small class="font-DMSans">{{item.mobile_number}}</small>
+                                </div>
+                            </ng-template>
+
+                            <ng-template #notFoundTemplate let-notFound *ngIf="healthoUsers && healthoUsers.length!==0">
+                                <div [innerHTML]="notFound"></div>
+                            </ng-template>
+
+
+                            <ng-autocomplete historyHeading="" [historyListMaxNumber]="0" [data]="healthoUsers"
+                                [searchKeyword]="'name'" placeholder="Search & Select ..."
+                                (inputChanged)="getUserSearchToStartConvo($event)"
+                                (selected)="addMembersToGroup($event); auto_complete.clear()" [minQueryLength]="2"
+                                [itemTemplate]="itemTemplate" #auto_complete>
+                            </ng-autocomplete>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row px-3">
+
+                    <ng-container *ngFor="let mem of groupConvo?.group_data?.members">
+                        <div class="col-12 d-flex justify-content-between align-items-center py-2 px-1">
+                            <div class="font-DMSans fw-bold">
+                                <span>{{mem?.username}}</span>
+                            </div>
+                            <div class="d-flex gap-2 flex-row">
+                                <ng-container *ngIf="groupConvo.group_data?.admin?.includes(mem.id)">
+                                    <i class="ri-vip-crown-line text-warning fs-5"></i>
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="groupConvo.group_data?.admin?.includes(mySelf.id) && mem.id != mySelf.id">
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button type="button" class="btn fs-5 bg-transparent p-0" id="dropdownBasic1"
+                                            ngbDropdownToggle>
+                                            <i class="ri-more-2-fill fs-5"></i>
+                                        </button>
+                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                            <button ngbDropdownItem (click)="removeMemFromGroup(mem)">Remove
+                                                Member</button>
+                                            <button *ngIf="groupConvo.group_data?.admin?.includes(mem.id)"
+                                                ngbDropdownItem (click)="RemoveAdminAccess(mem)">Remove admin
+                                                Access</button>
+                                            <button *ngIf="!groupConvo.group_data?.admin?.includes(mem.id)"
+                                                ngbDropdownItem (click)="giveAdminAccess(mem)">Make Admin</button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+
+            </div>
+
+            <div class="col-3 bg-white border rounded-3" *ngIf="personalConvoData && !group">
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                        <button class="border-0 bg-transparent fs-3" (click)="closeProfile = false" ngbTooltip="Close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mt-5 pt-3">
+                    <div class="col-12 d-flex justify-content-center">
+                        <img [src]=" personalConvoData && personalConvoData?.chat_data?.partner?.dp ? personalConvoData?.chat_data?.partner?.dp :'/assets/images/no-profile-picture-icon.svg'"
+                            class="bg-light-blue rounded-circle" style="width: 90px; height: 90px; object-fit: cover;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 fs-4 fw-bold text-center">
+                        {{personalConvoData?.chat_data?.partner?.username}}
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+
+<ng-template let-modal #addChat>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Invite </span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <div class="row mb-3">
+            <div class="col-8">
+                <app-searchbox classVal="form-control search shadow bg-white rounded-pill py-2"
+                    placeholder="Search Users..."
+                    (searchTermChange)="getUserSearchToStartConvo($event)"></app-searchbox>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <app-datatable tableClass="table table-hover shadow">
+                    <ng-container class="tableheader">
+                        <td>Username</td>
+                        <td></td>
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <tr *ngFor="let user of healthoUsers">
+                            <td class="fw-medium py-2 fs-5">{{user.username}}</td>
+                            <td>
+                                <input type="checkbox" style="width: 15px; height: 15px"
+                                    (change)="selectUsersForChattings($event, user)">
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+
+        <div class="row align-items-center" *ngIf="selectedHealthOUSers && selectedHealthOUSers.length != 0">
+            <div class="col-11">
+                <input class="form-control shadow rounded-pill ps-3 py-2" placeholder="Enter Message"
+                    [(ngModel)]="start_convo_message">
+            </div>
+            <div class="col-1">
+                <button class="btn p-0 border-0 "  (click)="startConversation()">
+                    <i class="ri-send-plane-2-line fs-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #createGroup>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Create Group</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+
+
+        <div class="row mb-3">
+            <div class="col-12 text-muted">
+                <small>Enter Group Name</small>
+            </div>
+            <div class="col-12">
+                <input class="form-control shadow rounded-pill ps-3 py-2 fw-bold" placeholder=""
+                    [(ngModel)]="group_name">
+            </div>
+        </div>
+
+
+        <div class="row mb-3">
+            <div class="col-12 text-muted">
+                <small>Search & Select Users</small>
+            </div>
+            <div class="col-8">
+                <app-searchbox classVal="form-control search shadow bg-white rounded-pill py-2"
+                    placeholder="Search Users..."
+                    (searchTermChange)="getUserSearchToStartConvo($event)"></app-searchbox>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <app-datatable tableClass="table table-hover shadow">
+                    <ng-container class="tableheader">
+                        <td>Username</td>
+                        <td> 
+                            <input type="checkbox" style="width: 15px; height: 15px"
+                            (change)="selectUsersForChattingsbULK($event)">
+                        </td>
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <tr *ngFor="let user of healthoUsers">
+                            <td class="fw-medium py-2 fs-5">{{user.username}}</td>
+                            <td>
+                                <input type="checkbox" style="width: 15px; height: 15px"
+                                    (change)="selectUsersForChattings($event, user)">
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+
+        <div class="row align-items-center" *ngIf="selectedHealthOUSers && selectedHealthOUSers.length != 0">
+            <div class="col-11">
+                <input class="form-control shadow rounded-pill ps-3 py-2" placeholder="Enter Message"
+                    [(ngModel)]="start_convo_message">
+            </div>
+            <div class="col-1">
+                <button class="btn p-0 border-0 " (click)="startGroupConvo()">
+                    <i class="ri-send-plane-2-line fs-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template let-modal #viewPdf>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">
+            {{openedFile}}
+        </span>
+        <div class="d-flex">
+            <!-- <button (click)="downloadFile(openedFile.file, openedFile.file_name)">Download</button> -->
+            <button (click)="modalService.dismissAll()" class="btn-close"></button>
+        </div>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <div class="row mb-3">
+            <div class="col-12">
+                <iframe [src]="safeUrl" width="100%" height="450" frameborder="0" style="border:0"
+                    allowfullscreen></iframe>
+                <div id="container"></div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #viewImage>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">
+            {{openedFile}}
+        </span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <div class="row mb-3">
+            <div class="col-12 d-flex justify-content-center">
+                <img [src]="safeUrl" style="width: 500px; height: 500px; object-fit: contain">
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template let-modal #changeProfile>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4"> </span>
+        <button class="btn border rounded-pill bg-transparent px-3 d-flex gap-2 align-items-center"
+            *ngIf="!mySelf.editMode" (click)="mySelf.editMode = !mySelf.editMode">
+            <i class="ri-pencil-line"></i>
+            <span>Edit</span>
+        </button>
+        <button class="btn border rounded-pill bg-soft-danger text-danger px-3 d-flex gap-2 align-items-center"
+            *ngIf="mySelf.editMode" (click)="mySelf.editMode = !mySelf.editMode; user_name_ok = null">
+            <i class="ri-close-line"></i>
+            <span>Close</span>
+        </button>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+
+        <ng-container *ngIf="!mySelf.editMode">
+            <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-center">
+                    <img style="width: 120px; height: 120px" class="shadow"
+                        [src]=" mySelf && mySelf.dp && mySelf != '' ? mySelf.dp : '/assets/images/no-profile-picture-icon.svg'"
+                        class="rounded-circle object-cover shadow">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center fs-4 text-wrap break-word fw-bold">
+                    {{mySelf?.username}}
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="mySelf.editMode">
+            <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-center">
+                    <img style="width: 120px; height: 120px" class="shadow"
+                        [src]=" mySelf && mySelf.dp && mySelf != '' ? mySelf.dp : '/assets/images/no-profile-picture-icon.svg'"
+                        class="rounded-circle object-cover shadow">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-center">
+                    <div class="font-DMSans d-flex flex-row gap-2 rounded-3">
+                        <!-- Hidden file input -->
+                        <label for="fileUpload" class="visually-hidden">Upload Image</label>
+                        <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                            class="form-control bg-soft-primary rounded-5 d-none" (change)="onFileChanged($event, 'dp')"
+                            name="fileUpload" id="fileUpload" accept="image/png, image/gif, image/jpeg">
+
+                        <!-- Button for uploading images -->
+                        <button type="button" (keydown.enter)="$event.stopPropagation()"
+                            class="input-group-text btn bg-white border border-light-blue rounded-3 d-flex gap-2 form-control align-items-center"
+                            (click)="file.click()">
+                            <i class="ri-upload-2-line"></i> Upload Image
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <div class="col-12 d-flex flex-column justify-content-center">
+
+                    <div class="d-flex flex-row align-items-center fw-semibold fs-5  rounded-3">
+                        <app-input [inputLength]="20"
+                            classVal="form-control outline-none focus-none fw-semibold fs-4  rounded-3 border"
+                            (onValueChanged)="updateUserName($event)"
+                            [inputValue]="mySelf?.username.replace('@healtho', '')" [removeCloseIcon]="true"
+                            [removeLabel]="true"></app-input>
+
+                        <span class="text-muted">{{'@healtho'}}</span>
+                    </div>
+
+
+                    <div class="d-flex justify-content-center" *ngIf="user_name_ok === true && mySelf?.username!= ''">
+                        <span class="btn bg-transparent border-0 text-success d-flex align-items-center">
+                            <i class="ri-check-line fs-4"></i>
+                            <span>Available</span>
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-center" *ngIf="user_name_ok === false || mySelf?.username== ''">
+                        <span class="btn bg-transparent border-0 text-danger d-flex align-items-center">
+                            <i class="ri-close-line fs-4"></i>
+                            <span>Username not available</span>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row mb-3" *ngIf="false">
+                <div class="col-12 d-flex flex-row justify-content-center align-items-center">
+                    <button (click)="updateUserProfile()"
+                        class="btn bg-transparent border-0 text-success d-flex align-items-center ">
+                        <i class="ri-check-line fs-4"></i>
+                        <span>Save</span>
+                    </button>
+
+                    <button class="btn bg-transparent border-0 text-danger d-flex align-items-center ">
+                        <i class="ri-close-line fs-4"></i>
+                        <span>Close</span>
+                    </button>
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+</ng-template>
+
+
+
+<ng-template #moreFeatures>
+
+</ng-template>
+
+
+<ng-template let-modal #forwardMessage>
+    <div class="modal-header align-items-center py-1" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Forward To </span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row mb-2">
+                <div class="col-8">
+                    <app-searchbox [applyAutoFocus]="true"></app-searchbox>
+                </div>
+                <div class="col-4">
+                    <button class="bg-dark text-white rounded-3 btn" (click)="forWard()">Forward</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>
+                                <app-checkbox [showLabel]="false" [removeActInc]="true" labelClass="d-none" classVal=""
+                                    (onCheckboxValueChanged)="forwardMessageToChat(forward_chat, $event)"></app-checkbox>
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                        </ng-container>
+                        <ng-container class="tablebody" *ngFor="let item of forward_Chat_members">
+                            <tr>
+                                <td>
+                                    <app-checkbox [showLabel]="false" [removeActInc]="true"
+                                        [checkboxValue]="item.selected" labelClass="d-none" classVal=""
+                                        (onCheckboxValueChanged)="selectForward(item, $event)"></app-checkbox>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-row py-1 gap-2">
+                                        <img style="width: 25px; height: 25px" [src]="item.dp"
+                                            class="rounded-circle object-cover shadow">
+                                        <span class="fw-medium fs-5">
+                                            {{item.name}}
+                                        </span>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</ng-template>

@@ -1,0 +1,67 @@
+<div class="container-full font-Readex">
+
+
+  <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+  <div class="row g-lg-2 g-2 mb-1  align-items-center justify-content-between">
+
+    <!-- NAVIGATION  -->
+    <div class="col-lg-8 col-md-12 col-sm-12">
+      <div class="tabsNavigation d-flex">
+        <ul ngbNav #nav="ngbNav" class="nav nav-section-custom mb-1 font-inter" [activeId]="1">
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Consulting Doctors</a>
+            <ng-template ngbNavContent>
+              <app-consulting></app-consulting>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>Referral Doctors</a>
+            <ng-template ngbNavContent>
+              <app-referral></app-referral>
+            </ng-template>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+    <div class="col-md-12 col-lg-4 col-sm-12">
+      <div
+        class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+
+        <app-addnewbutton (click)="showDoc(2)" *ngIf="nav.activeId === 1" buttonText="Add Consulting Doctor"
+          content="content"></app-addnewbutton>
+
+        <app-addnewbutton (click)="openDoctorModal(addRefDoc)" *ngIf="nav.activeId === 2" buttonText="Add Ref. Doctor"
+          content="content"></app-addnewbutton>
+        <app-info-btn></app-info-btn>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row ">
+    <div class="col-12">
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+
+<ng-template #addRefDoc let-modal>
+  <div class="modal-body pt-2 bg-white rounded-3">
+      <div class="container-full rounded-3">
+          <div class="row">
+              <div class="col-12">
+                  <app-doctor-details [hideTitle]="true" [hideExecutive]="false"></app-doctor-details>
+              </div>
+          </div>
+      </div>
+  </div>
+</ng-template>
+

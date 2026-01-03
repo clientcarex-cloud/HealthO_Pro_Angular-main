@@ -1,0 +1,23 @@
+<form (ngSubmit)="saveConfig()" [formGroup]="baseForm" [id]="baseFormId">
+    <div class="row mb-1">
+        <div class="col-md-4 mb-3 mb-md-0">
+            <app-input labelText="User Logins" placeHolder="Enter Max. User Logins"
+            formControlName="userLogins" [formSubmitted]="submitted"
+            requiredMessage="User Logins is required" 
+            [applyAutoFocus]="true"           
+            [applyAllowNumbersOnly]="true"></app-input>            
+        </div>
+        <div class="col-md-4 mb-3 mb-md-0">
+            <app-input labelText="Lab Logins" placeHolder="Enter Max. Lab Logins"
+            formControlName="labLogins" [formSubmitted]="submitted"
+            requiredMessage="Lab Logins is required"                    
+            [applyAllowNumbersOnly]="true"></app-input>
+        </div>
+        <div class="col-md-4 mb-3 mb-md-0">
+            <app-checkbox labelText="Patient Login" [formSubmitted]="submitted" formControlName="patientLogin"></app-checkbox>            
+        </div>
+    </div>
+    <div class="hstack gap-2 justify-content-start">        
+        <app-submitbutton [formId]="baseFormId"></app-submitbutton>
+    </div>
+</form>

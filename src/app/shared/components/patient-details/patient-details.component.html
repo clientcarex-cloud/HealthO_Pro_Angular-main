@@ -1,0 +1,23 @@
+<!-- <p>patient-details works!</p> -->
+<div class="d-flex flex-column">
+    <div class="d-flex flex-row gap-1">
+      <span class="text-black text-nowrap fs-6 fw-medium"
+        *ngIf="title!== null">{{title}}</span>
+      <span [class]="nameClass" *ngIf="name">
+        <ngb-highlight [result]="name" [term]="query"></ngb-highlight>
+      </span>
+     
+    </div>
+    <small class="{{timeClass}}" *ngIf="time">
+        <ngb-highlight [result]="time" [term]="query"></ngb-highlight>
+    </small>
+
+    <small class="text-nowrap td-color" *ngIf="insertTime" [innerHTML]="insertTime"></small>
+
+    <!-- [openDelay]="300" [closeDelay]="0" #popover4="ngbPopover" triggers="mouseenter:mouseleave" -->
+    <div class="d-flex flex-column td-color" *ngIf="trnc_word" [ngbTooltip]="trnc_word" >
+        <small [class]="trnc_class" [style]="'max-width: '+ trnc_length + 'px'">
+            {{trnc_word}}
+        </small>
+    </div>
+  </div>

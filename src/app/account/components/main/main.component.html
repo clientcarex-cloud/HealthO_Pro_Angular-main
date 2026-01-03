@@ -1,0 +1,527 @@
+<div class="container-full font-Readex">
+  <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+  <div class="row g-lg-2 g-2 flex-wrap align-items-center justify-content-between">
+    <!-- NAVIGATION  -->
+    <div class="col-lg-8 col-md-12 col-sm-12">
+      <div class="tabsNavigation d-flex">
+        <ul ngbNav #nav="ngbNav" class="nav nav-section-custom font-inter" [activeId]="activeTab">
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Expenses</a>
+            <ng-template ngbNavContent>
+              <app-expenses></app-expenses>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>Income</a>
+            <ng-template ngbNavContent>
+              <app-income></app-income>
+            </ng-template>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+    <div class="col-md-12 col-lg-4 col-sm-12">
+      <div
+        class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+        <app-addnewbutton *ngIf="nav.activeId === 1" buttonText="Add Expenses" content="content"
+          (onAddNewClick)="openXl(Expense)"></app-addnewbutton>
+
+        <app-addnewbutton *ngIf="nav.activeId === 2" buttonText="Add Income" content="content"
+          (onAddNewClick)="openXl(Income)">
+        </app-addnewbutton>
+        <app-info-btn></app-info-btn>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+</div>
+
+<!--  (onAddNewClick)="addItem(content, { size: 'xl', centered: true })" -->
+<ng-template #Expense let-modal>
+  <form [formGroup]="expenseForm">
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+      <span class="modal-title" id="modal-basic-title">Add Expense</span>
+      <button type="button" class="btn-close" aria-label="Close"
+        (click)="modal.dismiss('Cross click'); resetExpenseForm()"></button>
+    </div>
+    <div class="modal-body font-Readex">
+      <div class="container-full">
+
+        <div class="row mb-lg-3 mb-2 g-lg-2 g-2">
+
+            <div class="col-lg-4 col-12">
+                <div class="row">
+                    <div class="col-12">Expense Type <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <div class="row g-1">
+                            <div class="col-10">
+                                <app-select placeHolder="Select Type" selectBindLabel="name" selectBindId="id"
+                                    [formSubmitted]="Expensesubmitted" [selectItems]="expenseType"
+                                    formControlName="expense_type"
+                                    classVal="ng-select-container border-0 fw-semibold rounded-3">
+                                </app-select>
+                            </div>
+                            <div class="col-2 ">
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-flex d-none"
+                                    (click)="submitted=false;typeSubmit=false;openModal(ExpenseType, { size: 'sm', centered: false })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-none d-flex"
+                                    (click)="submitted=false;typeSubmit=false;;openModal(ExpenseType, { size: 'sm', centered: true })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-12">
+                <div class="row">
+                    <div class="col-12">Select Date <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-datepicker datePickerFormat="Y-m-d" formControlName="expense_date"
+                            [formSubmitted]="Expensesubmitted"
+                            classVal="form-control flatpickr-input rounded-3 fw-semibold"
+                            requiredMessage="Start Date is required"></app-datepicker>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <div class="row">
+                    <div class="col-12">Amount <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-input [removeLabel]="true" [formSubmitted]="Expensesubmitted" formControlName="amount"
+                            [applyAllowNumbersOnly]="true" placeHolder="₹" [applyAllowNumbersOnly]="true"
+                            classVal="form-control fw-semibold rounded-3"></app-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-6">
+                <div class="row">
+                    <div class="col-12">Payment Mode <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-select placeHolder="Select Mode" selectBindLabel="name" selectBindId="id"
+                            classVal="ng-select-container border-0 rounded-3" [formSubmitted]="Expensesubmitted"
+                            [selectItems]="paymentModes" formControlName="pay_mode">
+                        </app-select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Invoice No., Paid to  and Select User  -->
+        <div class="row mb-lg-3 mb-2 g-lg-2 g-2">
+
+            <div class="col-lg-4 col-12">
+                <div class="row">
+                    <div class="col-12">Invoice No. <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-input [formSubmitted]="Expensesubmitted" [removeLabel]="true" formControlName="invoice_no"
+                            placeHolder="Enter Id" classVal="form-control rounded-3"></app-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-6">
+                <div class="row">
+                    <div class="col-12">Paid to <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <div class="row g-1">
+                            <div class="col-10">
+                                <app-select placeHolder="Select Paid to" [formSubmitted]="Expensesubmitted"
+                                    formControlName="paid_to" selectBindLabel="name" selectBindId="id"
+                                    [selectItems]="paid_to_types" classVal="ng-select-container border-0 rounded-3">
+                                </app-select>
+                            </div>
+                            <div class="col-2 ">
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-flex d-none"
+                                    (click)="submitted=false;typeSubmit=false;openModal(paidToType, { size: 'sm', centered: false })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-none d-flex"
+                                    (click)="submitted=false;typeSubmit=false;;openModal(paidToType, { size: 'sm', centered: true })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <!-- <app-addnewbutton class="bi bi-plus-circle border-0 p-0 fs-4 fw-semibold" (onAddNewClick)="openXl(ExpenseType)" buttonText=""></app-addnewbutton> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-12">
+
+                <div class="row">
+                    <div class="col-12">Account to <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <div class="row g-1">
+                            <div class="col-12">
+                                <app-select [formSubmitted]="Expensesubmitted" placeHolder="Select Staff"
+                                    selectBindLabel="name" selectBindId="id" [selectItems]="account_to"
+                                    formControlName="account_to" classVal="ng-select-container border-0 rounded-3">
+                                </app-select>
+                            </div>
+                            <!-- <div class="col-2 ">
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-flex d-none"
+                                    (click)="submitted=false;typeSubmit=false;openModal(accountTo, { size: 'sm', centered: false })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-none d-flex"
+                                    (click)="submitted=false;typeSubmit=false;;openModal(accountTo, { size: 'sm', centered: true })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- description  -->
+        <div class="row mb-lg-3 mb-2 g-lg-2 g-2">
+            <div class="col-lg-9 col-12">
+                <div class="row">
+                    <div class="col-12">Enter Description <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-input [removeLabel]="true" placeHolder="Type Here" [formSubmitted]="Expensesubmitted"
+                            formControlName="description" classVal="form-control rounded-3"></app-input>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    <div class="modal-footer py-1 px-3 font-Readex bg-light-blue font-Readex">
+      <button type="button" class="btn btn-success rounded-3" (click)="saveApiCalll('expense')">
+        Save
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #Income let-modal>
+  <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+    <span class="modal-title" id="modal-basic-title">Add income</span>
+    <button type="button" class="btn-close" aria-label="Close"
+      (click)="submitted=false;typeSubmit=false;;;modal.dismiss('Cross click');"></button>
+  </div>
+  <form [formGroup]="incomeForm">
+    <div class="modal-body font-Readex">
+      <div class="container-full">
+
+        <div class="row mb-3 g-3">
+
+            <div class="col-lg-4 col-12">
+                <div class="row">
+                    <div class="col-12">Income Type <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <div class="row g-1">
+                            <div class="col-10">
+                                <app-select placeHolder="Select Type" selectBindLabel="name" selectBindId="id"
+                                    formControlName="income_type" [selectItems]="incomeType"
+                                    [formSubmitted]="submitted" classVal="ng-select-container fw-semibold border-0  rounded-3">
+                                </app-select>
+                            </div>
+                            <div class="col-2 ">
+                                <button class="btn p-0 fs-4 fw-semibold"
+                                    (click)="submitted=false;typeSubmit=false;;openModal(IncomeType, { size: 'sm', centered: false })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-12">
+                <div class="row">
+                    <div class="col-12">Select Date <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-datepicker datePickerFormat="Y-m-d" formControlName="income_date" classVal="form-control font-Readex flatpickr-input rounded-3 fw-semibold"
+                            [formSubmitted]="submitted" requiredMessage="Start Date is required"></app-datepicker>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <div class="row">
+                    <div class="col-12">Amount <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-input [removeLabel]="true" [formSubmitted]="submitted" formControlName="amount"
+                            placeHolder="₹" classVal="form-control fw-semibold rounded-3"></app-input>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-lg-2 col-12">
+                <div class="row">
+                    <div class="col-12">Payment Mode <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-select placeHolder="Select Mode" selectBindLabel="name" [formSubmitted]="submitted"
+                            selectBindId="id" [selectItems]="paymentModes" formControlName="pay_mode" classVal="ng-select-container border-0 rounded-3">
+                        </app-select>
+                    </div>
+                </div>
+            </div>
+
+            
+
+        </div>
+
+        <div class="row mb-3 g-3">
+            <div class="col-lg-4 col-12">
+
+                <div class="row">
+                    <div class="col-12">Account to <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <div class="row g-1">
+                            <div class="col-12">
+                                <app-select [formSubmitted]="Expensesubmitted" placeHolder="Select Staff"
+                                    selectBindLabel="name" selectBindId="id" [selectItems]="account_to"
+                                    formControlName="account_to" classVal="ng-select-container border-0 rounded-3">
+                                </app-select>
+                            </div>
+                            <!-- <div class="col-2 ">
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-flex d-none"
+                                    (click)="submitted=false;typeSubmit=false;openModal(accountTo, { size: 'sm', centered: false })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <button class="btn p-0 fs-4 fw-semibold d-lg-none d-flex"
+                                    (click)="submitted=false;typeSubmit=false;;openModal(accountTo, { size: 'sm', centered: true })">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+            <div class="col-lg-4 col-12">
+
+              <div class="row">
+                  <div class="col-12">Received From <span class="text-danger">*</span></div>
+                  <div class="col-12">
+                      <div class="row g-1">
+                          <div class="col-10">
+                            <app-select placeHolder="Select" [formSubmitted]="submitted"
+                              formControlName="received_from" selectBindLabel="name" selectBindId="id"
+                              [selectItems]="receivedFroms" classVal="ng-select-container border-0 rounded-3">
+                            </app-select>
+                          </div>
+                          <div class="col-2 ">
+                              <button class="btn p-0 fs-4 fw-semibold d-lg-flex d-none"
+                                  (click)="submitted=false;typeSubmit=false;openModal(addReceivedFromModel, { size: 'sm', centered: false })">
+                                  <i class="bi bi-plus-circle"></i>
+                              </button>
+                              <button class="btn p-0 fs-4 fw-semibold d-lg-none d-flex"
+                                  (click)="submitted=false;typeSubmit=false;;openModal(addReceivedFromModel, { size: 'sm', centered: true })">
+                                  <i class="bi bi-plus-circle"></i>
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+        </div>
+
+
+        <!-- description and select date  -->
+        <div class="row mb-3 g-3">
+            <div class="col-lg-9 col-12">
+                <div class="row">
+                    <div class="col-12">Enter Description <span class="text-danger">*</span></div>
+                    <div class="col-12">
+                        <app-input [removeLabel]="true" placeHolder="Type Here" [formSubmitted]="submitted"
+                            formControlName="description" classVal="form-control rounded-3"></app-input>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- <div class="row mb-3 g-3">
+        <div class="col-lg-2 col-12">
+        <div class="row">
+            <div class="col-12 d-lg-flex d-none"></div>
+            <div class="col-12">
+            <app-checkbox
+                labelText=""
+                activeText="Is Authorized"
+                formControlName="is_authorized"
+                inactiveText="Is Authorized"
+                classVal="form-check"
+            ></app-checkbox>
+            </div>
+        </div>
+        </div>
+        <div class="col-lg-3 col-12">
+        <div class="row">
+            <div class="col-12">Authorized By</div>
+            <div class="col-12">
+            <app-select
+                placeHolder="Select Group"
+                selectBindLabel="name"
+                selectBindId="id"
+            >
+            </app-select>
+            </div>
+        </div>
+        </div>
+    </div> -->
+
+    </div>
+
+    </div>
+    <div class="modal-footer py-0 px-3 font-Readex bg-light-blue font-Readex">
+      <button type="button" class="btn btn-success rounded-3" (click)="saveApiCalll('income')">
+        Save
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+
+<ng-template #ExpenseType role="document" let-modal>
+  <div class="modal-header py-2 px-3 font-Readex bg-dark text-white">
+    <span class="modal-title" id="modal-basic-title">Add Expense Type</span>
+    <button type="button" class="btn p-0 text-white bi bi-close" aria-label="Close"
+      (click)="submitted=false;typeSubmit=false;modal.dismiss('Cross click')">x</button>
+  </div>
+  <form [formGroup]="expenseTypeForm" (ngSubmit)="saveApiCalll('expsTp')">
+    <div class="modal-body font-Readex bg-light-blue ">
+      <div class="w-100 mb-2">
+        <app-input labelText="Expense Type Name" placeHolder="Type here.." formControlName="name"
+          [formSubmitted]="typeSubmit" [inputValue]="capital.expenseType"
+          (onValueChanged)="capital.typeExpCaptilize($event)"></app-input>
+      </div>
+
+      <app-checkbox [labelText]="''" formControlName="is_active" [formSubmitted]="typeSubmit" classVal="form-check"
+        [showLabel]="false" activeText="Is active" inactiveText="Is active"></app-checkbox>
+    </div>
+    <div class="modal-footer py-0 px-3 font-Readex bg-dark border-light-blue font-Readex">
+      <button type="button" class="btn btn-soft-success text-white btn-sm rounded-3" (click)="saveApiCalll('expsTp')">
+        Save Type
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #IncomeType role="document" let-modal>
+  <div class="modal-header py-2 px-3 font-Readex bg-dark text-white">
+    <span class="modal-title" id="modal-basic-title">Add Income Type</span>
+    <button type="button" class="btn p-0 text-white bi bi-close" aria-label="Close"
+      (click)="submitted=false;typeSubmit=false;modal.dismiss('Cross click')">x</button>
+  </div>
+  <form [formGroup]="incomeTypeForm">
+    <div class="modal-body font-Readex bg-light-blue">
+      <div class="w-100 mb-2">
+        <app-input labelText="Income Type Name" placeHolder="Type here.." formControlName="incmTypename"
+          [formSubmitted]="typeSubmit"></app-input>
+      </div>
+
+      <app-checkbox [labelText]="''" [showLabel]="false" formControlName="is_active_incm" [formSubmitted]="submitted"
+        classVal="form-check" activeText="Is active" inactiveText="Is active"></app-checkbox>
+    </div>
+    <div class="modal-footer py-0 px-3 font-Readex bg-dark border-light-blue font-Readex">
+      <button type="button" class="btn btn-soft-success text-white btn-sm rounded-3" (click)="saveApiCalll('incmTp')">
+        Save Type
+      </button>
+
+    </div>
+  </form>
+</ng-template>
+
+
+<ng-template #paidToType role="document" let-modal>
+  <div class="modal-header py-2 px-3 font-Readex bg-dark text-white">
+    <span class="modal-title" id="modal-basic-title">Add Paid Type</span>
+    <button type="button" class="btn p-0 text-white bi bi-close" aria-label="Close"
+      (click)="submitted=false;typeSubmit=false;;;modal.dismiss('Cross click')">x</button>
+  </div>
+  <form [formGroup]="paidToTypeForm">
+    <div class="modal-body font-Readex bg-light-blue">
+      <div class="w-100 mb-2">
+        <app-input labelText="Paid Type" placeHolder="Type here.." (onValueChanged)="enterName('name', $event)"
+          formControlName="name" [formSubmitted]="typeSubmit"></app-input>
+      </div>
+
+      <app-checkbox [labelText]="''" [showLabel]="false" formControlName="is_active" [formSubmitted]="submitted"
+        classVal="form-check" activeText="Is active" inactiveText="Is active"></app-checkbox>
+    </div>
+    <div class="modal-footer py-0 px-3 font-Readex bg-dark border-light-blue font-Readex">
+      <button type="button" class="btn btn-soft-success text-white rounded-3"
+        (click)="saveApiCalll('paidToName');modal.dismiss('Cross click')">
+        Save
+      </button>
+
+    </div>
+  </form>
+</ng-template>
+
+
+<ng-template #accountTo role="document" let-modal>
+  <div class="modal-header py-2 px-3 font-Readex bg-dark text-white">
+    <span class="modal-title" id="modal-basic-title">Add Account</span>
+    <button type="button" class="btn p-0 text-white bi bi-close" aria-label="Close"
+      (click)="submitted=false;typeSubmit=false;modal.dismiss('Cross click')">x</button>
+  </div>
+  <form [formGroup]="AccToTypeForm">
+    <div class="modal-body font-Readex bg-light-blue">
+      <div class="w-100 mb-2">
+        <app-input labelText="Account To" placeHolder="Type here.." (onValueChanged)="enterName(2, $event)"
+          formControlName="name" [formSubmitted]="typeSubmit"></app-input>
+      </div>
+
+      <app-checkbox [labelText]="''" [showLabel]="false" formControlName="is_active" [formSubmitted]="submitted"
+        classVal="form-check" activeText="Is active" inactiveText="Is active"></app-checkbox>
+    </div>
+    <div class="modal-footer py-0 px-3 font-Readex bg-dark border-light-blue font-Readex">
+      <button type="button" class="btn btn-soft-success text-white rounded-3"
+        (click)="saveApiCalll('accTo');modal.dismiss('Cross click')">
+        Save
+      </button>
+
+    </div>
+  </form>
+</ng-template>
+
+
+<ng-template #addReceivedFromModel role="document" let-modal>
+  <div class="modal-header py-2 px-3 font-Readex bg-dark text-white">
+    <span class="modal-title" id="modal-basic-title">Received From</span>
+    <button type="button" class="btn p-0 text-white bi bi-close" aria-label="Close"
+      (click)="submitted=false;typeSubmit=false;modal.dismiss('Cross click')">x</button>
+  </div>
+  <form [formGroup]="AccToTypeForm">
+    <div class="modal-body font-Readex bg-light-blue">
+      <div class="w-100 mb-2">
+        <app-input labelText="Account To" placeHolder="Type here.." (onValueChanged)="enterName(2, $event)"
+          formControlName="name" [formSubmitted]="typeSubmit"></app-input>
+      </div>
+    </div>
+    <div class="modal-footer py-0 px-3 font-Readex bg-dark border-light-blue font-Readex">
+      <button type="button" class="btn btn-soft-success text-white rounded-3"
+        (click)="saveReceivedFrom(modal);">
+        Save
+      </button>
+    </div>
+  </form>
+</ng-template>

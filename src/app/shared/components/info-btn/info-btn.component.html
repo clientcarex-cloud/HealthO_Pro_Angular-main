@@ -1,0 +1,73 @@
+<div class="row">
+    <div class="col">
+        <div ngbDropdown class="d-inline-block">
+            <button class="border border-0 fs-4 bg-transparent custom-dropdown-toggle" ngbDropdownToggle>
+                <i class="bi bi-info-circle"></i>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="p-0">
+                <div class="container-full px-3 py-2">
+                    <div class="row mb-1">
+                        <div class="col-12 fw-semibold fs-4">
+                            {{title && title!=="" ? title : ""}}
+                        </div>
+                    </div>
+
+                    <div class="row mb-1">
+                        <div class="col-12 fw-light fs-5">
+                            {{description && description!=="" ? description : ""}}
+                        </div>
+                    </div>
+
+                    <div class="row mb-1">
+                        <div class="col-12">
+                            <small>Watch Video</small>
+                        </div>
+                        <div class="col-12 rounded-3">
+                            <!-- https://www.youtube.com/watch?v=kTny1iFuTh0 -->
+                            <!-- <iframe class="rounded-3" width="336" height="189" src="https://youtube.com/embed/HtMF973tXIY?si=jOyj93ChGVhuJ8jy" 
+                            title="YouTube video player" frameborder="0" 
+                            allow="autoplay; encrypted-media;" allowfullscreen></iframe> -->
+
+                            <!-- <iframe class="rounded-3"width="336" height="175" src="https://youtube.com/embed/HtMF973tXIY?si=jOyj93ChGVhuJ8jy" frameborder="0" allowfullscreen></iframe> -->
+                            <iframe width="336" height="175" src="https://www.youtube.com/embed/BJ3Yv572V1A" title="🔴 LIVE: Enter the Savage Kingdom: Ultimate Predators | Watch Now on Nat Geo WILD" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        </div>
+                    </div>
+
+                    <div class="row mb-1">
+                        <div class="col-12">
+                            <a href="https://incrasoft.com/" class="TermsLink">https://incrasoft.com/</a>
+                        </div>
+                    </div>
+
+                    <div class="row mb-1">
+                        <div class="col-12 fw-semibold">
+                            Instructions :-
+                        </div>
+                        <div class="col-12">
+                            <!-- {{steps}} -->
+                            <!-- <div [innerHTML]="formatSteps(steps)"></div> -->
+                        </div>
+                    </div>
+
+                    <div class="row mb-1">
+                        <div class="col-12 mb-1">
+                            For Further Information
+                        </div>
+                        <div class="col-12">
+                            <div class="col-3">
+                                <button class="text-nowrap btn btn-primary rounded-3 px-3 d-flex flex-column text-center align-items-center">
+                                    <span>
+                                        Contact Support</span>
+                                        <span><i class="bi bi-telephone"></i> 01169655591</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

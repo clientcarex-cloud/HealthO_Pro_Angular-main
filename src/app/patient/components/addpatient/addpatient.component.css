@@ -1,0 +1,159 @@
+.td-color {
+  color: var(--Palette-Blue-Gray-600, #475569);
+  /* letter-spacing: 0.492px; */
+}
+
+.discount-lh {
+  line-height: 0px;
+}
+
+.autocomplete-custom .autocomplete-container {
+  position: absolute;
+  top: -100%; /* Adjust this value to position the dropdown above the input field */
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  max-height: 200px; /* Set a max-height for the dropdown if needed */
+  overflow-y: auto; /* Enable vertical scrolling if the dropdown exceeds its max-height */
+}
+
+.ng-autocomplete{
+  color:red;
+  width: 800px !important;
+}
+
+.table-container {
+  /* Add any necessary styles for the container */
+  max-height: 300px; /* Set the maximum height of the container */
+  overflow: auto; /* Enable scrolling for overflow content */
+}
+
+.fixed-height-body {
+  display: inline-block;
+  width:100%;
+  /* Set the height of the tbody */
+  max-height: 168px;
+  height: 168px; /* Set the desired fixed height */
+  overflow-y: auto; /* Enable vertical scrolling for overflow content */
+}
+
+.percentage{
+  position: absolute;
+  z-index:99;
+  /* left: 5px; */
+  padding-left:10px;
+}
+
+
+
+/* .showOn{
+  position: absolute;
+  z-index: 9999999;
+} */
+/*# sourceMappingURL=addpatient.component.css.map */
+
+
+.custom-table tbody tr td{
+  padding: 10px;
+ border: 0px solid transparent;
+}
+
+
+.off-canvas-arrow{
+  transform: translate(25px,0px);
+}
+
+
+.billTable {
+  border-collapse: separate;
+  /* border-spacing: 20px; Adjust the spacing value as needed */
+}
+
+.billTable td {
+  padding: 2px 0px; /* Adjust the padding value as needed */
+}
+
+
+.rotate-chevron {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .rotate-chevron.rotate-up {
+    transform: rotate(180deg);
+  }
+  
+ 
+  .fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .fade-in.active {
+    opacity: 1;
+  }
+
+
+.table-dropdown {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  }
+  
+  .table-dropdown.active {
+    max-height: 100%; /* Adjust this value based on your desired height */
+    opacity: 1;
+  }
+
+
+@keyframes fadeInDown {
+    0% {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .table-dropdown {
+    display: none;
+    animation: fadeInDown 0.2s ease forwards;
+  }
+  
+  .table-dropdown.active {
+    display: block;
+  }
+  
+
+  .bg-status{
+    background: rgba(134, 205, 226, 0.15);
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.02) inset;
+}
+
+.inactive{
+    color:#0E4EA3;
+}
+
+.inactive:hover{
+    color: #000;
+}
+
+
+.dateSelect{
+  background-color: rgba(20, 164, 190, 0.18) !important;
+}
+
+.dataSelect:hover{
+  background-color: rgba(111, 192, 206, 0.18) !important;
+}
+
+
+.iframeDoc{
+  width: 221mm;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    height: 80vh;
+}

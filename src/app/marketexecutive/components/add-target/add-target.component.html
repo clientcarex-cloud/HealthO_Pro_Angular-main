@@ -1,0 +1,77 @@
+
+<div class="container-full">
+    <form [formGroup]="baseForm">
+        <div class="row mb-3">
+            <div class="col-lg-5 col-12 mb-3" >
+                <app-select [inputDisable]="updateModel" labelText="Select Executive" labelClass="form-label mb-1" placeHolder="Select Executive" formControlName="labstaff"
+                [imp]="true" [selectItems]="staffs" selectBindLabel="name" [isLoading]="pageLoading" classVal="ng-select-container border-0 rounded-3" [formSubmitted]="submitted"></app-select>
+            </div>
+
+            <div class="col-lg-7 col-12">
+                <app-input labelClass="form-label mb-1" formControlName="assigned_areas" labelText="Area" [formatLetter]="true"
+                placeHolder="Enter Area" [imp]="true" [formSubmitted]="submitted" classVal="form-control rounded-3 "></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-lg-4 mb-3">
+                <app-select (onSelectionChanged)="changeTargetType($event)" labelText="Target Type" labelClass="form-label mb-1" placeHolder="Select Type" formControlName="target_type"
+                [imp]="true" [selectItems]="targetTypes" selectBindLabel="name" classVal="ng-select-container border-0 rounded-3"></app-select>
+            </div>
+
+            <div class="col-lg-3 mb-3" *ngIf="baseForm.get('target_type')?.value?.id == 2">
+                <!-- {{baseForm.get('target_type')?.value?.id == 2 ? 'no_of_referrals' : 'target_revenue'}}" [labelText]="baseForm.get('target_type')?.value?.id == 2 ? 'No. of Referrals' : 'Target Revenue' -->
+                <app-input labelClass="form-label mb-1" formControlName="no_of_referrals" [formatLetter]="true" labelText="No. of Referrals" 
+                placeHolder="Enter number" [applyAllowNumbersOnly]="true" [imp]="true" [formSubmitted]="submitted" classVal="form-control rounded-3 py-1"></app-input>
+            </div>
+
+            <div class="col-lg-3" *ngIf="baseForm.get('target_type')?.value?.id == 1">
+                <!-- {{baseForm.get('target_type')?.value?.id == 2 ? 'no_of_referrals' : 'target_revenue'}}" [labelText]="baseForm.get('target_type')?.value?.id == 2 ? 'No. of Referrals' : 'Target Revenue' -->
+                <app-input labelClass="form-label mb-1" [formatLetter]="true" labelText="Target Revenue" formControlName="target_revenue"
+                placeHolder="Enter number" [applyAllowNumbersOnly]="true" [imp]="true" [formSubmitted]="submitted" classVal="form-control rounded-3 py-1"></app-input>
+            </div>
+        </div>
+
+        <!-- <div class="row mb-3">
+            
+            <div class="col-lg-3 col-5 mb-3">
+                <app-datepicker classVal='form-control font-Readex flatpickr-input rounded-3' labelText="From Date" [imp]="true" datePickerFormat="Y-m-d" formControlName="from_date"
+                [selectToday]="true" [setMin]="true" [setMax]="false"></app-datepicker>
+            </div>
+
+            <div class="col-lg-3 col-5">
+                <app-datepicker classVal='form-control font-Readex flatpickr-input rounded-3' labelText="To Date" [imp]="true" datePickerFormat="Y-m-d" formControlName="to_date"
+                [selectToday]="false" [setMin]="true" [setMax]="false"></app-datepicker>
+            </div>
+
+        </div> -->
+
+        <div class="row mb-3">
+
+            <div class="col-lg-3 col-5  mb-3">
+                <app-datepicker classVal='form-control font-Readex flatpickr-input rounded-3'
+                    labelText="From Date" [imp]="true" datePickerFormat="Y-m-d" formControlName="from_date"
+                    (dateValueChange)="endDate.setMinimumDate($event, true)" [selectToday]="true" [setMin]="true"
+                    [setMax]="false" [formSubmitted]="submitted"></app-datepicker>
+            </div>
+
+            <div class="col-lg-3 col-5">
+                <app-datepicker #endDate classVal='form-control font-Readex flatpickr-input rounded-3'
+                    labelText="To Date" [imp]="true" datePickerFormat="Y-m-d" formControlName="to_date"
+                    [selectToday]="false" [setMin]="true" [setMax]="false"
+                    [formSubmitted]="submitted"></app-datepicker>
+            </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12 d-flex justify-content-end">
+                <button (click)="updateModel ? updateApiCall() : saveApiCall()" class="btn btn-success rounded-3 fs-5 px-3">
+                    {{updateModel ? 'Update' : 'Save'}}
+                </button>
+            </div>
+        </div>
+
+
+    </form>
+</div>

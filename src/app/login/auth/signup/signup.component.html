@@ -1,0 +1,302 @@
+<!-- auth-page wrapper -->
+<div class="auth-page-wrapper py-5 d-flex justify-content-center align-items-center min-vh-100"
+  style="background-color: #f8fafc">
+  <!-- <div class="bg-overlay"></div> -->
+  <!-- auth-page content -->
+  <div class="auth-page-content p-0">
+    <div class="container px-sm-2">
+      <div class="row" style="border-radius: 12px">
+        <div class="col-lg-12" style="border-radius: 12px">
+          <div class="card shadown-none overflow-hidden border" style="border-radius: 12px">
+            <div class="row g-0 flex-column-reverse flex-lg-row">
+              <!-- <div class="row g-0 flex-column-reverse flex-lg-row"  *ngIf="!inProgress"> -->
+
+              <div class="col-lg-6 col-12 font-Readex">
+                <div class="row" style="padding: 2rem 2rem">
+
+                  <!-- HEALTHO PRO LOGO  -->
+                  <div class="mb-3">
+                    <a routerLink="/" class="d-block">
+                      <img src="assets/images/HealthO.svg" alt="" height="35">
+                    </a>
+                  </div>
+
+                  <!-- SIGN IN OR SIGN UP TEXT  -->
+                  <!-- Intro Text  -->
+                  <div class="mb-3 d-flex flex-row gap-2 ">
+                    <span class="fs-5 fw-medium logoColor">
+                      All Your Operations In One Place
+                    </span>
+
+                    <!-- <span class="fs-5 logoColor">
+                      LIMS SaaS Product
+                    </span> -->
+                  </div>
+
+                  <div class="mb-3 d-flex flex-row gap-2">
+                    <span class="fs-5 fw-medium pb-0" style=" border-bottom: 1.5px solid #000000; ">
+                      Create Account
+                    </span>
+                  </div>
+
+                  <!-- <div class="text-left mb-3 ">
+                    <span class="fs-5">
+                      Already have an account ?
+                      <a routerLink="/auth/signin" class="text-decoration-underline Link">
+                        Signin</a>
+                    </span>
+                  </div> -->
+
+                  <div>
+                    <form [formGroup]="createUser" (ngSubmit)="onSubmit()">
+                      <!-- <form [formGroup]="createUser" (ngSubmit)="showTemp()"> -->
+                      <!-- NAME  -->
+                      <div class="mb-2 d-flex flex-column gap-0">
+                        <div>
+                          Full Name<span class="text-danger">*</span>
+                        </div>
+                        <div class="d-flex flex-row align-items-center  fs-5">
+                          <div class="indianFlagText ps-2 d-flex flex-row gap-2 align-items-center">
+                            <div class="d-flex align-items-center">
+                              <i class="ri-user-3-line fs-5"></i>
+                            </div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <app-input [removeLabel]="true" placeHolder="Enter Full Name" [formSubmitted]="submitted"
+                              [spellcheck]="false" classVal="form-control rounded-3 pt-2 pb-2 fs-5" formControlName="full_name"
+                              styleVal="padding-left:34px" [applyAutoFocus]="true" [applyAllowLettersOnly]="true" [applySpecialChars]="false"
+                              [applyEmptySpace]="true" (onValueChanged)="validName($event)" [inputLength]="75"  [inputDisable]="inProgress"
+                              [formatLetter]="true" 
+                             >
+                            </app-input>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- MOBILE NUMBER  -->
+                      <div class="mb-2 d-flex flex-column gap-0">
+                        <div>Mobile Number<span class="text-danger">*</span></div>
+
+                        <div class="d-flex flex-row align-items-center">
+                          <div class="indianFlagText ps-2 d-flex flex-row gap-2 align-items-center">
+                            <div class="d-flex align-items-center">
+                              <img src="assets/images/india-flag-icon.svg" class="rounded-1" height="16" alt="" />
+                            </div>
+                            <div class="fs-5">+ 91</div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <app-input [removeLabel]="true" placeHolder="" formControlName="phone_number"
+                              [formSubmitted]="submitted" classVal="form-control rounded-3 py-2 fs-5"
+                              requiredMessage="Mobile number required" styleVal="padding-left:75px"
+                              [applyAllowNumbersOnly]="true" [inputLength]="10"  [inputDisable]="inProgress" >
+                            </app-input>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- CREATE ACCOUNT FOR  -->
+                      <div class="mb-2 d-flex row flex-row gap-0">
+                        <div class="col-12">
+                          <div>Create account for<span class="text-danger">*</span></div>
+
+                          <div class="d-flex flex-row align-items-center">
+                            <div class="flex-grow-1">
+
+                              <select [class.border-danger]="submitted && !createUser.value.user_type "
+                                class="form-select w-100 py-2 rounded-3 fs-5" formControlName="user_type"
+                                (input)="showAdditional($event)">
+                                <option disabled>Select Account Type</option>
+                                <option class="py-3 fs-5" *ngFor="let item of  categories; index as i"
+                                  [value]="item.id">
+                                  {{item.type_name}}</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div [@collapseExpand]="getUserType() === '3' ? 'open' : 'closed'">
+                        <div class="mb-2  d-flex  flex-column gap-0">
+                          <div>Organisation name <span class="text-danger">*</span></div>
+
+                          <div class="d-flex flex-row align-items-center">
+                            <div class="flex-grow-1">
+
+                              <!-- <app-input [removeLabel]="true" [removeLabel]="true" placeHolder="" formControlName="organisation_name"
+                          [formSubmitted]="submitted || name.description === null || name.description === ''" [spellcheck]="false"
+                          classVal="form-control rounded-3 pt-2 pb-2 fs-5" [inputValue]="name.description"
+                           [applyAutoFocus]="false"
+                          (onValueChanged)="name.capitalizeReturnDesc($event)"></app-input> -->
+
+                              <input formControlName="organization_name" [spellcheck]="false"
+                                [class.border-danger]="capitalizeSrvc.description === '' && submitted"
+                                class="form-control rounded-3 pt-2 pb-2 fs-5" [value]="capitalizeSrvc.description"
+                                (input)="descriptionCall($event)">
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Health care registry type -->
+                        <div class="mb-2  d-flex  flex-column gap-0">
+                          <div>Health Care Registry<span class="text-danger">*</span></div>
+
+                          <div class="d-flex flex-row align-items-center">
+                            <div class="flex-grow-1">
+
+                              <select *ngIf="getUserType()==='3'"
+                                [class.border-danger]="createUser.value.HealthcareRegistryType ===null && submitted"
+                                class="form-select w-100 py-2 rounded-3 fs-5" formControlName="HealthcareRegistryType">
+                                <option disabled>Select Organisation Type</option>
+                                <option class="py-3 fs-5" *ngFor="let item of  registries; index as i"
+                                  [value]="item.id">
+                                  {{item.name}}</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- country -->
+                        <div class="mb-2 d-flex flex-row row gap-0" *ngIf="getUserType()==='3'">
+                          <div class="col-lg-4 col-12 d-flex flex-column gap-0">
+                            <div>Country<span class="text-danger">*</span></div>
+
+                            <div class="d-flex flex-row align-items-center">
+                              <div class="flex-grow-1">
+
+                                <select [class.border-danger]="submitted && createUser.value.country === null"
+                                  (input)="getCountry($event)" class="form-select w-100 py-2 rounded-3 fs-5"
+                                  formControlName="country">
+                                  <option disabled>Select Country</option>
+                                  <option class="py-3 fs-5" *ngFor="let item of  countries; index as i"
+                                    [value]="item.id">
+                                    {{item.name}}</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-lg-4 col-12 d-flex flex-column gap-0"
+                            *ngIf="createUser.value.country && getUserType()==='3'">
+                            <div>State<span class="text-danger">*</span></div>
+
+                            <div class="d-flex flex-row align-items-center">
+                              <div class="flex-grow-1">
+
+                                <select class="form-select w-100 py-2 rounded-3 fs-5" formControlName="state">
+                                  <option disabled>Select State</option>
+                                  <option class="py-3 fs-5" *ngFor="let item of filteredStates()" [value]="item.id">
+                                    {{item.name}}
+                                  </option>
+                                </select>
+
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- <div class="col-lg-4 col-12s d-flex flex-column gap-0"
+                            *ngIf="createUser.value.state && getUserType()==='3'">
+                            <div>City<span class="text-danger">*</span></div>
+
+                            <div class="d-flex flex-row align-items-center">
+                              <div class="flex-grow-1">
+
+                                <select [class.border-danger]="submitted && createUser.value.city === null"
+                                  class="form-select w-100 py-2 rounded-3 fs-5" formControlName="city">
+                                  <option disabled>Select City</option>
+                                  <option class="py-3 fs-5" *ngFor="let item of filteredCities()" [value]="item.id">
+                                    {{item.name}}
+                                  </option>
+                                </select>
+
+                              </div>
+                            </div>
+                          </div> -->
+
+                        </div>
+
+                      </div>
+
+                      <form [formGroup]="termForm">
+                        <!-- TERMS AND CONDITIONS  -->
+                        <div class="mb-2 form-check d-flex flex-row align-items-center gap-1">
+                          <input #termsCheckbox class="form-check-input border border-primary" type="checkbox"
+                            role="switch" (change)="checkTerms()" formControlName="terms" />
+                          <label class="form-check-label ms-1 fw-normal fs-5">I agree to HealthO Pro
+                            <a class="Link" href="https://incrasoft.com/terms-of-services/">
+                              <span>Terms</span> and
+                              <span>conditions</span>
+                              <!-- <span><i class="bi bi-box-arrow-up-right ps-1 Link"></i></span> -->
+                            </a>
+                          </label>
+                        </div>
+                      </form>
+
+                      <!-- send otp button  -->
+                      <div class="mb-2 d-flex flex-sm-row flex-column justify-content-between align-items-sm-center gap-3">
+                        <div>
+                          <button type="submit" [disabled]="inProgress"
+                            class="btn text-white mt-0 px-5 fs-5 d-flex rounded-3 align-items-center text-nowrap gap-2 flex-column"
+                            style="padding: 0.4rem 0.75rem;background-color: #1e336a;">
+                            {{!inProgress ? "Next" : "Process Started, Please Wait"}}
+                            <div *ngIf="inProgress" class="loader"></div>
+                          </button>
+                        </div>
+                        <div class="text-left">
+                          <span class="mb-0 fs-5">
+                            Already have an account ?
+                            <a routerLink="/auth/signin" class="Link">
+                              Login</a>
+                          </span>
+                        </div>
+                      </div>
+
+
+                      <app-dwnld></app-dwnld>
+
+                    </form>
+
+                  </div>
+
+
+
+
+
+
+                </div>
+              </div>
+              <!-- end col -->
+
+              <div class="col-lg-6  d-lg-flex d-none justify-content-end d-flex">
+
+                <div class="float-end bg-light-blue d-flex align-items-center">
+                  <app-carousel></app-carousel>
+                </div>
+
+              </div>
+              <!-- end col -->
+            </div>
+
+            <div class="row  g-0 flex-column-reverse flex-lg-row" *ngIf="false">
+              <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 500px;">
+                <!-- <img src="/assets/images/loadingAnimation.gif" class="bg-transparent" style="width: 250px;height: 250px"> -->
+                <app-loading></app-loading>
+              </div>
+            </div>
+            <!-- end row -->
+          </div>
+          <!-- end card -->
+        </div>
+        <!-- end col -->
+      </div>
+      <!-- end row -->
+    </div>
+    <!-- end container -->
+  </div>
+  <!-- end auth page content -->
+
+  <!-- footer -->
+  <app-auth-footer></app-auth-footer>
+  <!-- end Footer -->
+</div>
+<!-- end auth-page-wrapper -->

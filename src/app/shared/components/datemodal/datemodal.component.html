@@ -1,0 +1,103 @@
+<div ngbDropdown #dateDropdown="ngbDropdown" class="d-inline-block w-100">
+    <button type="button" 
+        class="btn bg-white border w-100 rounded-3 text-start d-flex align-items-center justify-content-between font-DMSans fw-bold"
+        id="dropdownBasic1" ngbDropdownToggle >
+        <!-- MAinshowDateValue -->
+        <span>{{ dateValue }}</span>
+         <!-- <span>{{displayString}}</span> -->
+        <span><i class="ri-arrow-down-s-line fs-5 p-0"></i></span>
+    </button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="py-3">
+        <div class="container" style="width:375px">
+            <div class="row align-items-center mb-3">
+                <div class="col-3 d-flex align-items-center">
+                    Duration
+                </div>
+                <div class="col-9">
+                    <form [formGroup]="dateForm">
+                        <select class="form-select rounded-3" formControlName="duration" (change)="changeDuration($event)">
+                            <option *ngFor="let d of duration" [value]="d.id">{{ d.name }}</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-3 d-flex align-items-center">
+                    Date
+                </div>
+                <div class="col-9">
+                    <ng-container *ngIf="dateForm.value.duration === 1">
+                        <div class="input-group w-100">
+                            <input class="form-control" placeholder="yyyy-mm-dd" name="dp"
+                                [(ngModel)]="dateNewValue" [maxDate]="maxDate" [autoClose]="true" 
+                                [minDate]="{ day: 1, month: 1, year: 2024 }" ngbDatepicker
+                                (dateSelect)="selectDate($event)" #d="ngbDatepicker" />
+                            <button class="btn btn-outline-primary bi bi-calendar3"
+                                (click)="d.toggle()" type="button"></button>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="dateForm.value.duration === 2">
+                        <select class="form-select rounded-3" (change)="customMonth($event)">
+                            <option disabled>Select Month</option>
+                            <!-- <option *ngFor="let month of generateMonthsObject()" [value]="month.dateRange" [selected]="customMonthValue === month.dateRange"> -->
+
+                            <option *ngFor="let month of generateMonthsObject()" [value]="month.dateRange" 
+                            [selected]="dateValue == month.dateRange">
+                                {{ month.month }}
+                            </option>
+                        </select>
+                    </ng-container>
+
+                    <ng-container *ngIf="dateForm.value.duration === 3">
+                        <select class="form-select rounded-3" (change)="customYear($event)">
+                            <option selected disabled>Select Year</option>
+                    
+                            <option *ngFor="let item of years" [value]="item.year" [selected]="item.dateRange == dateValue">
+                                {{ item.year }}
+                            </option>
+                        </select>
+                    </ng-container>
+
+                    <ng-container *ngIf="dateForm.value.duration === 4">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="input-group w-100">
+                                    <input class="form-control form-control-sm" placeholder="Start Date" name="dp"
+                                        [(ngModel)]="selectStartDateNew" [maxDate]="maxDate"
+                                        [minDate]="{ day: 1, month: 1, year: 2024 }" ngbDatepicker
+                                        (dateSelect)="selectCustomDate($event, 1)"
+                                        #d="ngbDatepicker" />
+                                    <button class="btn btn-sm btn-outline-primary bi bi-calendar3"
+                                        (click)="d.toggle()" type="button"></button>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="input-group w-100">
+                                    <input class="form-control" placeholder="End Date" name="de"
+                                        [(ngModel)]="selectEndDateNew" [maxDate]="maxDate" [disabled]="!selectStartDateNew"
+                                        [minDate]="selectStartDateNew" ngbDatepicker 
+                                        (dateSelect)="selectCustomDate($event, 2)"
+                                        #de="ngbDatepicker" />
+                                    <button class="btn btn-outline-primary bi bi-calendar3"
+                                        (click)="de.toggle()" type="button"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-9">
+                    <button class="btn btn-primary rounded-3" [disabled]="isLoading" (click)="emitDateValue(); dateDropdown.close()">
+                    <span *ngIf="!isLoading">Show</span>
+                    <span *ngIf="isLoading">Loading..</span>
+                </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

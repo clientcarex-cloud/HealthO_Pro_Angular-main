@@ -1,0 +1,9 @@
+<div container="body" ngbTooltip="More Options" ngbDropdown class="dropdown" #dropdown="ngbDropdown">
+    <button type="button" class="btn p-0" id="dropdownBasic1" ngbDropdownToggle>
+        <i class="ri-more-2-fill fw-bold"></i>
+    </button>
+    <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="dropdownBasic1" [ngClass]="{'show': dropdown.isOpen()}">
+        <button ngbDropdownItem (click)="copyText()">Copy Message</button>
+        <button ngbDropdownItem (click)="forwardMessageToChat(chat)">Forward Message</button>
+    </div>
+</div>

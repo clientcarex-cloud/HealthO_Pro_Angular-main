@@ -1,0 +1,8 @@
+<label [attr.for]="checkboxId" [class]="mainLabel" *ngIf="showLabel">{{labelText}}</label>
+<div [class]="classVal">
+    <input class="form-check-input" type="checkbox" role="switch" [attr.id]="checkboxId" 
+    [(ngModel)]="checkboxValue" [disabled]="inputDisabled" tabindex="{{tab_idx}}"
+    (change)="onCheckedChange($event)" >
+    <label [class]="labelClass"  [attr.for]="checkboxId">{{ checkboxValue ?
+        activeText : inactiveText }}</label>
+</div>

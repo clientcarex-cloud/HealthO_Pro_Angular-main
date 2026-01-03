@@ -1,0 +1,381 @@
+<!-- <p>manage-amount works!</p> -->
+<div class="container-full">
+
+    <div class="row mb-3 px-2 align-item-center pt-2">
+
+        <div class="col-lg-9 col-12 d-flex flex-lg-row flex-column justify-content-sm-start">
+            <div class="d-flex align-item-lg-center align-item-start justify-content-start"
+                style="align-items: center;">
+                <span>
+                    <button class="border-0 bg-transparent p-0" routerLink="/doctor/doctors">
+                        <i class="ri-arrow-left-line fs-4 td-color"></i>
+                    </button>
+                </span>
+                <span class="fs-5 ps-2 fw-semibold">{{this.doctor?.name + ' | ' + this.doctor.mobile_number || ""}}</span>
+                <span class="fs-5 ps-2 fw-semibold" *ngIf="doctor">{{doctor?.doctor_type_id == 2 ? " | Consulting Doctor" : " | Referral Doctor "}}</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row mb-3">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-6">
+                    <app-searchbox (searchTermChange)="searchTestQuery($event)"></app-searchbox>
+                </div>
+                <div class="col-6">
+                    <app-select [selectItems]="departments" [labelText]="''" selectBindLabel="name"
+                        [multipleSelect]="true" placeHolder='Select Department'
+                        (onSelectionChanged)="selectDepartment($event)"></app-select>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="row">
+                <div class="col-lg-7 col-12 d-flex align-item-center gap-2">
+                    <button *ngIf="!bulk && filtered_test" type="button" class="btn px-3 btn-primary rounded-3"
+                        (click)="bulkEdit()">Bulk Edit</button>
+
+                    <button *ngIf="!bulk && filtered_test" type="button" class="btn px-3 btn-info rounded-3"
+                        (click)="openXl(syncModalTests)">Sync {{doctor?.doctor_type_id == 2 ? "Cons." : "Ref. "}}
+                        Amt</button>
+                    <!-- 
+                    <button *ngIf="!bulk && filtered_test" type="button" class="btn px-3 btn-secondary rounded-3" 
+                    (click)="openXl(mergeRefDoctors)"
+                    >Merge Doctors</button> -->
+
+                    <button *ngIf="bulk" type="button" class="btn btn-success rounded-3 px-3" (click)="bulkSave()"
+                        [disabled]="bulkSaveProgress">
+                        <span *ngIf="bulkSaveProgress" class="spinner-border spinner-border-sm mr-1"></span>
+                        <span *ngIf="!bulkSaveProgress">Save</span>
+                        <span *ngIf="bulkSaveProgress">Please wait</span>
+                    </button>
+
+                    <button *ngIf="bulk && !bulkSaveProgress" type="button" class="btn btn-danger rounded-3 px-3"
+                        (click)="bulkEdit()">Close</button>
+                </div>
+
+                <div class="col-lg-5 col-12">
+
+                    <div class="row mx-0 g-1 align-items-center justify-content-end">
+                        <div class="col-3 d-flex justify-content-end">
+                            <span class="fw-light">Showing</span>
+                        </div>
+                        <div class="col-3">
+                            <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans"
+                                style="width: auto" name="pageSize" placeholder="Select"
+                                (change)="changePageNumber($event)">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option [value]="all_count">All</option>
+                            </select>
+                        </div>
+                        <div class="col-2 justify-content-end pe-0">
+                            <span class="fw-light">Entries</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <app-datatable tableClass="table table-hover">
+                <ng-container class="tableheader">
+                    <th>Test Name</th>
+                    <th>Department</th>
+                    <th class="text-center">Price</th>
+                    <th class="text-center" style="max-width: 120px" [class.bg-soft-primary]="bulk">
+                        <span>
+                            Amount
+                        </span>
+                        <app-num-input *ngIf="bulk"
+                            classVal="form-control fw-semibold text-center rounded-3 shadow border-1 py-1 fs-5"
+                            [(inputValue)]="bulkEnter" [maintainLimit]="true" [disableInput]="bulkSaveProgress"
+                            [limit]="bulkPercentage ? 100 : 1000000"
+                            (inputValueChange)="enterBulk($event)"></app-num-input>
+                    </th>
+                    <th class="text-center" [class.bg-soft-primary]="bulk">
+                        <div class="d-flex flex-column">
+                            <span>
+                                Percentage
+                            </span>
+                            <span class="py-2 fs-4" *ngIf="bulk">
+                                <input type="checkbox" [class]="" [checked]="bulkPercentage"
+                                    style="height: 17px; width: 17px" [disabled]="bulkSaveProgress"
+                                    (change)="enterBulkPercentage($event)">
+                            </span>
+                        </div>
+
+                    </th>
+                    <th class="text-center" *ngIf="!bulk">Edit</th>
+                </ng-container>
+                <ng-container class="tablebody" *ngFor="let item of filtered_test">
+
+                    <tr class="font-Readex" [class.bg-soft-primary]="item.editMode && !bulk" *ngIf="!pageLoading">
+
+                        <td class="fs-6 fw-medium">
+                            <ngb-highlight [result]="item.name" [term]="testQuery"></ngb-highlight>
+                        </td>
+
+                        <td class="fs-6">
+                            <small>{{item.department}}</small>
+                        </td>
+                        <td class="text-wrap text-center fs-5 td-color">
+                            {{item?.price ? item?.price : ''}}
+                        </td>
+                        <td colspan="1" class="py-1 text-center">
+                            <div class="d-flex flex-column justify-content-center">
+                                <div class="text-center d-flex flex-column justify-content-center">
+                                    <!-- <input type="text"
+                                        [class]="!item.editMode ? 'form-control fw-semibold text-center rounded-3 border-0 py-1 fs-5 bg-transparent' : 'form-control fw-semibold text-center rounded-3 shadow border-1 py-1 fs-5'"
+                                        [value]="item.amount ? item.amount : '0'"
+                                        [disabled]="!item.editMode || bulkSaveProgress"
+                                        (input)="writeAmount(item,  $event)"> -->
+                                    
+                                        <app-num-input 
+                                        [classVal]="!item.editMode ? 'form-control fw-semibold text-center rounded-3 border-0 py-1 fs-5 bg-transparent' : 'form-control fw-semibold text-center rounded-3 shadow border-1 py-1 fs-5'"
+                                        [inputValue]="item?.amount || 0"
+                                        [disableInput]="!item.editMode || bulkSaveProgress"
+                                        [maintainLimit]="true"
+                                        [limit]="item?.is_percentage ? 100 : item?.price"
+                                        (inputValueChange)="writeAmount(item,  $event)"
+                                        ></app-num-input>
+                                </div>
+
+                            </div>
+
+                        </td>
+                        <td class="text-center fs-5">
+                            <input type="checkbox" [checked]="item?.is_percentage" style="height: 17px; width: 17px"
+                                (change)="controlPercentage(item, $event)"
+                                [disabled]="!item.editMode || bulkSaveProgress">
+                        </td>
+                        <td class="text-center" *ngIf="!bulk">
+                            <button *ngIf="!item.editMode" class="btn edit-btn btn-sm border-0 bg-transparent fs-3 p-0 "
+                                (click)="editMode(item, true)">
+                                <i class="ri-edit-line logoColor"></i>
+                            </button>
+                            <div *ngIf="item.editMode">
+                                <div class="d-flex flex-row justify-content-center gap-2 ">
+                                    <button (click)="updateAmountForTest(item)"
+                                        class="btn btn-sm border-0 bg-transparent fs-3 p-0 text-success">
+                                        <i class="ri-check-line"></i>
+                                    </button>
+                                    <button (click)="editMode(item, false)"
+                                        class="btn btn-sm border-0 bg-transparent fs-3 p-0 text-danger">
+                                        <i class="ri-close-line p-0"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+
+                </ng-container>
+                <ng-container class="tablebody" *ngIf="pageLoading">
+
+                    <tr>
+                        <td colspan="6">
+                            <span class="d-flex flex-column align-items-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text-black pt-2 fw-light">Loading</div>
+                            </span>
+                        </td>
+                    </tr>
+
+
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+
+    <div class="row g-1 justify-content-md-between align-items-md-center font-DMSans">
+        <div class="col col-sm-6 text-sm-right ">
+            <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number *
+                page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }}
+                    Entries</span>
+        </div>
+        <div class="col col-sm-6">
+            <div class="text-sm-right float-end text-black">
+                <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+                    (pageChange)="onPageChange($event)">
+                </app-pagination>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<ng-template #syncModalTests let-modal>
+    <div class="modal-header py-2 px-3 bg-white d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Sync Tests</span>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="modal.dismiss('Cross click');"></button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row mb-3">
+                <div class="col-12 fw-light fs-5">
+                    Source <span class="text-danger">*</span>
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <!-- <app-select [inputDisable]="true" [selectItems]="[doctor]"
+                selectBindLabel="name" [selectValue]="[doctor][0]" classVal="fw-light border-0 rounded-3"
+                ></app-select> -->
+
+                    <ng-autocomplete historyHeading="" [historyListMaxNumber]="0" [data]="[doctor]"
+                        [searchKeyword]="'name'" placeholder="" [initialValue]="[doctor][0]" [disabled]="true"
+                        [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate" #auto_complete_mobile>
+                    </ng-autocomplete>
+
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-12 fw-light fs-5">
+                    Target <span class="text-danger">*</span>
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <!-- <app-select [inputDisable]="true" [selectItems]="[doctor]"
+                selectBindLabel="name" [selectValue]="[doctor][0]" classVal="fw-light border-0 rounded-3"
+                ></app-select> -->
+
+                    <ng-template #itemTemplate let-item>
+                        <a class="py-1 px-2 d-flex justify-content-between align-items-center">
+                            <span [innerHTML]="item.name" class="fw-normal fs-6"></span>
+                            <small>
+                                <small class="item-type text-black fw-light px-2 py-0 rounded bg-soft-danger"
+                                    [innerHTML]="item.mobile_number"></small>
+                            </small>
+                        </a>
+                    </ng-template>
+
+                    <ng-template #notFoundTemplate let-notFound>
+                        <div [innerHTML]="notFound"></div>
+                    </ng-template>
+
+                    <ng-autocomplete historyHeading="" [historyListMaxNumber]="0" [data]="mergeDoctors"
+                        [searchKeyword]="'name'" placeholder="Search Doctor" class="w-100 text-center"
+                        (inputChanged)="getDoctorSearches($event)" (selected)="onItemSelected($event)"
+                        [isLoading]="docLoading" [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"
+                        #auto_complete_mobile>
+                    </ng-autocomplete>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end">
+                    <button class="btn btn-success fs-5 rounded-3" [disabled]="syncSave" (click)="syncDoctor()">
+                        <ng-container *ngIf="!syncSave">
+                            Sync
+                        </ng-container>
+                        <ng-container *ngIf="syncSave">
+                            <div class="d-flex flex-row align-item-center gap-2">
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                <span>Syncing ...</span>
+                            </div>
+                        </ng-container>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #mergeRefDoctors let-modal>
+    <div class="modal-header py-3 px-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Merge Doctors</span>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="modal.dismiss('Cross click');"></button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row mb-3">
+                <div class="col-12">
+                    To :
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <!-- <app-select [inputDisable]="true" [selectItems]="[doctor]"
+                selectBindLabel="name" [selectValue]="[doctor][0]" classVal="fw-light border-0 rounded-3"
+                ></app-select> -->
+
+                    <ng-autocomplete historyHeading="" [historyListMaxNumber]="0" [data]="[doctor]"
+                        [searchKeyword]="'name'" placeholder="" [initialValue]="[doctor][0]" [disabled]="true"
+                        [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate" #auto_complete_mobile>
+                    </ng-autocomplete>
+
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-12">
+                    Doctors :
+                </div>
+                <div class="col-12">
+
+                    <ng-template #itemTemplate let-item>
+                        <a class="py-1 px-2 d-flex justify-content-between align-items-center">
+                            <span [innerHTML]="item.name" class="fw-normal fs-6"></span>
+                            <small>
+                                <small class="item-type text-black fw-light px-2 py-0 rounded bg-soft-danger"
+                                    [innerHTML]="item.mobile_number"></small>
+                            </small>
+                        </a>
+                    </ng-template>
+
+                    <ng-template #notFoundTemplate let-notFound>
+                        <div [innerHTML]="notFound"></div>
+                    </ng-template>
+                    <!--
+                <ng-autocomplete historyHeading="" [historyListMaxNumber]="0" [data]="mergeDoctors"
+                    [searchKeyword]="'name'" placeholder="Search Doctor" class="w-100 text-center"
+                    (inputChanged)="getDoctorSearches($event)" (selected)="onItemSelected($event)"
+                    [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate" #auto_complete_mobile>
+                </ng-autocomplete> -->
+
+                    <!-- <app-select [inputDisable]="true" [selectItems]="[doctor]"
+                selectBindLabel="name" [selectValue]="[doctor][0]" classVal="fw-light border-0 rounded-3"
+                ></app-select> -->
+
+                    <app-select classVal="fw-light ng-select-container border-0 rounded-3 w-100 fs-5"
+                        [selectItems]="mergeDoctors" (onCustomSearch)="getDoctorSearches($event)"
+                        [multipleSelect]="true" (onSelectionChanged)="selectMerged($event)"
+                        selectBindLabel="name"></app-select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end">
+                    <button class="btn btn-success px-5 rounded-3" (click)="mergeDoctorsPost()">
+                        <ng-container *ngIf="!syncSave">
+                            Merge
+                        </ng-container>
+                        <ng-container *ngIf="syncSave">
+                            <div class="d-flex flex-row align-item-center gap-2">
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                <span>Merging ...</span>
+                            </div>
+                        </ng-container>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

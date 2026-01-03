@@ -1,0 +1,47 @@
+<div class="container-full" style="width: 300px">
+
+    <div class="row">
+        <div class="col-12">
+            <ul class="ps-3 mb-0 pb-0">
+
+                <li>Valid Upto <span class="text-danger">{{timeSrvc.dateAsString(card?.validity_ends_on, false)}}</span></li>
+                
+                <li *ngIf="card?.card?.no_of_members">{{card?.card?.no_of_members}} {{card?.card?.no_of_members > 1 ? ' Persons' : ' Person'}}</li>
+                
+                <ng-container *ngIf="card?.benefits && card?.benefits.length != 0">
+                    <li [innerHTML]="returnFreePrivilegeCard('free_usages', 'availed_free_usages', 'Free')?.html_content"></li>
+                    <li [innerHTML]="returnFreePrivilegeCard('discount_usages', 'availed_discount_usages', 'Discounted')?.html_content"></li>
+                </ng-container>
+                    
+                <li>
+                    <span [class.text-success]="card?.card?.is_active" [class.text-danger]="!card?.card?.is_active">
+                        {{card?.card?.is_active ? 'Active' : 'In-Active'}}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="false">
+        <div class="col-12">
+            <ul>
+                <li *ngIf="card?.doctor_consultation">
+                    {{"Discount on Doctor Consultation " + card?.doctor_consultation?.discount + "% For " +
+                    card?.doctor_consultation?.frequency + " times"}}
+                </li>
+                <li *ngIf="card?.ambulance">
+                    {{"Ambulance " + card?.ambulance?.type?.name + " For " + card?.ambulance?.frequency + " times"}}
+                </li>
+                <li *ngIf="card?.ip_billing">
+                    {{"In-Patient Discount " + card?.ip_billing?.discount + "% For " + card?.ip_billing?.frequency +
+                    " times"}}
+                </li>
+                <li *ngIf="card?.pharmacy">
+                    {{"Pharmacy Discount " + card?.pharmacy?.discount + "% For " + card?.pharmacy?.frequency + "
+                    times"}}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>

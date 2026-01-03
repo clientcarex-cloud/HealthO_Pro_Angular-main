@@ -1,0 +1,157 @@
+:host ::ng-deep .st-area {
+  background-color: #000000;
+  /* Set your desired background color */
+
+}
+
+.unselectable {
+  /* Prevent selection for all browsers */
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently supported by most modern browsers */
+}
+
+
+.st-toolbar-item select:last-child {
+  display: none;
+}
+
+#total_number {
+  font-weight: 900;
+}
+
+#page_number {
+  font-weight: 900;
+}
+
+
+
+.typePlace:focus {
+  outline: 2.5px solid #0d6efd42 !important;
+  // border: 2px solid red; /* Replace #yourColor with the color you prefer */
+  box-shadow: none;
+  /* Remove any shadow if exists */
+}
+
+:host ::ng-deep .st-toolbar[_ngcontent-ng-c3040375463] {
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border: 1px solid #bdbdbd;
+  padding: 0px;
+  background-color: #fff;
+}
+
+:host ::ng-deep .st-toolbar-item[_ngcontent-ng-c3663704024] {
+  border: 0;
+  padding: 5px 8px;
+  background-color: #fff;
+  border-radius: 5px;
+  margin-right: 1px;
+  cursor: pointer;
+}
+
+:host ::ng-deep .st-editor-container .st-area {
+  /* Your styles */
+  overflow: hidden;
+  border: 0px solid #bdbdbd;
+  // width: 210mm;
+  min-height: 297mm;
+  align-self: center;
+  // margin: 10px auto;
+  // background-size: 210mm 297mm;
+  // background-repeat: repeat-y;
+  // background-color: #4ced02;
+  background-color: #EFF2F7; // sky blue
+  font-family: "Trebuchet MS", sans-serif;
+  resize: none;
+  outline: none;
+  /* Add this line to remove the outline color */
+
+  /* Dynamic padding based on height */
+  //  padding-top: 271px; /* Initial padding-top */
+}
+
+//   :host ::ng-deep .st-editor-container .st-area:not(:first-of-type) {
+//     padding-top: 150px; /* Padding for subsequent elements */
+// }
+
+
+:host ::ng-deep .st-toolbar {
+  position: sticky;
+  top: 37px;
+  // background-color: #e05454; /* Optional: Change the background color */
+  border-top: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  z-index: 102
+}
+
+.wordreportcontent {
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+.st-custom-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 105
+}
+
+
+.outer-container {
+  overflow: scroll;
+  width: 100%;
+  /* Adjust as needed */
+  height: 95vh;
+  /* Adjust as needed */
+}
+
+.inner-container {
+  transform-origin: 0 0;
+}
+
+:host ::ng-deep .st_area_editor {
+  font-size: 14px;
+  /* Default font size */
+
+  /* Font size 6 */
+  font[size="6"] {
+    line-height: 1.2;
+    /* Adjust the line-height as needed */
+  }
+
+  font[size="7"] {
+    line-height: 1.6;
+    /* Adjust the line-height as needed */
+  }
+
+  /* Other font sizes */
+  font[size="2"] {
+    line-height: 1.2;
+    /* Adjust the line-height as needed */
+  }
+
+  font[size="3"] {
+    line-height: 0.6px;
+    /* Adjust the line-height as needed */
+  }
+
+  /* Add more font sizes as needed */
+}
+
+
+br {
+  // line-height: 20px;
+  padding: 20px 0px;
+}

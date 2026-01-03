@@ -1,0 +1,14 @@
+<div class="form-check">
+  <input
+    class="form-check-input"
+    type="radio"
+    [multiple]="true"
+    name="flexRadioDefault"
+    id="flexRadioDefault2"
+    [checked]="checkValue"
+    (change)="onCheckChange($event)"
+  >
+  <label [class]="labelClass" (change)="changeValue()" for="flexRadioDefault2" *ngIf="!removeLabel">
+    {{labelText}}
+  </label>
+</div>

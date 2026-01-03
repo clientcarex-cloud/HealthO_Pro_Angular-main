@@ -1,0 +1,279 @@
+<!-- <p>leave-requests works!</p> -->
+<div class="container-full">
+    <div class="row">
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs-custom-transparent" [activeId]="activeTab">
+                <li ngbNavItem [ngbNavItem]="1" (click)="activeTab = 1 ; submitted = false">
+                    <button ngbNavLink class="fs-4">
+                        {{is_sa ? 'Pending Requests' : 'My Requests' }}</button>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="myRequests"></ng-container>
+                    </ng-template>
+                </li>
+
+                <li ngbNavItem [ngbNavItem]="2" (click)="activeTab = 2 ; submitted = false" *ngIf="!is_sa">
+                    <button ngbNavLink class="fs-4">Apply New</button>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="applyNew"></ng-container>
+                    </ng-template>
+                </li>
+            </ul>
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+</div>
+
+<ng-template #applyNew>
+    <div class="container-full p-3">
+        <form [formGroup]="baseForm">
+            <div class="row mb-3">
+                <div class="col-lg-4">
+                    <app-select labelText="Leave Type" labelClass="form-label mb-1" placeHolder="Select Type"
+                        formControlName="leave_type" [imp]="true" [selectItems]="leaveTypes" selectBindLabel="name"
+                        classVal="ng-select-container border-0 fs-5 rounded-3" [formSubmitted]="submitted"></app-select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-lg-3 col-6">
+                    <app-datepicker classVal='form-control font-Readex flatpickr-input rounded-3 fs-5'
+                        labelText="From Date" [imp]="true" datePickerFormat="Y-m-d" formControlName="from_date"
+                        (dateValueChange)="endDate.setMinimumDate($event, true)" [selectToday]="true" [setMin]="true"
+                        [setMax]="false" [formSubmitted]="submitted"></app-datepicker>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <app-datepicker #endDate classVal='form-control font-Readex flatpickr-input rounded-3 fs-5'
+                        labelText="To Date" [imp]="true" datePickerFormat="Y-m-d" formControlName="to_date"
+                        [selectToday]="true" [setMin]="true" [setMax]="false"
+                        [formSubmitted]="submitted"></app-datepicker>
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-lg-10 col-12">
+                    <app-input labelClass="form-label mb-1" formControlName="reason" labelText="Reason"
+                        [formatLetter]="true" placeHolder="Enter Reason" [imp]="true" [formSubmitted]="submitted"
+                        classVal="form-control rounded-3 fs-5"></app-input>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12 mb-1">
+                    Attachments
+                </div>
+                <div class="col-12">
+                    <div class="d-flex flex-row gap-2 align-items-center" *ngIf="!baseForm.get('attachments')?.value">
+                        <div>
+                            <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                                class="form-control bg-soft-primary rounded-5 d-none" (change)="onFileChanged($event)"
+                                name="fileUpload" id="fileUpload" accept="image/png, image/gif, image/jpeg">
+
+                            <button type="button" (keydown.enter)="$event.stopPropagation()"
+                                ngbTooltip="Upload From Storage"
+                                class="btn border rounded-3 bg-white shadow d-flex align-items-center gap-2"
+                                (click)="file.click()">
+                                Upload <i class="ri-upload-2-line fs-5"></i>
+                            </button>
+
+                        </div>
+
+                        or
+
+                        <button class="btn border rounded-3 bg-white shadow d-flex align-items-center gap-2"
+                            ngbTooltip="Open Camera And Capture" (click)="openModal(webCam, { size: 'lg' })">
+                            Capture <i class="ri-camera-line fs-5"></i>
+                        </button>
+                    </div>
+
+                    <div *ngIf="baseForm.get('attachments')?.value" class="d-flex flex-nowrap flex-row">
+
+                        <button ngbTooltip="View Attached Image" class="btn btn-primary rounded-3 px-2"
+                            (click)="openModal(imagePreview, { size: '', centered: true})">
+                            View
+                        </button>
+
+                        <button ngbTooltip="Delete Image" class="btn rounded-3 text-danger p-0" (click)="removeImage()">
+                            <i class="ri-close-line fs-4 p-0"></i>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex justify-content-end fs-5 px-2">
+                    <button (click)="saveApiCall()" class="btn btn-success fs-5 rounded-3 shadow">Save</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #myRequests>
+    <div class="container-full p-3">
+        <div class="row mb-3 justify-content-between" *ngIf="!is_sa">
+            <div class="col-4">
+                <app-display-data [data]="stats"></app-display-data>
+            </div>
+            <div class="col-4">
+                <app-datemodal [showDate]="false" [showCustom]="false" [initWith]="2"
+                [setTodayDefault]="false" defaultDateValue="{{from_date}} to {{to_date}}" (dateValueChanged)="getRangeValue($event)"
+                ></app-datemodal> 
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-12">
+                <app-datatable>
+                    <ng-container class="tableheader">
+                        <th>S.no</th>
+
+                        <th *ngIf="is_sa">Staff</th>
+                        <th class="text-nowrap">Leave Type & Reason</th>
+                        <th class="text-nowrap">Applied On</th>
+                        <th class="text-nowrap">Day & Dates</th>
+                        <th>Attachments</th>
+                        <th *ngIf="!is_sa">Status</th>
+                        <th>Action</th>
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <tr *ngFor="let item of leaves; let i = index ">
+                            <td><span class="fw-semibold text-black">{{ i + 1 }}.</span></td>
+                            <td *ngIf="is_sa">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <img class="me-2 rounded-circle"
+                                            style="width:27px; height: 27px; object-fit: contain;"
+                                            [src]="item?.lab_staff?.profile_pic && item?.lab_staff?.profile_pic != '' ? item?.lab_staff?.profile_pic : '/assets/images/no-profile-picture-icon.svg'">
+                                    </div>
+                                    <app-patient-details name="{{item?.lab_staff?.name}}"
+                                        time="{{item?.lab_staff?.mobile_number}}"></app-patient-details>
+                                </div>
+                            </td>
+                            <td>
+                                <app-patient-details name="{{item?.leave_type?.name}}"
+                                    [nameClass]="'text-nowrap fs-6 fw-medium'" [trnc_length]="150"
+                                    trnc_word="{{item?.reason}}"
+                                    trnc_class="text-nowrap td-color text-truncate"></app-patient-details>
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-black text-nowrap">
+                                    {{timeSrvc.decodeTimestamp(item?.added_on)}}
+                                </span>
+                            </td>
+                            <td>
+                                <app-patient-details
+                                    name="{{item?.no_of_days}} {{item?.no_of_days && item?.no_of_days > 1 ? 'Days' : 'Day' }} "
+                                    [nameClass]="'text-nowrap fs-6 fw-medium'"
+                                    time="{{timeSrvc.dateAsString(item?.from_date, false, true)}}{{item?.no_of_days > 1 ?  ' to ' + timeSrvc.dateAsString(item?.to_date, false, true) : ''}}"></app-patient-details>
+                            </td>
+
+                            <!-- <td><span class="fw-semibold text-black text-nowrap">
+                                {{timeSrvc.dateAsString(item?.from_date, false, true)}}
+                            </span></td>
+                            <td><span class="fw-semibold text-black text-nowrap">
+                                {{timeSrvc.dateAsString(item?.to_date, false, true)}}
+                            </span>
+                        </td> -->
+
+                            <td>
+                                <button *ngIf="item.attachments" ngbTooltip="View Attached Image"
+                                    class="btn btn-primary btn-sm rounded-3"
+                                    (click)="picture = item.attachments;openModal(attachments, { size: '', centered: true})">
+                                    View
+                                </button>
+                            </td>
+                            <td *ngIf="!is_sa">
+                                <span class="fw-semibold" *ngIf="!is_sa" [class.text-danger]="item?.status?.id == 3"
+                                    [class.text-success]="item?.status?.id == 2">{{item.status?.name}}</span>
+
+
+                                <select *ngIf="is_sa" class="form-select border py-1 shadow rounded-3 fw-medium"
+                                    [class.text-success]="item?.status?.id == 2" (change)="changeStatus($event, item)"
+                                    [class.text-danger]="item?.status?.id == 3" style="min-width: 110px">
+                                    <ng-container *ngFor="let status of statusTypes">
+                                        <option class="text-black" [selected]="status?.id == item?.status?.id"
+                                            [value]="status?.id">
+                                            {{status?.name}}</option>
+                                    </ng-container>
+                                </select>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-row gap-2 align-items-center">
+                                    <button (click)="deleteRequest(item, false, true, 2)" *ngIf="is_sa && !item?.is_cancel && item?.status?.id != 2"
+                                    class="btn btn-success rounded-3 btn-sm">Approve</button>
+
+                                    <span *ngIf="is_sa && !item?.is_cancel && item?.status?.id == 2" class="text-success fw-medium"
+                                    >Approved</span>
+    
+                                    <button (click)="deleteRequest(item, true, false, is_sa ? 3 : 4)" *ngIf="!item?.is_cancel"
+                                        class="btn btn-danger rounded-3 btn-sm">
+                                    {{is_sa ? 'Reject' : 'Cancel'}}</button>
+                                </div>
+
+                                <!-- <span *ngIf="item?.is_cancel">Cancelled</span> -->
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #imagePreview let-modal>
+    <div class="modal-header py-1 px-3 bg-soft-primary border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Attached Image</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center">
+                    <img [src]="baseForm.get('attachments')?.value ? baseForm.get('attachments')?.value : ''"
+                        style="height: 400px; width: 400px; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #attachments let-modal>
+    <div class="modal-header py-1 px-3 bg-soft-primary border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Attached Image</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center">
+                    <img [src]="picture ? picture : ''" style="height: 400px; width: 400px; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #webCam let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom fs-5">
+        <span class="modal-title" id="modal-basic-title">Add Image</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12">
+                    <app-webcam (pictureTaken)="addCameraImage($event, modal)"></app-webcam>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

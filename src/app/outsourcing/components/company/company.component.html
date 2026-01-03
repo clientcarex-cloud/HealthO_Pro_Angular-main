@@ -1,0 +1,412 @@
+<app-layout [showNav]="false" [showPageTitle]="false" [showMap]="false" [displayInformation]="false"
+  [labPackage]="false">
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="text-nowrap text-black">Sno.</th>
+        <th>
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Name</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+              *ngIf="collabs && collabs.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+
+        <th>Tests</th>
+
+        <th>Bill</th>
+        <th>Reports</th>
+      </ng-container>
+
+      <ng-container class="tablebody" *ngFor="let collab of collabs;let i = index">
+        <tr class="td-color">
+
+          <td class="fw-semibold text-black" (click)="editCompany(addCompany ,collab)">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+
+          <td (click)="editCompany(addCompany ,collab)">
+            <div class="d-flex flex-column">
+              <span class="fw-semibold text-black">{{collab?.name}}</span>
+              <span>{{collab?.mobile_number}}</span>
+            </div>
+          </td>
+
+
+          <td>
+            <button class="btn fs-4" (click)="openTests(sourcingTests, globalTestsModal, collab)"><i class="ri-edit-2-line"></i></button>
+          </td>
+
+          <td>
+            <button class="btn btn-primary rounded-3" (click)="bills(managePayments, collab)">
+              {{!is_referring ? 'View Bill' : 'Pay Bill'}}
+            </button>
+          </td>
+
+          <td>
+            <button class="btn btn-primary rounded-3 d-flex gap-2 align-items-center justify-content-center" (click)="bills(sendEmail, collab)">
+              Send <i class="ri-mail-line"></i>
+            </button>
+          </td>
+
+        </tr>
+
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </ng-container>
+
+</app-layout>
+
+
+
+
+
+
+<ng-template #globalTestsModal let-modal>
+  <div class="modal-header py-2 px-3 border-bottom bg-light-blue">
+    <span class="modal-title fs-5" id="modal-basic-title">{{selected_organization?.organization_name}}</span>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+  </div>
+  <div class="modal-body p-0">
+    <app-global-tests [sourcing_lab]="selected_organization"></app-global-tests>
+  </div>
+</ng-template>
+
+
+<ng-template #sourcingTests let-modal>
+  <div class="modal-header py-2 px-3 border-bottom bg-light-blue">
+    <span class="modal-title fs-5" id="modal-basic-title">{{selected_organization?.name}}</span>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="container-full">
+
+      <!-- search box  -->
+      <div class="row g-2 mb-2 justify-content-between">
+        <div class="col-lg-8 col-12">
+          <div class="row g-2">
+            <div class="col-lg-5 col-12">
+              <app-searchbox placeholder="Search Tests" [spellcheck]="false" [applyAutoFocus]="false"
+                (searchTermChange)="searchTestQuery($event)" [searchTerm]="query"></app-searchbox>
+            </div>
+            <div class="col-lg-5 col-12">
+              <app-select [selectItems]="departments" selectBindLabel="name" placeHolder="Select Department"
+                (onSelectionChanged)="selectDepartment($event)"></app-select>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-12 d-flex justify-content-lg-end justify-content-start align-items-center">
+          <div class="row">
+            <div class="col-4">
+              <span class="fw-light">Showing</span>
+            </div>
+          </div>
+          <div class="col-4 px-1">
+            <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+              name="pageSize" placeholder="Select" (change)="changeTestPageNumber($event)">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option [value]="test_all_count">All</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <span class="fw-light">Entries</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Global Tests Table  -->
+
+      <ng-container *ngIf="is_referring">
+        <ng-container *ngTemplateOutlet="referringLab"></ng-container>
+      </ng-container>
+
+      <div class="row g-3 justify-content-between align-items-center">
+        <div class="col-lg-6 col-12 font-DMSans">
+          <span class="text-nowrap">Showing {{(test_page_number * test_page_size) - test_page_size + 1}} to
+            {{(test_page_number *
+            test_page_size) < test_all_count ? test_page_number * test_page_size : test_all_count}} of {{ test_all_count
+              ? test_all_count : 0 }} Entries</span>
+        </div>
+
+        <div class="col-lg-6 col-12">
+          <div class="d-flex justify-content-end font-DMSans">
+            <app-pagination [collectionSize]="test_all_count || 0" [page]="test_page_number" [pageSize]="test_page_size"
+              (pageChange)="onTestPageChange($event)">
+            </app-pagination>
+            <!-- [paginationSize]="'sm'" -->
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="row">
+        <div class="col-12 d-flex justify-content-end ">
+          <button class="btn btn-success rounded-3" (click)="is_referring ? saveRevisedPrice() : importTests()">
+            {{is_referring ? 'Save' : 'Import Tests' }} {{!is_referring && new_included.length != 0 ? "(" + new_included.length + ")" : ''}}
+          </button>
+        </div>
+      </div> -->
+
+    </div>
+  </div>
+
+  <div class="modal-footer py-1 px-2 bg-light-blue">
+    <div class="d-flex justify-content-end ">
+      <button class="btn btn-success rounded-3 px-3" (click)="is_referring ? saveRevisedPrice() : importTests()" [disabled]="savingProgress">
+        <span class="text-nowrap" *ngIf="!savingProgress">
+          {{is_referring ? 'Save' : 'Import Tests' }} {{!is_referring && new_included.length != 0 ? "(" + new_included.length + ")" : ''}}
+        </span>
+        <div *ngIf="savingProgress" class="d-flex flex-row ">
+          <span class="spinner-border spinner-border-sm mr-1 text-nowrap"></span>
+          <span>Saving..</span>
+        </div>
+       
+      </button>
+    </div>
+  </div>
+
+</ng-template>
+
+
+<ng-template #outsouring>
+  <div class="row mb-3">
+    <div class="col-12">
+      <app-datatable>
+        <ng-container class="tableheader">
+          <th *ngIf="sourcing_term=='initiator='">
+            <app-checkbox [showLabel]="false" activeText="" inactiveText="" classVal=""
+              (onCheckboxValueChanged)="selectAll($event)"></app-checkbox>
+          </th>
+          <th>Test Name</th>
+          <th>Code</th>
+          <th>Price</th>
+          <th>Department</th>
+          <!-- <th >Price</th> -->
+        </ng-container>
+        <ng-container class="tablebody">
+          <tr *ngFor="let test of global_tests" class="td-color">
+            <td *ngIf="sourcing_term=='initiator='">
+                <ng-container *ngIf="tests_included?.includes(test.id)">
+                  <span class="text-success">Imported</span>
+                </ng-container>
+                <ng-container *ngIf="!tests_included?.includes(test.id)">
+                  <app-checkbox [showLabel]="false" activeText="" (onCheckboxValueChanged)="add_or_remove(test.id)"
+                  inactiveText="" classVal="" [inputDisabled]="tests_included?.includes(test.id)"
+                  [checkboxValue]="is_test_added(test.id)"></app-checkbox>
+                </ng-container>
+            </td>
+            <td>
+              <div class="text-black fw-medium py-1">
+                <ngb-highlight [result]="test.name" [term]="query"></ngb-highlight>
+              </div>
+
+            </td>
+
+            <td>
+              <small>
+                <ngb-highlight [result]="test.short_code" [term]="query"></ngb-highlight>
+              </small>
+            </td>
+            <td class="text-black fw-medium">
+              {{test.price}}
+            </td>
+            <td class="text-black">
+              <small>
+                <ngb-highlight [result]="test.department" [term]="query"></ngb-highlight>
+              </small>
+            </td>
+
+          </tr>
+        </ng-container>
+
+        <ng-container class="tablebody" *ngIf="!global_tests || global_tests.length === 0">
+          <tr>
+            <td colspan="8">
+              <div
+                class="text-black fs-6 font-monsterract d-flex flex-row gap-3 py-5 align-items-center justify-content-center "
+                style="vertical-align: middle;min-height: 100px;">
+                <!-- No data found -->
+<!--                 
+                  <small class="inactive">NO DATA FOUND</small>
+                  <img src="/assets/images/empty-box.png" style="width:50px"> 
+                -->
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </app-datatable>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #referringLab>
+  <div class="row mb-3">
+    <div class="col-12">
+      <app-datatable>
+        <ng-container class="tableheader">
+          <th *ngIf="sourcing_term=='initiator='">
+            <app-checkbox [showLabel]="false" activeText="" inactiveText="" classVal=""
+              (onCheckboxValueChanged)="selectAll($event)"></app-checkbox>
+          </th>
+          <th>Test Name</th>
+          <th>Price</th>
+          <th>
+            <div class="d-flex flex-column bg-soft-primary justify-content-center align-items-center">
+              <div>Revised Price (%)</div>
+                <app-num-input [maintainLimit]="true" styleVal="max-width: 100px" (inputValueChange)="bulkEnter($event)"
+                classVal="form-control fw-light rounded-3 py-1 fs-5 fw-semibold" [disableInput]="savingProgress"></app-num-input>
+            </div>
+          </th>
+          <th>Code</th>
+          <th>Department</th>
+
+        </ng-container>
+        <ng-container class="tablebody">
+          <tr *ngFor="let test of global_tests" class="td-color">
+            <td *ngIf="sourcing_term=='initiator='">
+              <app-checkbox [showLabel]="false" activeText="" (onCheckboxValueChanged)="add_or_remove(test.id)"
+                inactiveText="" classVal="" [inputDisabled]="tests_included?.includes(test.id)"
+                [checkboxValue]="is_test_added(test.id)"></app-checkbox>
+            </td>
+            <td>
+              <div class="text-black fw-medium">
+                <ngb-highlight [result]="test.name" [term]="query"></ngb-highlight>
+              </div>
+             
+            </td>
+            <td class="text-black fw-medium">
+              {{test.price}}
+            </td>
+            <td class="text-black fw-medium text-center">
+              <div class="d-flex justify-content-center">
+                <app-num-input [maintainLimit]="false" styleVal="max-width: 100px"
+                (inputValueChange)="changeRevisedPrice($event, test)" [disableInput]="savingProgress"
+                classVal="form-control fw-light rounded-3 py-1 fs-6 fw-semibold"
+                [inputValue]="test.revised_price?.revised_price || ''"></app-num-input>
+              </div>
+            </td>
+
+            <td>
+              <small>
+                <ngb-highlight [result]="test.short_code" [term]="query"></ngb-highlight>
+              </small>
+            </td>
+            <td class="text-black">
+              <small>
+                <ngb-highlight [result]="test.department" [term]="query"></ngb-highlight>
+              </small>
+            </td>
+
+          </tr>
+        </ng-container>
+
+        <ng-container class="tablebody" *ngIf="!global_tests || global_tests.length === 0">
+          <tr>
+            <td colspan="8">
+              <div
+                class="text-black fs-6 font-monsterract d-flex flex-row gap-3 py-5 align-items-center justify-content-center "
+                style="vertical-align: middle;min-height: 100px;">
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </app-datatable>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #managePayments let-modal>
+  <div class="modal-header py-2 px-3 bg-light-blue border-bottom ">
+    <span class="modal-title fs-5" id="modal-basic-title">{{selected_organization?.name || selected_organization?.organization_name}} | Pay Bill</span>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-success rounded-3" [disabled]="bills.invoiceLoading"
+      *ngIf="selected_organization?.partners && selected_organization?.partners.length != 0"
+       (click)="bills.printInvoice()" >
+       <span *ngIf="bills.invoiceLoading" class="spinner-border spinner-border-sm mr-1"></span> 
+       <span *ngIf="!bills.invoiceLoading">Print Invoice</span>
+      </button>
+      <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+  </div>
+  <div class="modal-body" style="min-height: 40vh">
+    <app-bills #bills [sourcing_lab]="null" [company]="selected_organization" [is_referring]="is_referring"></app-bills>
+  </div>
+</ng-template>
+
+
+<ng-template #sendEmail let-modal>
+  <div class="modal-header py-2 px-3 bg-light-blue border-bottom ">
+    <span class="modal-title fs-5" id="modal-basic-title">{{selected_organization?.name || selected_organization?.organization_name}} | Send Reports</span>
+    <div class="d-flex align-items-center gap-2">
+      <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+  </div>
+  <div class="modal-body" style="min-height: 40vh">
+    <app-send-email [sourcing_lab]="null" [company]="selected_organization" [is_referring]="is_referring"></app-send-email>
+  </div>
+</ng-template>
+
+
+<ng-template #addCompany let-modal>
+  <div class="modal-header align-items-center modal-bg">
+      <span class="modal-title fs-4">Company Details</span>
+      <button (click)="modalService.dismissAll()" class="btn-close"></button>
+  </div>
+
+  <div class="modal-body container-full modal-bg">
+      <app-add-company #companyComp [company]="selected_collab" (saved)="saveCompany($event)"></app-add-company>
+  </div>
+
+  <div class="modal-footer py-1 modal-bg">
+      <div class="d-flex justify-content-end">
+          <button class="btn btn-success fs-5 rounded-3" (click)="companyComp.saveApiCall()" >Save</button>
+      </div>
+  </div>
+</ng-template>

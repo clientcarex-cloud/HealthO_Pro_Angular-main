@@ -1,0 +1,148 @@
+<div class="container-full p-0 " style="min-height: 300px !important; ">
+
+    <div class="row mb-3" style="min-height: 150px;" *ngIf="show_payment">
+        <div class="col-12">
+            <app-datatable>
+                <ng-container class="tableheader text-nowrap">
+                    <th>Date & Time</th>
+                    <th>Receipt Id</th>
+                    <th>User</th>
+                    <th *ngIf="show_payment_for">Payment For</th>
+                    <th>Type</th>
+                    <th>Remarks</th>
+                    <th>Discount</th>
+                    <th>Paid</th>
+                    <th>Action</th>
+                </ng-container>
+                <ng-container class="tablebody text-nowrap">
+                    <tr *ngFor="let receipt of paymentHistoryTable">
+                        <td>{{timeSrvc.decodeTimestamp(receipt.added_on)}}</td>
+                        <td class="py-2">{{receipt.Receipt_id}}</td>
+                        <td class="td-color">{{receipt.created_by ? receipt.created_by : ""}}</td>
+                        <td *ngIf="show_payment_for" class="text-nowrap td-color">{{receipt?.payment_for?.name}}</td>
+                        <td>
+                            <ng-container *ngIf="!is_superadmin">
+                           
+                                {{receipt.payments ? getMultiPaymodes(receipt.payments) : ""}}
+                            </ng-container>
+                            <ng-container *ngIf="is_superadmin">
+                                <app-nom-select [selectItems]="pay_modes" bindLabel="name" bindValue="name" selectedValue="{{receipt.payments[0].pay_mode}}" (valueChanged)="changePayMode($event, receipt, 0)"></app-nom-select>
+
+                                <app-nom-select *ngIf="receipt.payments.length == 2" [selectItems]="pay_modes" bindLabel="name" bindValue="name" selectedValue="{{receipt.payments[1].pay_mode}}"  (valueChanged)="changePayMode($event, receipt, 1)"></app-nom-select>
+                            </ng-container>
+                        </td>
+                        <td>
+                            <small>{{receipt.remarks ? receipt.remarks : ""}}</small>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column ">
+                                <span>
+                                    <div class="d-flex flex-column">
+                                        <span class="fs-5 fw-medium">{{receipt.discount_amt ? '₹ '+
+                                            receipt.discount_amt : '0.00'}}</span>
+                                        <small>
+                                            <small class="fw-light">{{receipt.is_discount_amt_by_ref_doc ? 'By Ref.Dr' : ''}}</small>
+                                        </small>
+                                    </div>
+                                </span>
+                                <small *ngIf="receipt.discount_type" class="td-color">
+                                    {{receipt.discount_type.name}}
+                                </small>
+                                
+                                    <small *ngIf="receipt.discount_type" class="td-color">
+                                        <ng-container *ngIf="receipt?.discount_type?.name != 'Privilege Card Discount'">
+                                            {{receipt.discount_type.is_percentage ? "" : "₹"}}
+                                            {{getFloatVal(receipt.discount_type.number)}}
+                                            {{receipt.discount_type.is_percentage ? "%" : ""}}
+                                        </ng-container>
+                                    </small>
+
+
+                            </div>
+
+                        </td>
+                        <td class="fs-5 fw-medium">
+                            {{receipt.payments ? '₹ '+ getMultiPaymodesAmount(receipt.payments) : ""}}
+                        </td>
+                        <td>
+                            <button class="btn btn-success btn-sm px-3 rounded-3" [disabled]="receipt?.loading"
+                                (click)="print_patient_report(receipt.id, receipt)">
+
+                                <span *ngIf="!receipt?.loading">Print</span>
+                                <span *ngIf="receipt?.loading"
+                                    class="spinner-border spinner-border-sm mr-1 "></span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="paymentHistoryTable.length === 0">
+                        <td colspan="8">
+                            <div class="d-flex align-items-center justify-content-center td-color"
+                                style="min-height: 150px">
+                                No Payments
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+    <div class="row mb-1" *ngIf="show_payment">
+        <div class="col-12 fw-semibold fs-5">
+            Refund History
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <ng-container *ngTemplateOutlet="refundTable; context: {refundList: refundList}"></ng-container>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #refundTable let-refundList="refundList">
+    <app-datatable>
+        <ng-container class="tableheader">
+            <th>Date & Time</th>
+            <th>Refund</th>
+            <th>Mode</th>
+            <!-- <th class="text-center">Added to Due</th> -->
+            <th>User</th>
+            <th>Staff Remarks</th>
+            <th style="max-width: 350px">Additional Remarks</th>
+            <th>Action</th>
+        </ng-container>
+        <ng-container class="tablebody">
+            <tr *ngFor="let receipt of refundList">
+                <td class="py-2">{{timeSrvc.decodeTimestamp(receipt.added_on)}}</td>
+                <td class="fs-5 fw-medium">{{receipt.refund ? "₹ " + receipt.refund : ""}}</td>
+                <td class="fs-5 fw-medium">{{receipt.refund_mode ? receipt.refund_mode : ""}}</td>
+                <td>{{receipt.created_by ? receipt.created_by : ""}}</td>
+                <td>
+                    <div style="max-width: 350px;" class="text-wrap">{{receipt.remarks_from_staff ?
+                        receipt.remarks_from_staff: ""}}</div>
+                </td>
+                <td>
+                    <div style="max-width: 350px;" class="text-wrap"
+                        [innerHTML]="receipt.remarks ? placeBreak(receipt.remarks) : ''"></div>
+                </td>
+                <td>
+                    <button class="btn btn-success btn-sm px-3 rounded-3"
+                        (click)="print_patient_refund_slip(receipt)">Print</button>
+                </td>
+            </tr>
+            <tr *ngIf="refundList.length === 0">
+                <td colspan="7">
+                    <div class="d-flex flex-column align-items-center justify-content-center td-color"
+                        style="min-height: 150px">
+                        <img src="/assets/images/No-data-cuate.svg" style="width: 200px">
+                        <span class="pb-2
+                        ">No Refund History Found</span>
+                    </div>
+                </td>
+            </tr>
+        </ng-container>
+
+    </app-datatable>
+</ng-template>

@@ -1,0 +1,37 @@
+:host {
+    cursor: crosshair;
+  }
+  
+  :host.visible * {
+    user-select: none;
+    /* user-drag: none; */
+  }
+  
+  .magnify {
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+    border: 1px solid darkgray;
+    border-radius: 50%;
+    position: fixed; 
+    background: white;
+    transform: translateX(50%) translateY(50%) scale(2);
+    box-shadow: rgba(0, 0, 0, 0.2) 4px 4px 10px;
+    transition: opacity 100ms linear, width 100ms linear, height 100ms linear;
+    opacity: 1;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1000
+  }
+  
+  .inner {
+    position: absolute;
+    transform: translateX(25px) translateY(25px);
+    white-space: nowrap;
+  }
+  
+  .hidden {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }

@@ -1,0 +1,260 @@
+<div class="container-full">
+
+    <form [formGroup]="invoiceForm">
+        <div class="row mb-3">
+
+            <div class="col-lg-4 col-12">
+                <div class="row g-1">
+                    <div class="col-10">
+                        <app-select labelText="Supplier" labelClass="form-label mb-1" [imp]="true"
+                            selectBindLabel="name" formControlName="manufacturer"
+                            classVal="fw-semibold ng-select-container border-0  rounded-3" [inputDisable]="false"
+                            [selectItems]="suppliers" placeHolder="Select Supplier"></app-select>
+                    </div>
+                    <div class="col-2 d-flex flex-column">
+                        <label for="addFor" class="form-label mb-2 visibility-none">i</label>
+                        <!-- (click)="is_adding_room_type = false;openModal(addUpdateSupplier, { size: '', })" -->
+                        <button (click)="openModal(addUpdateSupplier, { size: 'lg', })" type="button"
+                            style="width: 22px; height: 22px" name="addFor"
+                            class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                            <i class="ri-add-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-12">
+
+                <app-input [applyAutoFocus]="true" labelText="Invoice No." labelClass="form-label mb-1" [imp]="true"
+                    placeHolder="Enter Invoice no." classVal="form-control fw-semibold py-1 rounded-3"
+                    formControlName="invoice_number"></app-input>
+
+            </div>
+
+            <div class="col-lg-4 col-12 d-flex justify-content-end align-items-center">
+                <button type="button" class="btn btn-success rounded-3" (click)="saveInvoice()">Save</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <form [formGroup]="baseForm">
+                <app-datatable tableClass="table table-hover table-custom">
+                    <ng-container class="tableHeader">
+                        <th class="serialNumber"><small>#</small></th>
+                        <th colspan="2" class="text-nowrap"><small>Medicine Name</small></th>
+                        <th class="widthOneTwenty text-nowrap"><small>Batch No.</small></th>
+                        <th class="widthOneTwenty text-nowrap"><small>Expiry Date</small></th>
+                        <th class="widthOneTwenty text-nowrap"><small>Tax Type</small></th>
+                        <th class="widthSevenFive"><small>Tax%</small></th>
+                        <th class="widthSevenFive"><small>Disc.%</small></th>
+                        <th class="widthSevenFive"><small>Pack</small></th>
+                        <th class="widthOneTwenty text-nowrap"><small>M.R.P</small></th>
+                        <th class="widthOneTwenty"><small>Rate</small></th>
+                        <th class="widthSevenFive"><small>Qt.</small></th>
+                        <th class="widthSevenFive text-end"><small>Amount</small></th>
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <!-- (click)="editStock(item, i, autoComplete)" -->
+                        <tr class="fw-semibold" *ngFor="let item of stocks; let i = index ;">
+                            <td class="serialNumber">{{i+1}}.</td>
+                            <td class="width-250">
+                                <small>{{item.item?.showName}}</small>
+                            </td>
+                            <td>
+                                <app-deletebutton btnClassVal="bg-transparent fs-6 border-0" placement="bottom"
+                                    ngbTooltip="Remove Test" deleteIconClass="bi bi-x-lg text-danger fw-bold"
+                                    (click)="deleteStock(item, i)"></app-deletebutton>
+                            </td>
+                            <td>{{item?.batch_number}}</td>
+                            <td>{{item?.expiry_date}}</td>
+                            <td>{{item?.tax_type?.name}}</td>
+                            <td>{{item?.tax}}%</td>
+                            <td>{{item?.discount}}%</td>
+                            <td>{{item?.packs}}</td>
+                            <td>{{returnTotalAmount(item?.price, false)}}</td>
+                            <td>{{returnTotalAmount(item?.rate, false)}}</td>
+                            <td>{{item?.quantity}}</td>
+                            <td class="text-end">{{returnTotalAmount(item?.total_amount, false)}}</td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="13">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                                    <!-- {{stocks?.length == 0 ? '' : '' }} -->
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2" class="py-2 width-275">
+                                <div>
+                                    <ng-autocomplete #autoComplete [data]="medicines" searchKeyword="showName"
+                                        placeholder="Search" (inputChanged)="getSearches($event);"
+                                        (selected)="inputSelected($event, autoComplete)" [focusFirst]="true"
+                                        [minQueryLength]="2" [itemTemplate]="itemTemplate"
+
+                                        [notFoundTemplate]="notFoundTemplate"></ng-autocomplete>
+
+                                    <ng-template #itemTemplate let-item>
+                                        <a class="px-2 py-1 fs-6" [innerHTML]="item.showName"></a>
+                                    </ng-template>
+
+                                    <ng-template #notFoundTemplate let-notFound>
+                                        <div [innerHTML]="notFound"></div>
+                                    </ng-template>
+                                </div>
+                            </td>
+
+                            <td>
+                                <button (click)="openModal(addUpdateMedicine, { size: '', })" type="button"
+                                    style="width: 22px; height: 22px" name="addFor"
+                                    class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                                    <i class="ri-add-line"></i>
+                                </button>
+                            </td>
+
+                            <td class="widthOneTwenty">
+                                <app-input styleVal="font-size: 11px !important;"
+                                    classVal="form-control fw-semibold rounded-3" [removeCloseIcon]="true"
+                                    [removeLabel]="true" placeHolder="Batch No." formControlName="batch_number"
+                                    [formSubmitted]="submitted"></app-input>
+                            </td>
+
+                            <td class="widthOneTwenty">
+                                <app-datepicker styleVal="font-size: 11px !important;" datePickerFormat="Y-m-d"
+                                    classVal="form-control fw-semibold rounded-3" [labelText]="''" [removeIcon]="true"
+                                    placeHolder="Expiry Date" formControlName="expiry_date" [setMax]="false"
+                                    [formSubmitted]="submitted"></app-datepicker>
+                            </td>
+                            <td class="widthOneTwenty" style="font-size: 11px !important;">
+                                <app-select formControlName="tax_type" dropPosition="top" selectBindLabel="name"
+                                    classVal="fw-semibold ng-select-container border-0  rounded-3" labelText=""
+                                    [formSubmitted]="submitted" placeHolder="Tax Type"
+                                    [selectItems]="taxTypes"></app-select>
+                            </td>
+
+                            <td class="widthSevenFive">
+                                <app-num-input styleVal="font-size: 11px !important;" formControlName="tax"
+                                    classVal="form-control fw-semibold rounded-3" placeHolder="Tax %"
+                                    [maintainLimit]="true" [formSubmitted]="submitted"></app-num-input>
+                            </td>
+                            <td class="widthSevenFive">
+                                <app-num-input styleVal="font-size: 11px !important;" formControlName="discount"
+                                    classVal="form-control fw-semibold rounded-3" placeHolder="Disc."
+                                    [maintainLimit]="true" [formSubmitted]="submitted"></app-num-input>
+                            </td>
+                            <td class="widthSevenFive">
+                                <app-input styleVal="font-size: 11px !important;"  formControlName="packs"
+                                [removeCloseIcon]="true" [removeLabel]="true"  [applyDot]="false"
+                                    classVal="form-control fw-semibold rounded-3" placeHolder="Packs"
+                                    [formSubmitted]="submitted"></app-input>
+                            </td>
+                            <td class="widthOneTwenty">
+                                <app-num-input styleVal="font-size: 11px !important;"
+                                    classVal="form-control fw-semibold rounded-3" placeHolder="MRP"
+                                    [maintainLimit]="false" formControlName="price"
+                                    [formSubmitted]="submitted"></app-num-input>
+                            </td>
+                            <td class="widthOneTwenty">
+                                <app-num-input styleVal="font-size: 11px !important;"
+                                    classVal="form-control fw-semibold rounded-3" [removeLabel]="true"
+                                    [maintainLimit]="false" placeHolder="Rate" formControlName="rate"
+                                    [formSubmitted]="submitted"></app-num-input>
+                            </td>
+                            <td class="widthSevenFive">
+                                <app-input styleVal="font-size: 11px !important;"
+                                    classVal="form-control fw-semibold rounded-3" [removeCloseIcon]="true"
+                                    [removeLabel]="true" placeHolder="Qt." [applyDot]="false" formControlName="quantity"
+                                    [formSubmitted]="submitted"></app-input>
+                            </td>
+                            <td class="widthSevenFive">
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary rounded-3 btn-sm"
+                                    (click)="addItem(autoComplete)">Add</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="11">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    Total Amount
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="fw-semibold py-1 text-end">
+                                    {{returnTotalAmount()}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="11" class="text-end">Discount</td>
+                            <td colspan="2">
+                                <app-num-input classVal="form-control fw-semibold rounded-3 text-end" [inputValue]="discount_inv"
+                                [maintainLimit]="true" [limit]="totalAmount" (inputValueChange)="updateOverallDiscount($event) ;"></app-num-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="11" class="text-nowrap text-end">Net Amount</td>
+                            <td colspan="2" class="text-end py-1 fw-semibold">{{returnTotalAmount(totalAmount - discount_inv, true)}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="11" class="text-end ">Tax</td>
+                            <td colspan="2" class="text-end py-1 fw-semibold">
+                                <!-- {{returnTotalAmount(taxAmount, true)}} -->
+                                <app-num-input classVal="form-control fw-semibold rounded-3 text-end" [inputValue]="taxAmount"
+                                [maintainLimit]="false" [limit]="999999999" (inputValueChange)="updateOverallTax($event) ;"></app-num-input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="11" class="text-nowrap text-end fw-semibold">Net Payable</td>
+                            <td colspan="2" class="text-end py-1 fw-semibold">{{returnTotalAmount(totalAmount - discount_inv, true)}}</td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<ng-template #addUpdateSupplier let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+        <span class="modal-title fs-5" id="modal-basic-title">
+            Add Supplier
+        </span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <app-add-supplier #supplier (saved)="setSupplier($event, modal)"></app-add-supplier>
+    </div>
+
+    <div class="modal-footer py-1 px-3 bg-light-blue border-top d-flex justify-content-end">
+
+        <button type="button" class="btn btn-success rounded-3 fs-5" aria-label="Close"
+            (click)="supplier.saveApiCall()">Save</button>
+    </div>
+</ng-template>
+
+
+<ng-template #addUpdateMedicine let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+        <span class="modal-title fs-5" id="modal-basic-title">
+            Add Medicine
+        </span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <app-add-medicine #addmedicines (saved)="setMedicine($event, autoComplete, modal)"></app-add-medicine>
+    </div>
+
+    <div class="modal-footer py-1 px-3 bg-light-blue border-top d-flex justify-content-end">
+
+        <button type="button" class="btn btn-success rounded-3 fs-5" aria-label="Close"
+            (click)="addmedicines.saveApiCall()">Save</button>
+    </div>
+</ng-template>

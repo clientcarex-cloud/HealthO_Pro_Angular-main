@@ -1,0 +1,4 @@
+/* Add this to your component's CSS file */
+.custom-dropdown-toggle::after {
+    display: none; /* Hide the chevron icon */
+}

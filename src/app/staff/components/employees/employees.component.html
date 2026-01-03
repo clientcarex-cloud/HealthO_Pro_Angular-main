@@ -1,0 +1,132 @@
+<!-- EMPLOYEE COMPONENT  -->
+<app-layout [showMap]="false" [showNav]="false" [showPageTitle]="false" [displayInformation]="false"
+    [labPackage]="false">
+
+    <ng-container class="addNewoptions">
+        <app-addnewbutton buttonText="Add Employee"></app-addnewbutton>
+        <app-info-btn></app-info-btn>
+    </ng-container>
+
+    <!-- <ng-container class="displayInformation">
+        <app-display-data [data]="dataEmployee"></app-display-data>
+    </ng-container> -->
+
+    <ng-container class="searchbox">
+            <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+        name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option [value]="all_count">All</option>
+      </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-black text-nowrap">ID & DOJ</th>
+                <th class="text-nowrap"><span>Name & Job Title</span></th>
+                <th class="text-nowrap"><span>Mobile Number</span></th>
+                <th><span>Department</span></th>
+                <th class="text-nowrap"><span>Employment Type</span></th>
+                <th class="text-center"><span class="text-nowrap">Edit & Login Access</span></th>
+            </ng-container>
+            <ng-container class="tablebody ">
+                <tr *ngFor="let item of staffs" class="td-color">
+                    <td (click)="showStaff(item.id)">
+                        <div class="d-flex flex-row justify-content-between gap-2">
+                            <div class="d-flex flex-column ">
+                                <span class="fw-medium text-black text-nowrap">
+                                    <ngb-highlight [result]="item.id.toString()"
+                                        [term]="query"></ngb-highlight>
+                                </span>
+                                <small>
+                                    {{formatDate(item.added_on)}}
+                                </small>
+                            </div>
+                        </div>
+                    </td>
+                    <td (click)="showStaff(item.id)">
+                        <div class="d-flex flex-row justify-content-between gap-2">
+                            <div class="d-flex flex-column ">
+                                <span class="fw-medium text-black text-nowrap">
+                                    <ngb-highlight [result]="item.name" [term]="query"></ngb-highlight>
+                                </span>
+                                <small>
+                                    {{item.role ? item.role.name ? item.role.name : "-": "-"}}
+                                </small>
+                            </div>
+                        </div>
+                    </td>
+                    <td (click)="showStaff(item.id)" class=" text-nowrap">
+                        +91
+                        <span *ngIf="item.mobile_number">
+                            <ngb-highlight [result]="item.mobile_number.toString()"
+                                [term]="query"></ngb-highlight>
+                        </span>
+                        <span *ngIf="!item.mobile_number">
+                            --
+                        </span>
+                    </td>
+                    <td (click)="showStaff(item.id)">
+                        <div class="d-flex flex-column justify-content-start">
+                            <span class="text-black text-nowrap">
+                                {{item.branch ? item.department.name ? item.department.name : "-": "-"}}
+                            </span>
+                        </div>
+                    </td>
+
+                    <td (click)="showStaff(item.id)">
+                        <div class="d-flex flex-column justify-content-start">
+                            <span class="text-black text-nowrap">
+                                {{item.employement_type ? item.employement_type.name ? item.employement_type.name : "-":
+                                "-"}}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-row justify-content-center align-items-center gap-2">
+                            <span>
+                                <button (click)="showStaff(item.id)" class="btn btn-transparent rounded-circle"
+                                    ngbTooltip="Edit Employee">
+                                    <i class="ri-edit-2-line fs-4"></i>
+                                </button>
+                            </span>
+
+                            <span class="fw-medium text-black text-nowrap">
+                                <app-checkbox [showLabel]="false" [checkboxValue]="item.is_login_access || item.is_superadmin" triggers="mouseenter:mouseleave"m
+                                    [inputDisabled]="item.is_superadmin" ngbPopover="{{item.is_superadmin ? 'Can`t Disable Super Admin Access. Kindly Change the role and try again.' : ''}}"
+                                    (onCheckboxValueChanged)="toggleAccess(item, $event)" inactiveText=""
+                                    activeText=""></app-checkbox>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+            all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+      </ng-container>
+    
+      <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </ng-container>
+</app-layout>

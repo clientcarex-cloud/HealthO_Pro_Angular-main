@@ -1,0 +1,55 @@
+<!-- <p>print-report works!</p> -->
+
+<div class="container-full" style="height: 100%; background-color: #F8FAFC ; overflow: hidden;">
+    <div class="row px-0" *ngIf="false">
+        <div class="col-12 px-0">
+            <div class="py-5 d-flex justify-content-center bg-transparent">
+                <img src="assets/images/HealthO.svg" alt="" height="32px">
+            </div>
+        </div>
+    </div>
+
+    <!-- *ngIf="!showReport" -->
+    <div class="row mb-3" *ngIf="false">
+        <div class="col-12 d-flex justify-content-center px-3 text-center mb-3">
+            Enter Four Digit OTP Code sent to Registered Mobile Number
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)" [config]="config"></ng-otp-input>
+        </div>
+
+        <div class="col-12 d-flex justify-content-center">
+            <button class="btn btn-primary rounded-3 shadow" (click)="sendOTP()">Resend OTP</button>
+        </div>
+    </div>
+    <!-- *ngIf="showReport" -->
+    <div class="row" *ngIf="false">
+        <div class="col-12 d-flex justify-content-center d-sm-none">
+            <button class="btn btn-success rounded-3" (click)="printReport()">Print</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center" id="report">
+
+        </div>
+    </div>
+
+
+
+
+
+    <div class="row"  *ngIf="false">
+        <div class="col-12">
+            <app-test-editor [disableEditor]="true" [content]="htmlData" 
+            [pages_content]="['']" [header_to_diplay_in_every_page]="''"></app-test-editor>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12">
+            
+        </div>
+    </div>
+
+</div>

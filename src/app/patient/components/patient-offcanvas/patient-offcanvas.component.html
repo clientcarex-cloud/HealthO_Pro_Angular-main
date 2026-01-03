@@ -1,0 +1,320 @@
+<div [@offCanvasWidthChange]="offCanvas ? 'on' : 'off'"
+    class="row unlock d-none d-lg-flex d-md-flex sticky-top justify-content-end rounded-3" [class.border-end]="offCanvasWidth !== 0"
+    [class.border-primary]="offCanvasWidth !== 0"
+    [style]="'position: fixed; top: 52px;width: ' + offCanvasWidth + 'vw; height: 100vh;background-color: #F8FAFC; box-shadow: rgba(173, 174, 255, 0.1) 20px 0px 20px;'">
+
+    <ng-container *ngTemplateOutlet="SearchBarAndFilter"></ng-container>
+
+    <div class="col-12 overflow-auto pb-3" [class.d-none]="offCanvasWidth===0" style="height:80vh">
+        <ng-container *ngTemplateOutlet="patientTable"></ng-container>
+    </div>
+
+
+    <div class="col-12 d-flex align-items-center justify-content-end" style="height: 90vh;z-index:2000">
+        <button class="off-canvas-arrow rounded-pill p-0 fs-1 border btn btn-sm shadow-lg d-flex align-items-center justify-content-center"
+        (click)="open()">
+        <i class="ri-arrow-drop-right-line"></i>
+    </button>
+    </div>
+</div>
+
+<!-- d-flex d-lg-none d-md-none  -->
+<div [@offCanvasWidthChange]="offCanvas ? 'on' : 'off'"
+    class="row unlock d-none sticky-top justify-content-end rounded-3" [class.border-end]="offCanvasWidth !== 0"
+    [class.border-primary]="offCanvasWidth !== 0"
+    [style]="'position: fixed; top: 52px;width: ' + offCanvasWidth + 'vw; height: 100vh;background-color: #F8FAFC; box-shadow: rgba(173, 174, 255, 0.1) 20px 0px 20px;'">
+
+
+
+    <ng-container *ngTemplateOutlet="SearchBarAndFilter"></ng-container>
+
+    <div class="col-12 overflow-auto pb-3" [class.d-none]="offCanvasWidth===0" style="height:80vh">
+        <ng-container *ngTemplateOutlet="patientTable"></ng-container>
+    </div>
+
+    <ng-container *ngTemplateOutlet="clearFiltersComp"></ng-container>
+</div>
+
+
+
+<ng-template #SearchBarAndFilter>
+    <div class="col-12 pt-2 mb-1" [class.d-none]="offCanvasWidth===0">
+        <div class="row align-items-center">
+            <div class="col-9 fs-4 fw-normal font-Readex">
+                Patients List
+            </div>
+            <div class="col-3 text-end" (click)="closeCanvas();">
+                <button class="btn bg-transparent border-0 fs-4">
+                    <i class="ri-arrow-left-line"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mb-1" [class.d-none]="offCanvasWidth===0">
+        <div class="row align-items-center">
+            <div class="col-9 pe-0">
+                <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+                    (searchTermChange)="searchQuery($event)"></app-searchbox>
+            </div>
+            <div class="col-3 d-flex justify-content-end">
+                <div ngbDropdown #myDrop="ngbDropdown" class="w-100 p-0">
+                    <button type="button" class="btn inactive text-center fs-4 w-100 py-0 rounded-pill d-flex justify-content-center"
+                        [class.bg-soft-primary]="filtered" id="dropdownConfig" ngbDropdownToggle>
+                        <i class="ri-filter-line ps-1"></i><i class="ri-arrow-drop-down-line"></i>
+                    </button>
+                    <div ngbDropdownMenu #filterDrop aria-labelledby="dropdownConfig"
+                        class="dropdown-menu-start border">
+                        <div class="container-full pb-0 px-3 pt-2 font-Readex" style="width: 350px">
+                            <div class="row mb-3">
+                                <div class="col-12 mb-2">
+                                    Sort By Department
+                                </div>
+                                <div class="col-12">
+                                    <app-select #deptSelect [selectItems]="departments" [labelText]="''"
+                                        selectBindLabel="name" [multipleSelect]="true" placeHolder='Select Department'
+                                        (onSelectionChanged)="selectDepartment($event)"></app-select>
+                                </div>
+                            </div>
+
+                            <div class="row g-0 mb-3">
+                                <div class="col-12 mb-2">
+                                    Select Date
+                                </div>
+
+                                <div class="col-12 ">
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <button class="rounded-pill w-100 btn-sm text-center"
+                                                (click)="setToday();$event.stopPropagation(); myDrop.close()"
+                                                [class.bg-white]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                                                [class.border]="!(timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                                                [class.border-0]="timeSrvc.getTodaysDate() === SR_start_date && (!SR_end_date || SR_end_date == '')">Today</button>
+
+                                        </div>
+
+                                        <div class="col-4">
+                                            <button
+                                                class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect"
+                                                (click)="setYesterday();$event.stopPropagation(); myDrop.close()"
+                                                [class.bg-white]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                                                [class.border]="!(timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == ''))"
+                                                [class.border-0]="timeSrvc.getYesterdayDate() === SR_start_date && (!SR_end_date || SR_end_date == '')">Yesterday</button>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <button
+                                                class="border rounded-pill bg-white w-100 btn-sm text-center dataSelect"
+                                                (click)="setSevenDays();$event.stopPropagation(); myDrop.close()"
+                                                [class.bg-white]="!(timeSrvc.getLast7Days().startDate === SR_start_date && timeSrvc.getLast7Days().endDate === SR_end_date)">Last
+                                                7 Days</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="row align-items-center">
+                                        <div class="col-3">
+                                            <hr>
+                                        </div>
+                                        <div class="col-6 text-center text-muted fw-light">
+                                            <small>or By Start Date & End Date</small>
+                                        </div>
+                                        <div class="col-3">
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="text" mwlFlatpickr
+                                                class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                                                (input)="set_shiftReport_start_date($event)" dateFormat="Y-m-d"
+                                                [maxDate]="datePickerMaxDate" placeholder="Start Date"
+                                                [ngModel]="SR_start_date" [altInput]="true"
+                                                [convertModelValue]="true" />
+                                        </div>
+                                        <!-- <div class="col-1 p-0 d-flex justify-content-center align-items-center ">
+               -
+              </div> -->
+                                        <div class="col-6">
+                                            <input type="text" mwlFlatpickr
+                                                class="form-control font-Readex flatpickr-input rounded-3 fw-light"
+                                                (input)="set_shiftReport_end_date($event)" dateFormat="Y-m-d"
+                                                placeholder="End Date" [ngModel]="SR_end_date"
+                                                [minDate]="SR_start_date ? SR_start_date : ''"
+                                                [maxDate]="datePickerMaxDate" [altInput]="true"
+                                                [convertModelValue]="true" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-0 mb-3">
+                                <div class="col-12 mb-2">
+                                    Sort by Status
+                                </div>
+
+                                <div class="col-12 ">
+                                    <app-select #selectStatus [selectItems]="testStatus" [labelText]="''"
+                                        selectBindLabel="name" [multipleSelect]="true" placeHolder='Select Status'
+                                        (onSelectionChanged)="selectTest($event)"></app-select>
+                                </div>
+                            </div>
+
+                            <div class="row g-1 font-Readex justify-content-center">
+                                <!-- <div class="col-4" *ngIf="from_date!=='' || to_date !== ''">
+                                    <button class="btn w-100 btn-soft-danger btn-sm rounded-pill border-outline"
+                                        (click)="clearDates();$event.stopPropagation(); myDrop.close()">
+                                        <i class="bi bi-calendar-x"></i> Clear Dates
+                                    </button>
+                                </div> -->
+                                <div class="col-5" *ngIf="(from_date!=='' || to_date !== '') && (dept!==''|| statusQuery!=='')">
+                                    <button class="btn w-100 btn-soft-danger btn-sm rounded-pill border-outline"
+                                        (click)="clearAllFilters();$event.stopPropagation(); myDrop.close()">
+                                        <i class="ri-filter-off-line"></i> Clear All Filters
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mb-1" [class.d-none]="offCanvasWidth===0">
+        <ng-container *ngIf="date && date!='' else fromToDate">
+            <app-small-text text="Showing: {{date}}" query="{{date}}"></app-small-text>
+        </ng-container>
+        <ng-template #fromToDate>
+            <app-small-text text="Showing: {{from_date}} - {{to_date}}" query="{{from_date}} - {{to_date}}"></app-small-text>
+        </ng-template>
+    </div>
+</ng-template>
+
+
+<ng-template #clearFiltersComp>
+    <div class="col-12 d-flex align-items-center justify-content-end" style="height: 90vh;z-index:2000">
+        <button class="off-canvas-arrow rounded-pill p-0 fs-1 border btn btn-sm shadow-lg d-flex align-items-center justify-content-center"
+        (click)="openSM()">
+            <i class="ri-arrow-drop-right-line"></i>
+        </button>
+    </div>
+</ng-template>
+
+
+<ng-template #patientTable>
+    <div class="row">
+        <div class="col-12 fs-5 mb-5 fw-semibold font-Readex">
+            <app-datatable [removeHeader]="true">
+                <ng-container class="tablebody">
+                    <tr *ngFor="let patient of patients">
+                        <td (click)="showPatient(patient)">
+                            <div class="d-flex flex-column">
+                                <small class="d-flex flex-row justify-content-between gap-1">
+                                    <small class="text-black text-nowrap fw-medium text-truncate" style="max-width: 175px;">{{ patient.title ?
+                                        patient.title.name : ""}}
+                                        <ngb-highlight [result]="patient.name" [term]="query"></ngb-highlight>
+                                    </small>
+                                    <small>
+                                        <small class="text-truncate fw-normal td-color">
+                                            {{timeSrvc.decodeTimestamp(patient.added_on)}}
+                                        </small>
+                                    </small>
+                                </small>
+                                <small class="d-flex flex-row justify-content-between gap-1">
+                                    <div class="text-truncate fw-normal td-color" style="max-width: 150px;">
+                                        <small>
+                                            <!-- <ngb-highlight [result]="concatenateShortCodes(patient)"
+                                            [term]="query"></ngb-highlight> -->
+                                            Total : {{concatenateShortCodes(patient)}}
+                                        </small>
+                                    </div>
+                                    <!-- <div>
+                                        <ng-container *ngIf="patient.invoice; else noInvoice">
+                                            <ng-container *ngIf="patient.invoice.total_due === 0 || patient.invoice.total_due == '0.00'; else notFullyPaid">
+                                              <small class="td-color">Fully paid</small>
+                                            </ng-container>
+                                            <ng-template #notFullyPaid>
+                                                <small>
+                                                    {{ 'Rs. ' + patient.invoice.total_due }}
+                                                </small>
+                                              
+                                            </ng-template>
+                                          </ng-container>
+                                          <ng-template #noInvoice>Rs. ---</ng-template>
+                                    </div> -->
+                                </small>
+
+
+                            </div>
+                        </td>
+                    </tr>
+
+                      <tr *ngIf="pageLoading">
+                        <td colspan="10">
+                          <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                            style="vertical-align: middle;min-height: 100px;">
+              
+                            <span *ngIf="query!==''">
+                              No Data Found with Search Query " <span class="fw-bold text-black">{{query}}</span> "
+                            </span>
+              
+                            <span *ngIf="query==='' && !pageLoading">
+                              No patients registered on this day.
+                            </span>
+              
+                            <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                              <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                              </div>
+                              <div class="text-black pt-2 fw-light">Loading</div>
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      
+                    <tr class="bg-light-blue"  *ngIf="!pageLoading">
+                        <td>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <button class="btn btn-outline-primary 
+                                bg-white text-primary rounded-pill 
+                                btn-sm align-items-center flex-row" (click)="loadMore()">
+                                   
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="ri-arrow-down-line fs-6" *ngIf="!pageLoading"></i> 
+                                        <div class="spinner-border " role="status"
+                                        style="height: 13px; width: 13px" *ngIf="pageLoading">
+                                        
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                        <span>Load More</span>
+                                    </div>
+                                    <!-- <div class="spinner-border" role="status"
+                                        style="height: 13px; width: 13px" *ngIf="pageLoading">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div> -->
+                                </button>
+                                <small>
+                                    <small class="text-nowrap fw-normal ">Showing <span class="fw-semibold">{{(page_number * page_size) -
+                                        page_size + 1}}</span> to <span class="fw-semibold">{{(page_number * page_size) < all_count ? page_number *
+                                            page_size : all_count}}</span> of <span class="fw-semibold">{{ all_count ? all_count : 0 }}</span>
+                                            Entries</small>
+                                    </small>
+                            </div>
+
+                        </td>
+                    </tr>
+                </ng-container>
+
+                  
+
+            </app-datatable>
+        </div>
+    </div>
+</ng-template>

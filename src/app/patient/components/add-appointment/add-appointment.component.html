@@ -1,0 +1,341 @@
+<div class="container px-3">
+
+    <div class="row mb-3" *ngIf="!ptn">
+        <div class="col-7">
+            <ng-template #itemTemplate let-item>
+                <a class="py-1 px-2 d-flex justify-content-between align-items-center">
+                    <span [innerHTML]="item.title + item.name" class="fw-normal fs-6"></span>
+                    <small>
+                        <small class="item-type text-black fw-light px-2 py-0 rounded bg-soft-danger"
+                            [innerHTML]="item.mobile_number"></small>
+                    </small>
+                </a>
+            </ng-template>
+
+            <ng-template #notFoundTemplate let-notFound>
+                <div [innerHTML]="notFound"></div>
+            </ng-template>
+            <!-- (selected)="onItemSelected($event)" -->
+            <ng-autocomplete historyHeading="" [historyListMaxNumber]="0" [data]="appointments"
+                [searchKeyword]="'dispName'" placeholder="Search" class="w-100 text-center"
+                (inputChanged)="getAppointments($event)" (selected)="selectedPreviousAppointment($event); autoComplete.clear()"
+                [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate" #autoComplete>
+            </ng-autocomplete>
+        </div>
+    </div>
+
+    <div class="row mb-1">
+        <div class="col-12 fw-light fs-5 text-muted border-bottom pb-2">
+            Personal Details
+        </div>
+    </div>
+
+    <form [formGroup]="baseForm">
+        <div class="row mb-3 g-lg-2 g-2">
+            <!-- PATIENTS NAME, TITLE AND GENDER  -->
+            <div class="col-xl-8 col-lg-6 col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-12">
+                        <span>Patient Name & Gender <span style="color:red">*</span></span>
+                    </div>
+                    <div class="col-12">
+                        <div class="row g-0 ">
+                            <!-- TITLE SELECT -->
+                            <div class="col-2">
+                                <select formControlName="title" id="title" name="patientName"
+                                    (change)="changeTitle($event)"
+                                    [class.border-danger]="submitted && !baseForm.value.title"
+                                    class="form-select bg-soft-primary rounded-0 rounded-start"
+                                    aria-label="Text input with select button" placeholder="Select Title">
+                                    <option value="" disabled>Select Title</option>
+                                    <ng-container *ngFor="let title of titles">
+                                        <option [value]="title.id">
+                                            {{title.name}}</option>
+                                    </ng-container>
+                                </select>
+
+                            </div>
+
+                            <!-- PATIENT NAME INPUT  -->
+                            <div class="col-8">
+
+                                <app-input [removeCloseIcon]="false" [removeLabel]="true"
+                                    placeHolder="Enter name" formControlName="name" [applyUpperCase]="true"
+                                    [formSubmitted]="submitted" classVal="form-control rounded-0 "
+                                    [inputLength]="70" [applyAutoFocus]="true" [applyAllowLettersOnly]="true"
+                                    [applyEmptySpace]="true" [applyDot]="true"></app-input>
+
+                            </div>
+
+                            <!-- GENDER SELECT  -->
+                            <div class="col-2">
+                                <select formControlName="gender" aria-label="gender input with select button"
+                                    id="gender" class="form-select bg-soft-primary rounded-0 rounded-end"
+                                    (change)="changeGender($event)" aria-label="Text input with select button">
+                                    <option disabled>
+                                        <small> Select gender</small>
+                                    </option>
+                                    <ng-container *ngFor="let gender of genders">
+                                        <option [value]="gender.id" *ngIf="gender.is_active"
+                                            [selected]="baseForm.value.gender === gender.name">
+                                            {{gender.name}}</option>
+                                    </ng-container>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AGE AND YEAR  -->
+            <div class="col-xl-4 col-lg-2 col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-12">
+                        <span>Age <span style="color:red">*</span></span>
+                    </div>
+                    <div class="col-12">
+                        <div class="row g-0">
+                            <!-- AGE INPUT  -->
+                            <div class="col-7">
+
+                                <app-input *ngIf="!years" [removeCloseIcon]="true" [removeLabel]="true"
+                                    formControlName="age" [applyAllowNumbersOnly]="true" [inputLength]="2"
+                                    [applyDot]="false" [formSubmitted]="submitted"
+                                    classVal="form-control rounded-0 rounded-start"
+                                    placeHolder="Enter age"></app-input>
+
+                                <app-datepicker datePickerFormat="Y-m-d" formControlName="dob"
+                                    [formSubmitted]="submitted" *ngIf="years" [removeIcon]="true"
+                                    [datePickerMaxDate]="this.currentDate"
+                                    classVal="form-control flat-picker rounded-0 rounded-start"></app-datepicker>
+                            </div>
+                            <div class="col-5">
+                                <select class="form-select rounded-0 rounded-end bg-soft-primary"
+                                    formControlName="ULabPatientAge" (change)="changeAges($event)"
+                                    aria-label="Text input with select button">
+                                    <option disabled>Select</option>
+                                    <ng-container *ngFor="let item of ages">
+                                        <option [value]="item.id" *ngIf="item.is_active"
+                                            [selected]="item.id === ages[0].id">{{item.name}}</option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3 g-lg-2 g-2">
+            <!-- MOBILE NUMBER  -->
+            <div class="col-xl-4 col-lg-2 col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-12">
+                        <span>Mobile Number <span style="color:red">*</span></span>
+                    </div>
+                    <div class="col-12">
+                        <!-- MOBILE NUMBER INPUT  -->
+                        <app-input [removeLabel]="true" placeHolder="+ 91 " formControlName="mobile_number"
+                            classVal="form-control rounded-2" [formSubmitted]="submitted" [inputLength]="10"
+                            [applyAutoFocus]="false" [applyAllowNumbersOnly]="true">
+                        </app-input>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-1">
+            <div class="col-12 fw-light fs-5 text-muted border-bottom pb-2">
+                Appointment Details
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex flex-column gap-0 align-items-start justify-content-start">
+                    <div class="text-nowrap">
+                        Do you want to book appointment for?
+                    </div>
+                    <div class="d-flex flex-row align-items-center gap-3 fs-5">
+                        <div>
+                            <app-radio labelText="Consulting" labelClass="form-check-label ps-1"
+                            (checkValueChange)="setappointmentTypeId(1)" [checkValue]="baseForm.value.appointment_type_id == 1" 
+                            ></app-radio>
+                        </div>
+                        <div>
+                            <app-radio labelText="Services" labelClass="form-check-label ps-1"
+                            (checkValueChange)="setappointmentTypeId(2)" [checkValue]="baseForm.value.appointment_type_id == 2"
+                            ></app-radio>
+                        </div>
+                        <div>
+                            <app-radio labelText="Tests" labelClass="form-check-label ps-1"
+                            (checkValueChange)="setappointmentTypeId(3)" [checkValue]="baseForm.value.appointment_type_id == 3"
+                            ></app-radio>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-12">
+                        <span>Appointment Date<span style="color:red">*</span></span>
+                    </div>
+                    <div class="col-12">
+                        <app-datepicker datePickerFormat="Y-m-d" formControlName="appointment_date"
+                            placeHolder="Select Date"
+                            (dateValueChange)="changed = true; baseForm.get('consulting_doctor')?.setValue(null); baseForm.get('appointment_time')?.setValue(null)"
+                            [formSubmitted]="submitted" [removeIcon]="true" [setMax]="false" [setMin]="false"
+                            classVal="form-control font-Readex flatpickr-input rounded-3 fw-normal"
+                            [datePickerMinDate]="new ? currentDate : ptn.appointment_date" [selectToday]="new"
+                            [disableDates]="new ? [] : disableDates"></app-datepicker>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- *ngIf="baseForm?.value?.appointment_type_id == 1 || baseForm?.value?.appointment_type_id == 3" -->
+
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-12 text-nowrap">
+                        <span>Consulting Doctor<span style="color:red">*</span></span>
+                    </div>
+
+                    <div class="col-12">
+                        <!-- (onCustomSearch)="getDoctorSearches($event)" -->
+                        <app-select placeHolder="Search Doctor or Department" formControlName="consulting_doctor"
+                            [ngbTooltip]="!baseForm.get('appointment_date')?.value ? 'Select Appointment Date First' : ''"
+                            selectBindLabel="name" selectBindId="id" [selectItems]="refDoctors"
+                            [inputDisable]="!baseForm.get('appointment_date')?.value || baseForm.get('appointment_date')?.value == ''"
+                            [selectValue]="baseForm.value.referral_doctor" [formSubmitted]="submitted"
+                            classVal="fw-normal ng-select-container border-0 rounded-3"
+                            (onSelectionChanged)="doctorSelected($event)"
+                             [isLoading]="docLoading"
+                            [emptyFound]="false" [notFound]="testTerm != '' ? ' Not Found' : 'Search Doctor'">
+                        </app-select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3" *ngIf="baseForm.get('consulting_doctor')?.value">
+                <div class="row">
+                    <div class="col-12 text-nowrap">
+                        <span>Book slot<span style="color:red">*</span></span>
+                    </div>
+
+                    <div class="col-12">
+                        <select formControlName="appointment_time"
+                            [disabled]="!baseForm.get('consulting_doctor')?.value || baseForm.get('consulting_doctor')?.value == '' || !baseForm.get('appointment_date')?.value || baseForm.get('appointment_date')?.value == ''"
+                            class="form-select rounded-3" placeholder="Select Slot">
+                            <option selected disabled [value]="null">Select Slot</option>
+                            <ng-container *ngFor="let val of slots">
+                                <option [value]="val" class="fs-5">{{convertTime(val)}}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mb-3" *ngIf="baseForm.get('consulting_doctor')?.value && baseForm?.value?.appointment_type_id == 1">
+            <div class="col-6">
+                <app-select labelText="Case Type" labelClass="form-label mb-1" selectBindLabel="name" formControlName="case_type"
+                [selectItems]="caseType" [imp]="true" placeHolder="Select Case Type" classVal="fw-normal ng-select-container border-0 rounded-3"></app-select>
+            </div>
+        </div>
+
+        <div class="row mb-3"  *ngIf="baseForm?.value?.appointment_type_id == 3 || baseForm?.value?.appointment_type_id == 2">
+            <div class="col-12 d-flex flex-row">
+                <!-- Search & Select Services -->
+                <span>{{baseForm.value?.appointment_type_id == 3 ? 'Tests' : 'Services'}}</span>
+                <span class="text-danger">*</span>
+            </div>
+            <div class="col-8">
+                <app-select placeHolder="Select {{baseForm.value?.appointment_type_id == 3 ? 'Tests' : 'Services'}}" selectBindLabel="name" selectBindId="id"
+                    [selectItems]="searchData" [formSubmitted]="submitted" [multipleSelect]="true"
+                    formControlName="lab_tests" classVal="fw-normal ng-select-container border-0 rounded-3"
+                    (onCustomSearch)="getSearches($event)" [isLoading]="searchLoading" [emptyFound]="false"
+                    [notFound]="testTerm != '' ? ' Not Found' : 'Search ..'">
+                </app-select>
+            </div>
+        </div>
+
+        <div class="row mb-3" *ngIf="ptn?.reason_of_cancellation" >
+            <div class="col-12">
+                Remarks
+            </div>
+            <div class="col-12 fs-5">
+                {{ptn?.reason_of_cancellation}}
+            </div>
+        </div>
+
+
+        <div class="row"  *ngIf="updateBool  && !ptn?.is_cancelled ">
+            <div class="col-12 d-flex justify-content-end gap-2">
+
+                <button *ngIf="updateBool  && !ptn.is_cancelled " class="btn btn-danger rounded-3 shadow"
+                    (click)="openModal(warningModal)">
+                    <span>
+                        Cancel Appointment
+                    </span>
+                </button>
+                <button *ngIf="updateBool" class="btn btn-primary rounded-3 shadow"
+                    (click)="ptn.view || ptn?.patient ? navPatient(ptn) : addAsPatient()">
+                    <span>
+                        {{ptn.view || ptn?.patient ? 'View Details' : 'Add as Patient'}}
+                    </span>
+                </button>
+                <button *ngIf="updateBool && !ptn.is_cancelled" class="btn btn-success px-3 rounded-3 shadow"
+                    [disabled]="inProgress" (click)="saveAppointment()">
+                    <span *ngIf="inProgress">Saving..</span>
+                    <span *ngIf="!inProgress">{{ updateBool ? 'Update' : 'Save'}}</span>
+                </button>
+                
+            </div>
+        </div>
+
+        <div class="row" *ngIf="new">
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <button (click)="saveAppointment()" class="btn btn-success rounded-3">
+                    Save
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+
+
+
+<ng-template #warningModal let-modal>
+    <div class="modal-body overflow-hidden" style="background-color: #F8FAFC;">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 fs-5">
+                    Reason For Cancellation
+                </div>
+                <div class="col-12 fs-5">
+                    <textarea class="form-control" [(ngModel)]="remarks" placeholder="Type here .."
+                        style="min-height: 130px"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer py-1 px-3  d-flex justify-content-end">
+        <button class="btn btn-primary rounded-3 shadow" (click)="modal.dismiss('Cross click') ; remarks = ''">
+            Go back
+        </button>
+
+        <button class="btn btn-soft-danger border-danger shadow rounded-3" (click)="updateAppointment(true)">
+            Cancel Appointment
+        </button>
+    </div>
+</ng-template>

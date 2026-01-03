@@ -1,0 +1,109 @@
+
+<div class="container-full pb-3" style="height: 75vh !important;">
+
+    <!-- MODAL TABLE  -->
+    <div class="row font-DMSans mb-3" *ngFor="let report of reportTableData; let i = index">
+
+        <div class="col-12 mb-1 text-center">
+            <span class="fs-4 font-Readex">
+                {{report.groupname}}
+            </span>
+        </div>
+
+        <app-datatable tableClass="table table-striped" tableHeaderClass="bg-dark text-white" class="mb-3">
+            <ng-container class="tableheader">
+                <th class="border-end border-white">Parameter</th>
+                <th class="text-center border-end border-white"
+                    style="min-width: 210px;max-width: 210px;width: 210px">Value</th>
+                <th class="text-center border-end border-white">Unit</th>
+                <th class="text-center border-end border-white text-nowrap">Reference Range</th>
+                <th class="text-center border-end border-white">Bold</th>
+            </ng-container>
+
+            <ng-container class="tablebody">
+
+                <tr class="bg-white font-Readex" *ngFor="let item of report.parameters">
+
+                    <td class="border-end">
+                        <div class="d-flex flex-column ">
+                            <span class="fs-5 fw-medium text-nowrap">
+                                {{item.parameter}}
+                            </span>
+                            <small class="font-italic td-color">
+                                <i>{{item?.method ? item?.method : ''}}</i>
+                            </small>
+                        </div>
+                    </td>
+                    <td colspan="1" class="py-2 border-end text-center">
+                        <div style="min-width: 200px;resize: horizontal; max-width: 450px" class="overflow-auto shadow rounded-3" *ngIf="!item.select" >
+                            <input id="report-input-{{item.id}}"
+                            [class]="item.is_value_bold ? 'form-control rounded-3 border-1 py-1 fw-bold border-danger bg-soft-danger fs-5' : 'form-control rounded-3 border-1 py-1 fw-semibold fs-5'"
+                            [disabled]="patient.printed || saveLoading || saveAuthLoading"
+                            [ngbTooltip]="item?.formula && item?.formula != '' ? 'Value Computed Through Formula ' + item?.formula : ''"
+                            [style]="patient.printed || (item?.formula && item?.formula != '') ? 'cursor: not-allowed;' : ''"
+                            [value]="item.value" [ngbTypeahead]="search" [readOnly]="item.formula && item?.formula != ''"
+                            (input)="onReportValueChange($event, item)" (focus)="checkFormula(item)"
+                            [focusFirst]="true" (selectItem)="onReportValueSelected($event, item.id)">
+                        </div>
+
+                        <div style="min-width: 200px;" *ngIf="item.select">
+                            <select [disabled]="patient.printed || saveLoading || saveAuthLoading" 
+                            [class]="item.is_value_bold ? 'form-select rounded-3 border-1 py-1 fw-bold border-danger bg-soft-danger fs-5' : 'form-select rounded-3 border-1 py-1 fw-semibold fs-5'"
+
+                             (change)="onReportValueChange($event, item)">
+                                <ng-container *ngFor="let val of item.selectOptions">
+                                    <option [selected]="item.value == val" [value]="val">{{val}}</option>
+                                </ng-container>
+                            </select>
+                        </div>
+
+
+                        <div class=" text-start">
+                            <small class="td-color">
+                                <small>{{item?.formula}}</small>
+                            </small>
+                        </div>
+                      </td>
+                    <td class="fs-6 text-center border-end">{{item.units}}</td>
+
+                    <td>
+                        <div [innerHTML]="withoutSpecChars(item.referral_range)"></div>
+                    </td>
+                    <td class="text-center border-end">
+                        <div class="d-flex justify-content-center ">
+                            <app-checkbox activeText="" inactiveText="" [showLabel]="false" tab_idx="-1"
+                                classVal="form-check" [checkboxValue]="item.is_value_bold" [inputDisabled]="patient.printed || saveLoading || saveAuthLoading"
+                                (onCheckboxValueChanged)="checkBold($event, item.id, item)"></app-checkbox>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+
+            <ng-container class="tablebody">
+                <tr *ngIf="!reportTableData || reportTableData.length === 0">
+                    <td colspan="4">
+                        <div class="td-color fs-6 py-5 font-monsterract fw-medium d-flex flex-column align-items-center justify-content-center"
+                            style="vertical-align: middle;min-height: 100px;">
+                            <!-- NO PATIENTS -->
+                            <!-- <img src="/assets/images/file.png" style="width:17%"> -->
+                            <!-- <span>NO DATA</span> -->
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+
+        </app-datatable>
+    </div>
+
+    <div class="row" *ngIf="lab_remark && (lab_remark !== '<p></p>' || lab_remark !== '<div></div>') && lab_remark !== ''">
+        <div class="col-12 fs-4 fw-medium mb-2">
+            Remarks
+        </div>
+        <!-- style="line-height: 10px;" -->
+        <div class="col-12 mb-3" >
+            <div class="border rounded-3 p-3 bg-white">
+                <div [innerHTML]="lab_remark"></div>
+            </div>
+        </div>
+    </div>
+</div>

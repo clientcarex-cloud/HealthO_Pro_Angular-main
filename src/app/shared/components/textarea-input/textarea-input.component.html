@@ -1,0 +1,22 @@
+<!-- app-input.component.html -->
+
+<div class="input-box">
+    <label *ngIf="!removeLabel" [attr.for]="inputId" [class]="labelClass">{{labelText}}<span *ngIf="imp" class="text-danger">*</span></label>
+    <div class="d-flex align-items-center w-100">
+    <textarea  [attr.type]="inputType" [attr.id]="inputId" [class]="classVal" [placeholder]="placeHolder"
+        [attr.cols]="columns" [attr.rows]="rows" [maxLength]="inputLength" [spellcheck]="false"
+        [ngClass]="{ 'is-invalid': formSubmitted && inputErrors }" [(ngModel)]="inputValue" [disabled]="inputDisable"
+        (input)="onInputChange($event)" (focusout)="onLostFocus()" [readonly]="isReadOnly" [style]="styleVal"></textarea>
+    <i *ngIf="inputValue && !isReadOnly && !inputDisable && !removeCloseIcon" class="bi bi-x fs-4 fw-bold close-icon" (click)="onClearInput()"></i>
+</div>
+    <div *ngIf="formSubmitted && inputErrors" class="invalid-feedback" align="left">
+        <!-- <div *ngIf="inputErrors && inputErrors['required']">{{requiredMessage}}</div>
+        <div *ngIf="inputErrors && inputErrors['minlength']">{{minLengthMessage}}</div>
+        <div *ngIf="inputErrors && inputErrors['maxlength']">{{maxLengthMessage}}</div>
+        <div *ngIf="inputErrors && inputErrors['email']">{{emailMessage}}</div> -->
+    </div>
+</div>
+
+<!-- autofocus [enableAutoFocus]="applyAutoFocus"  -->
+<!-- allowNumbersOnly [enableAllowNumbersOnly]="applyAllowNumbersOnly" -->
+<!-- allowLettersOnly [enableAllowLettersOnly]="applyAllowLettersOnly" [allowUnderScore]="applyAllowUnderScore" [allowEmptySpace]="applyEmptySpace" [allowNumbers]="applyNumbers" [allowSpecialChars]="applySpecialChars" -->

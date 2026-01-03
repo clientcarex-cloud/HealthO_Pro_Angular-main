@@ -1,0 +1,343 @@
+<div class="container p-0">
+    <div class="row">
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs-custom">
+                <li ngbNavItem>
+                    <a ngbNavLink class="fw-light fs-5" (click)="resetRefundForm()">Refund</a>
+                    <ng-template ngbNavContent>
+                        <form [formGroup]="refundform">
+                            <div class="container p-1">
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <span class="d-flex flex-row gap-2" id="modal-basic-title">
+                                            <span class="fw-normal">Refund Limit : </span>
+                                            <span class="fw-bold fs-5"> ₹
+                                                {{capitalSrvc.formatIndianNumber(checkRefundLimit)}}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Refund Amount <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <app-num-input [maintainLimit]="true" [limit]="checkRefundLimit"
+                                            [disableInput]="checkRefundLimit == 0"
+                                            (inputValueChange)="validateRefund($event)"></app-num-input>
+                                    </div>
+
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Refund Mode <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <select formControlName="refund_mode"
+                                            class="form-select fw-light rounded-3 py-2 fs-5 fw-semibold ">
+                                            <option [value]="null" selected disabled></option>
+                                            <ng-container *ngFor="let mode of payModes">
+                                                <option [value]="mode.id">{{mode.name}}</option>
+                                            </ng-container>
+                                        </select>                                        
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Remarks <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <app-input *ngIf="checkRefundLimit === 0" [inputDisable]="true"
+                                            [removeLabel]="true" [imp]="true" placeHolder=""></app-input>
+                                        <textarea *ngIf="checkRefundLimit !== 0"
+                                            [disabled]="checkRefundLimit === 0"
+                                            formControlName="remarks_from_staff"
+                                            class="form-control fw-light rounded-3"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row w-100 justify-content-end pt-2">
+                                    <div class="col-4">
+                                        <button (click)="dismiss()"
+                                            class="btn btn-danger w-100 rounded-3 shadow">Close</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <!-- saveRefund(true) -->
+                                        <button [disabled]="ptn?.invoice?.total_paid == 0"
+                                            (click)="saveRefund(true);"
+                                            class="btn btn-success w-100 rounded-3 shadow">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </ng-template>
+                </li>
+                <li ngbNavItem>
+                    <a ngbNavLink class="fw-light fs-5" (click)="resetRefundForm()">Cancel Tests/Packages</a>
+                    <ng-template ngbNavContent>
+                        <form [formGroup]="refundform">
+                            <div class="container p-1">
+
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Select Lab Test <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <app-select [inputDisable]="refundTests.length ===0"
+                                            classVal="fw-light fs-5 ng-select-container border-0 rounded-3"
+                                            [multipleSelect]="true" [selectItems]="refundTests"
+                                            selectBindLabel="name"
+                                            [placeHolder]="refundTests.length === 0 ? 'No Tests to Cancel' : 'Select Test'"
+                                            (onSelectionChanged)="cancelTest($event)"
+                                            formControlName="test"></app-select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Select Packages <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <app-select [inputDisable]="refundPackages.length ===0"
+                                            classVal="fw-light fs-5 ng-select-container border-0 rounded-3"
+                                            [multipleSelect]="true" [selectItems]="refundPackages"
+                                            selectBindLabel="name"
+                                            [placeHolder]="refundPackages.length === 0 ? 'No Packages to Cancel' : 'Select Packages'"
+                                            (onSelectionChanged)="cancelPackage($event)"
+                                            formControlName="package"></app-select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <app-datatable>
+                                            <ng-container class="tableheader">
+                                                <td style="max-width: 20px;"></td>
+                                                <td>Test</td>
+                                                <td>Price</td>
+                                            </ng-container>
+                                            <ng-container class="tablebody">
+                                                <tr *ngFor="let test of cancelTestId; let i = index">
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{test.name}}</td>
+                                                    <td>{{test.total}}</td>
+                                                </tr>
+                                                <tr *ngFor="let test of cancelPackageId; let i = index">
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{test.name}}</td>
+                                                    <td>{{test.total}}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </app-datatable>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12 pb-3 d-flex justify-content-end">
+                                        <button (click)="patientTestCancel()"
+                                            class="btn btn-soft-danger rounded-3 border-danger">Cancel
+                                            Tests</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </ng-template>
+                </li>
+                <li ngbNavItem>
+                    <a ngbNavLink class="fw-light fs-5" (click)="resetRefundForm()">Cancel & Refund</a>
+                    <ng-template ngbNavContent>
+                        <form [formGroup]="refundform">
+                            <div class="container p-1">
+
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Select Lab Test <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <!-- checkRefundLimit === 0 ||  -->
+                                        <app-select [inputDisable]="!refundTests || refundTests.length ===0"
+                                            classVal="fw-light fs-5 ng-select-container border-0 rounded-3"
+                                            [multipleSelect]="true" [selectItems]="refundTests"
+                                            selectBindLabel="name"
+                                            [placeHolder]="refundTests.length === 0 ? 'No Tests to Cancel' : 'Select Tests'"
+                                            (onSelectionChanged)="cancelTest($event)"
+                                            formControlName="test"></app-select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Select Packages <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <app-select
+                                            [inputDisable]="refundPackages && refundPackages.length ===0"
+                                            classVal="fw-light fs-5 ng-select-container border-0 rounded-3"
+                                            [multipleSelect]="true" [selectItems]="refundPackages"
+                                            selectBindLabel="name"
+                                            [placeHolder]="refundPackages.length === 0 ? 'No Packages to Cancel' : 'Select Packages'"
+                                            (onSelectionChanged)="cancelPackage($event)"
+                                            formControlName="package"></app-select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <app-datatable>
+                                            <ng-container class="tableheader">
+                                                <td style="max-width: 20px;"></td>
+                                                <td>Test</td>
+                                                <td>Price</td>
+                                            </ng-container>
+                                            <ng-container class="tablebody">
+                                                <tr *ngFor="let test of cancelTestId; let i = index">
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{test.name}}</td>
+                                                    <td>{{test.total}}</td>
+                                                </tr>
+                                                <tr *ngFor="let test of cancelPackageId; let i = index">
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{test.name}}</td>
+                                                    <td>{{test.total}}</td>
+                                                </tr>
+                                            </ng-container>
+                                        </app-datatable>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-8">
+                                        <div class="row mb-3">
+                                            <div class="col-12 mb-1 fw-medium">
+                                                Refund Amount <span class="text-danger">*</span>
+                                            </div>
+                                            <div class="col-12">
+                                                <!-- <app-select [selectItems]="refundTests" selectBindLabel="name"></app-select> -->
+                                                <input type="text" formControlName="refund" placeholder=""
+                                                    class="form-control fw-light rounded-3 py-2 fs-5 fw-semibold "
+                                                    (input)="validateRefund($event)" readonly
+                                                    [disabled]="checkRefundLimit === 0">
+                                            </div>
+                                            <div class="col-12 pt-1"
+                                                *ngIf="cancelTestId && checkRefundLimit == refundform?.value?.refund">
+                                                <small class="text-danger">Maximum Refund Limit</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <div class="row mb-3">
+                                            <div class="col-12 mb-1 fw-medium">
+                                                Refund Mode <span class="text-danger">*</span>
+                                            </div>
+                                            <div class="col-12">
+                                                <select formControlName="refund_mode"
+                                                    class="form-select w-100 fw-light rounded-3 py-2 fs-5 fw-semibold ">
+                                                    <!-- [disabled]="checkRefundLimit < 1" -->
+                                                    <option [value]="null" selected disabled></option>
+                                                    <ng-container *ngFor="let mode of payModes">
+                                                        <option [value]="mode.id">{{mode.name}}</option>
+                                                    </ng-container>
+                                                </select>
+                                                <!-- <app-select [selectItems]="payModes" selectBindLabel="name"></app-select> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- <div class="row mb-3">
+                            <div class="col-12">
+                                <app-checkbox activeText="Add Refund Amount to Due" inactiveText="Add Refund Amount to Due" [showLabel]="false"
+                                formControlName="add_refund_to_due" classVal="form-check"></app-checkbox>
+                            </div>
+                        </div> -->
+
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-1 fw-medium">
+                                        Remarks <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-12">
+                                        <!-- checkRefundLimit === 0 ||  -->
+                                        <!-- checkRefundLimit === 0 ||  -->
+                                        <app-input classVal="form-control py-2" *ngIf="!refundTests"
+                                            [inputDisable]="true" [removeLabel]="true" [imp]="true"
+                                            placeHolder=""></app-input>
+                                        <!-- *ngIf="checkRefundLimit !== 0" -->
+                                        <textarea style="min-height: 90px" formControlName="remarks_from_staff"
+                                            [disabled]="!refundTests"
+                                            class="form-control fw-light rounded-3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row w-100 justify-content-end pt-2">
+                                    <div class="col-4">
+                                        <button (click)="dismiss()"
+                                            class="btn btn-danger w-100 rounded-3 shadow">Close</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button [disabled]="ptn?.invoice?.total_paid == 0"
+                                            (click)="saveRefund(false)" [disabled]="refundLoading"
+                                            class="btn btn-success w-100 rounded-3 shadow">
+                                            <span *ngIf="!refundLoading">Submit</span>
+                                            <span *ngIf="refundLoading">Saving .. </span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </ng-template>
+                </li>
+
+            </ul>
+            <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </div>
+    </div>
+</div>
+
+
+
+<ng-template #refundWarning let-modal>
+    <div class="modal-body">
+        <div class="container-full">
+
+
+            <div class="row mb-3 justify-content-center">
+                <div class="col-12 text-center">
+                    Refund Amount
+                </div>
+                <div class="col-12  d-flex align-items-center justify-content-center gap-2">
+                    <span class="fw-medium fs-5 text-center">₹</span>
+                    <span class="fw-bold fs-2 text-center">{{refundform.get('refund')?.value}}</span>
+                </div>
+                <div class="col-12 d-flex align-items-center justify-content-center">
+                    <app-checkbox [inputDisabled]="true" activeText="Add Refund Amount to Due"
+                        inactiveText="Add Refund Amount to Due" [showLabel]="false" formControlName="add_refund_to_due"
+                        classVal="form-check"></app-checkbox>
+                </div>
+            </div>
+
+            <div class="row mb-5 justify-content-center">
+                <div class="col-12 text-center">
+                    Remarks
+                </div>
+                <div class="col-12 text-center">
+                    <span class="text-center fs-5 fw-medium">{{refundform.get('remarks')?.value}}</span>
+                </div>
+            </div>
+
+            <div class="row w-100 justify-content-center pt-2">
+                <div class="col-12 text-center mb-2 fw-light" (click)="modal.dismiss('Cross click')">
+                    Are you Sure Add Refund ?
+                </div>
+                <div class="col-4">
+                    <button (click)="modal.dismiss('Cross click');" class="btn btn-danger w-100 rounded-3 shadow">Go
+                        Back</button>
+                </div>
+                <div class="col-4">
+                    <button [disabled]="ptn?.invoice?.total_paid == 0" (click)="saveRefund(true)"
+                        class="btn btn-success w-100 rounded-3 shadow">Proceed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

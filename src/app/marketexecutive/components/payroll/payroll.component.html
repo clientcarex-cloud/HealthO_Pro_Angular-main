@@ -1,0 +1,211 @@
+<!-- <p>executive-visits works!</p> -->
+<!-- EMPLOYEE COMPONENT  -->
+<app-layout [showMap]="false" [showNav]="false" [showPageTitle]="false" [displayInformation]="false"
+    [labPackage]="false">
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker">
+        <!-- <app-datepicker-section (dateRangeSelected)="getRangeValue($event)"
+            [selectToday]="true"></app-datepicker-section> -->
+        <!-- <app-datepicker></app-datepicker> -->
+        <!-- <app-datepicker #datePicker datePickerFormat="Y-m-d"  placeHolder="Today's" 
+        (dateValueChange)="getRangeValue($event)" 
+      ></app-datepicker> -->
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+          <ng-container class="tableheader">
+
+            <th>S.no</th>
+            <th class="text-nowrap">Name & Ph No.</th>
+            <th class="text-nowrap" ngbTooltip="Payment Structure">Pymt. Structure</th>
+            <th class="text-nowrap">CTC</th>
+            <th class="text-nowrap">Basic Salary</th>
+            <th class="text-nowrap">Commision</th>
+            <th class="text-nowrap">Incentive</th>
+            <th class="text-nowrap" ngbTooltip="Special Allowance">Spl. Allowance</th>
+            <th class="text-nowrap">Conveyance Allowance</th>
+            <th class="text-nowrap">HRA</th>
+            <th class="text-nowrap">Deduction</th>
+            <th class="text-nowrap" ngbTooltip="Overtime Payment">OvrTm. Payment</th>
+            <th>Edit</th>
+          </ng-container>
+          <ng-container class="tablebody">
+            <tr *ngFor="let staff of staffs; let i = index" class="text-nowrap">
+                <td><span class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</span></td>
+                <td>
+                    <app-patient-details name="{{staff?.name}}" time="{{staff?.mobile_number}}"></app-patient-details>
+                </td>
+                <td >
+                    {{staff?.payroll?.payment_structure?.name}}
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.ctc" class="fw-semibold text-black">{{staff?.payroll?.ctc ? '₹ ' + staff?.payroll?.ctc : ''}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.basic_salary" class="fw-semibold text-black"> ₹ {{staff?.payroll?.basic_salary}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.commision" class="fw-semibold text-black"> ₹ {{staff?.payroll?.commision}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.incentive" class="fw-semibold text-black"> ₹ {{staff?.payroll?.incentive}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.special_allowance" class="fw-semibold text-black"> ₹ {{staff?.payroll?.special_allowance}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.conveyance_allowance" class="fw-semibold text-black"> ₹ {{staff?.payroll?.conveyance_allowance}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.hra" class="fw-semibold text-black"> ₹ {{staff?.payroll?.hra}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.deductions" class="fw-semibold text-black"> ₹ {{staff?.payroll?.deductions}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.payroll?.overtime_payment" class="fw-semibold text-black"> ₹ {{staff?.payroll?.overtime_payment}}</span>
+                </td>
+                <td>
+                    <button class="border-0 bg-transparent" (click)="editPayroll(Payroll, staff)">
+                        <i class="ri-edit-2-line fs-5"></i>
+                    </button>
+                </td>
+            </tr>
+          </ng-container>
+          
+
+        </app-datatable>
+      </ng-container>
+
+    <ng-container class="paginationEntries">
+        <div id="mapp" class="rounded-3" style="height: 0px;"></div>
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+            (pageChange)="onPageChange($event)">
+        </app-pagination>
+    </ng-container>
+</app-layout>
+
+
+
+<ng-template #Payroll let-modal>
+    <div class="modal-header py-2 px-3 bg-soft-primary border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{selectedItem?.name}} | {{selectedItem?.mobile_number}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="getData(); modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <app-datatable tableClass="table table-striped fs-5">
+                        <ng-container class="tableheader">
+                            <th>Particular</th>
+                            <th>Amount</th>
+                        </ng-container>
+                        <ng-container class="tablebody">
+                            <!-- <tr>
+                              <td class="fw-semibold text-black py-2">Commission</td>
+                              <td class="fw-semibold text-black py-2">₹ {{ selectedItem?.payroll?.commision || 0 }}</td>
+                            </tr> -->
+                            <tr>
+                                <td class="fw-semibold text-black py-2">Basic Salary</td>
+                                <td class="fw-semibold text-black py-2">
+                                  <app-num-input [maintainLimit]="false" [limit]="99999999" [inputValue]="selectedItem?.payroll?.basic_salary || 0"
+                                  classVal="form-control fw-light rounded-3 py-1 shadow fs-5 fw-semibold" (inputValueChange)="writeValue($event ,'basic_salary')"
+                                  ></app-num-input>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="fw-semibold text-black py-2">Special Allowance</td>
+                                <td class="fw-semibold text-black py-2">
+                                  <!-- ₹ {{ selectedItem?.payroll?.special_allowance || 0 }} -->
+                                  <app-num-input [maintainLimit]="false" [limit]="99999999" [inputValue]="selectedItem?.payroll?.special_allowance || 0"
+                                  classVal="form-control fw-light rounded-3 py-1 shadow fs-5 fw-semibold" (inputValueChange)="writeValue($event ,'special_allowance')"
+                                  ></app-num-input>
+                              </td>
+                              </tr>
+                              <tr>
+                                <td class="fw-semibold text-black py-2">HRA</td>
+                                <td class="fw-semibold text-black py-2">
+                                  <app-num-input [maintainLimit]="false" [limit]="99999999" [inputValue]="selectedItem?.payroll?.hra || 0"
+                                  classVal="form-control fw-light rounded-3 py-1 shadow fs-5 fw-semibold" (inputValueChange)="writeValue($event ,'hra')"
+                                  ></app-num-input>
+                              </td>
+                              </tr>
+                              <tr>
+                                <td class="fw-semibold text-black py-2">Conveyance Allowance</td>
+                                <td class="fw-semibold text-black py-2">
+                                  <!-- ₹ {{ selectedItem?.payroll?.conveyance_allowance || 0 }} -->
+                                  <app-num-input [maintainLimit]="false" [limit]="99999999" [inputValue]="selectedItem?.payroll?.conveyance_allowance || 0"
+                                  classVal="form-control fw-light rounded-3 py-1 shadow fs-5 fw-semibold" (inputValueChange)="writeValue($event ,'conveyance_allowance')"
+                                  ></app-num-input>
+                              </td>
+                              </tr>
+                            <tr>
+                              <td class="fw-semibold text-black py-2">Incentive</td>
+                              <td class="fw-semibold text-black py-2">₹ {{ selectedItem?.payroll?.incentive || 0 }}</td>
+                            </tr>
+  
+
+                            <tr>
+                              <td class="fw-semibold text-black py-2">Overtime Payment</td>
+                              <td class="fw-semibold text-black py-2">₹ {{ selectedItem?.payroll?.overtime_payment || 0 }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold text-black py-2">Deductions</td>
+                                <td class="fw-semibold text-danger py-2">₹ {{ selectedItem?.payroll?.deductions || 0 }}</td>
+                              </tr>
+
+
+
+
+                            <tr class="mt-2">
+                                <td class="fw-semibold text-black py-2">CTC</td>
+                                <td class="fw-semibold text-black py-2 fs-4">= ₹ {{ returnCTC() || 0 }}</td>
+                              </tr>
+                          
+                    </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+
+
+            <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-end">
+                    <button (click)="saveCtc()" class="btn btn-success rounded-3 fs-5 px-3">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ng-template>

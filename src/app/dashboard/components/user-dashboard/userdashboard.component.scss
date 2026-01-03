@@ -1,0 +1,169 @@
+.row.sticky {
+    position: sticky;
+    top: 0;
+    background-color: white; /* Adjust as needed */
+    z-index: 1000; /* Adjust as needed */
+
+}
+
+
+.invisible {
+    display: none;
+}
+
+.blur-effect {
+    filter: blur(7px); /* Initial blur amount */
+    transition: filter 0.3s, color 0.3s, transform 0.3s; /* Transition for filter, color, and transform */
+  }
+  
+  /* Add a class to remove the blur effect */
+  .remove-blur {
+    filter: blur(0); /* No blur */
+  }
+  
+
+.lockIcon {
+    transition: color 0.3s, transform 0.3s; /* Smooth color and transform transition */
+}
+
+.lockIcon:hover {
+    color: #000000; /* Change the color to #00217a on hover */
+    transform: scale(1.2) rotate(5deg); /* Scale the icon to 1.2 times its original size and rotate it slightly on hover */
+    // animation: shake 0.5s ease-in-out; /* Apply the shake animation on hover */
+}
+
+.flatpickr-input[readonly]{
+    display: none;
+}
+
+
+// @keyframes shake {
+//     0%, 100% {
+//         transform: translateX(0);
+//     }
+//     10%, 30%, 50%, 70%, 90% {
+//         transform: translateX(-5px);
+//     }
+//     20%, 40%, 60%, 80% {
+//         transform: translateX(5px);
+//     }
+// }
+  
+  
+
+.blurry-guard {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    z-index: 999; /* Ensure it appears above other content */
+}
+
+
+
+.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    // box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    //             0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    //             0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  .cdk-drag-placeholder {
+    // opacity: 100;
+    // background-color: #dae4ff;
+    color: white;
+    opacity: 0;
+    border: 5px dashed black ;
+    // box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    // 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    // 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+  
+  .cdk-drag-animating {
+    // transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); // smooth animation
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, ); // no animation
+  }
+  
+ 
+  
+  .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    // transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); // smooth animation
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, ); // no animation
+  }
+  
+
+
+
+  
+  .shimmer {
+    position: relative;
+    background: #3a3a3a;
+    background-image: linear-gradient(to right, #3a3a3a 0%, #3f3f3f 10%, #4a4a4a 20%, #3f3f3f 30%, #3a3a3a 50%, #3a3a3a 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 200px;
+    // -webkit-animation-duration: 1s;
+    // -webkit-animation-fill-mode: forwards;
+    // -webkit-animation-iteration-count: infinite;
+    // -webkit-animation-name: shimmer;
+    // -webkit-animation-timing-function: ease-in-out;
+  }
+  
+  // @-webkit-keyframes shimmer {
+  //   0% {
+  //     background-position: -400px 0;
+  //   }
+  
+  //   100% {
+  //     background-position: 400px 0;
+  //   }
+  // }
+  
+  #container {
+    width: 400px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #square {
+    width: 135px;
+    height: 135px;
+  }
+  
+  #content {
+    flex: 1;
+    height: 150px;
+    width: 100%;
+    padding: 0.5rem 1rem 0 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  
+  #content-title {
+    width: 100%;
+    height: 30px;
+    margin-bottom: 1rem;
+  }
+  
+  #content-desc {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: flex-end;
+  }
+  
+  .line {
+    width: 100%;
+    height: 10px;
+  }

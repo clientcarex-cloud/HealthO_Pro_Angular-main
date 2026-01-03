@@ -1,0 +1,50 @@
+<div class="input-box">
+    <span>
+    <span *ngIf="labelText" [attr.for]="datePickerId" class="{{labelClass}}">{{labelText}}
+    <span *ngIf="imp" class="text-danger">*</span>
+    </span>
+    <span [class]="spanClass">
+        <input time_24hr [enableTime]="allowTime"  [noCalendar]="!showCalender" *ngIf="dateMode !== 'range'" type="text" [attr.id]="datePickerId" [class]="getClass()" [placeholder]="placeHolder"
+            mwlFlatpickr [minDate]="datePickerMinDate" [maxDate]="datePickerMaxDate" [disabled]="disableDate"  
+            [convertModelValue]="convertDatePickerModelValue" [dateFormat]="datePickerFormat" [mode]="dateMode"
+            [ngClass]="{ 'is-invalid': formSubmitted && datePickerErrors }" [(ngModel)]="dateValue"
+            (input)="onInputChange($event)" [readonly]="isReadOnly" [disable]="disableDates" [style]="styleVal"/>
+        
+        <input time_24hr [enableTime]="allowTime" [noCalendar]="!showCalender" *ngIf="dateMode === 'range'" type="text" [attr.id]="datePickerId" [class]="getClass()" [placeholder]="placeHolder"
+            mwlFlatpickr [minDate]="datePickerMinDate" [maxDate]="datePickerMaxDate" [disabled]="disableDate" 
+            [convertModelValue]="convertDatePickerModelValue" [dateFormat]="datePickerFormat" [mode]="dateMode"
+            [ngClass]="{ 'is-invalid': formSubmitted && datePickerErrors }" [(ngModel)]="startValue"
+            (input)="onInputChange($event)" [readonly]="isReadOnly" [disable]="disableDates" />
+        
+
+            <!-- <input type="text" [attr.id]="datePickerId" [class]="getClass()" [placeholder]="placeHolder"
+            mwlFlatpickr [minDate]="datePickerMinDate" [maxDate]="datePickerMaxDate" [disabled]="disableDate"
+            [convertModelValue]="convertDatePickerModelValue" [dateFormat]="datePickerFormat" [mode]="dateMode"
+            [ngClass]="{ 'is-invalid': formSubmitted && datePickerErrors }" [(ngModel)]="startValue"
+            (input)="onInputChange($event)" [readonly]="isReadOnly"/> -->
+        <!-- <input *ngIf="dateMode === 'range'"  type="text" [attr.id]="datePickerId" [class]="getClass()" [placeholder]="placeHolder"
+            mwlFlatpickr [minDate]="datePickerMinDate" [maxDate]="datePickerMaxDate" [disabled]="disableDate"
+            [convertModelValue]="convertDatePickerModelValue" [dateFormat]="datePickerFormat" [mode]="dateMode"
+            [ngClass]="{ 'is-invalid': formSubmitted && datePickerErrors }" [(ngModel)]="endValue"
+            (input)="onInputChange($event)" [readonly]="isReadOnly"/> -->
+        
+            <!-- <i *ngIf="dateValue && !isReadOnly && !removeIcon" class="input-box-icon" (click)="onClearInput()"></i> -->
+
+            <i *ngIf="showCloseIcon && dateValue" class="input-box-icon" (click)="onClearInput()"></i>
+       
+            <!-- <i class="ri-calendar-event-fill datePickerIcon text-black" *ngIf="dateValue && !isReadOnly && !removeIcon" 
+            (click)="openDatePicker($event)"></i> -->
+
+
+
+            <!-- dateValue &&  --> <!-- icon condition -->
+            <i  (click)="openDatePicker($event);onClearInput();" class="{{dateIcon}} fw-light datePickerIcon text-muted" *ngIf="!isReadOnly && !removeIcon" ></i>
+    </span>
+    
+
+    <!-- <i *ngIf="dateValue && !isReadOnly" class="input-box-icon" (click)="onClearInput()"></i> -->
+    <div *ngIf="formSubmitted && datePickerErrors" class="invalid-feedback" align="left">
+        <div *ngIf="datePickerErrors && datePickerErrors['required']">{{requiredMessage}}</div>
+        <div *ngIf="datePickerErrors && datePickerErrors['minlength']">{{minDateMessage}}</div>
+        <div *ngIf="datePickerErrors && datePickerErrors['maxlength']">{{maxDateMessage}}</div>        
+    </div>

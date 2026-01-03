@@ -1,0 +1,23 @@
+<div class="card card-animate border overflow-hidden">
+    <!-- <div class="card-header border-b-0 d-flex gap-2 align-items-center">
+        <span class="ri-team-line fs-4"></span>
+        <span class="card-title mb-0 font-monsterract fw-medium text-dark">{{ title | uppercase }}</span>
+    </div> -->
+    <div class="card-header border-b-0 d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <div class="d-flex gap-2 align-items-center">
+            <span [class]="icon ? icon : ''"></span>
+            <span class="card-title mb-0 font-monsterract fw-medium text-dark">{{ title | uppercase }}</span>
+        </div>
+
+        <div *ngIf="count">
+            <span class="font-monsterract pe-4">{{countLabel}} -
+                <span class="fw-bold fs-5">{{count || 'NA'}}</span></span>
+        </div>
+
+    </div>
+
+    <div class="card-body fw-medium">
+        <div echarts [options]="chart" class="demo-chart font-Readex"></div>
+    </div>
+
+</div>

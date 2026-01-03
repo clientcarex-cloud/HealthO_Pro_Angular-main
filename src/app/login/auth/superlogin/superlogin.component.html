@@ -1,0 +1,214 @@
+
+<!-- auth-page wrapper -->
+<div class="auth-page-wrapper py-5 d-flex justify-content-center align-items-center min-vh-100"
+    style="background-color: #F8FAFC;">
+    <!-- <div class="bg-overlay"></div> -->
+    <!-- auth-page content -->
+    <div class="auth-page-content overflow-hidden p-0">
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-lg-5">
+                    <div class="card overflow-hidden shadow-none border" style="border-radius:12px">
+                        <div class="row g-0 flex-column-reverse flex-lg-row">
+
+                            <div class="col-lg-12 font-Readex">
+                                <div class="p-lg-5 p-3">
+                                    <!-- Logo  -->
+                                    <div class="mb-3">
+                                        <!-- routerLink="/" -->
+                                        <a class="d-block">
+                                            <img src="assets/images/HealthO.svg" alt="" height="32">
+                                        </a>
+                                    </div>
+
+                                    <ng-container *ngIf="!showOtpComponent">
+
+                                        <!-- <div class="mb-2 d-flex flex-row gap-2 ">
+                                            <span class="fs-5 fw-medium logoColor">
+                                                All Your Operations In One Place
+                                            </span>
+                                        </div> -->
+
+                                        <div class="mb-2 d-flex flex-row gap-2">
+                                            <span class="fs-5 fw-bold logoColor pb-0"
+                                                style=" border-bottom: 2px solid #1e336a; ">
+                                                Super Admin Login
+                                            </span>
+                                        </div>
+
+                                        <!-- login  -->
+                                        <div class="">
+                                            <form [formGroup]="loginForm"
+                                                (ngSubmit)="showNumberInput ? loginWithPassword() : onSubmit()">
+
+
+                                                <!-- first mobile input -->
+                                                <div class="mb-3 d-flex flex-column gap-1">
+                                                    <div>
+                                                        Enter Mobile Number <span class="text-danger">*</span>
+                                                    </div>
+                                                    <div class="font-DMSans fw-bold d-flex flex-row align-items-center">
+                                                        <div
+                                                            class="indianFlagText ps-2 d-flex flex-row gap-2 align-items-center">
+                                                            <div class="d-flex align-items-center">
+                                                                <img src="assets/images/india-flag-icon.svg"
+                                                                    class="rounded-1" height="16" alt="">
+                                                            </div>
+                                                            <div class="fw-bold fs-5">
+                                                                + 91
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <app-input [removeLabel]="true" placeHolder=""
+                                                                formControlName="phone_number" inputId="loginMobile"
+                                                                (onValueChanged)="showNumberInput? automatePassword($event) : automateSend($event)"
+                                                                [formSubmitted]="submitted" [inputLength]="10"
+                                                                classVal="form-control rounded-3 fw-bold fs-5"
+                                                                styleVal="padding-left:75px; padding: 0.65rem 0.75rem"
+                                                                [applyAutoFocus]="true" [inputDisable]="inProgress"
+                                                                [applyAllowNumbersOnly]="true">
+                                                            </app-input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- <ng-container *ngIf="showNumberInput"> -->
+
+                                                <div class="row mb-3"
+                                                    [@collapseExpand]="showNumberInput ? 'open' : 'closed'">
+                                                    <div class="col-12">
+                                                        Enter Password <span class="text-danger">*</span>
+                                                    </div>
+
+                                                    <div class="col-12 mb-2 d-flex align-items-center">
+                                                        <input [type]="fieldTextType ? 'text' : 'password'"
+                                                            [disabled]="!showNumberInput || inProgress"
+                                                            class="form-control rounded-3 fw-bold fs-5"
+                                                            [class.border-danger]="submitted&&firstPassword==''"
+                                                            style="padding-left:75px; padding: 0.65rem 0.75rem"
+                                                            placeholder="" id="password-input-one"
+                                                            (input)="setPasswordInput($event, true)">
+                                                        <button class="btn pe-3 end-0 top-0 position-absolute  "
+                                                            [class.text-danger]="submitted&&firstPassword==''"
+                                                            type="button" id="password-addon">
+                                                            <i class="mdi align-middle fs-4" [ngClass]="{'mdi-eye-off-outline': !fieldTextType, 'mdi-eye-outline': fieldTextType
+                                                                }" (click)="toggleFieldTextType()"></i></button>
+                                                    </div>
+
+                                                    <!-- <div class="col-12 text-end Link cursor-pointer">
+                                                                Forgot Password ?
+                                                            </div> -->
+
+                                                </div>
+
+
+                                                <!-- send otp button first  -->
+
+                                                <div class="mb-3">
+                                                    <button
+                                                        class="btn bg-logoColor d-flex align-items-center justify-content-center gap-2 rounded-3 text-white w-100 fs-5"
+                                                        type="submit" [disabled]="inProgress"
+                                                        style="padding: 0.65rem 0.75rem;background-color: #1e336a;">
+                                                        <span *ngIf="inProgress"
+                                                            class="spinner-border spinner-border-sm mr-1">
+                                                        </span>
+                                                        <span *ngIf="!inProgress">
+                                                            {{!showNumberInput ? 'Get OTP' : 'Login'}}
+                                                        </span>
+
+                                                    </button>
+                                                </div>
+
+                                                <!-- or line here  -->
+                                                <button type="button"
+                                                    class="d-flex align-items-center mb-3 border-0 p-0 bg-transparent"
+                                                    (click)="toggleLoginSystem()">
+
+                                                    <div class="col-12 p-0 Link cursor-pointer fs-5">
+                                                        {{!showNumberInput ? "Sign in using Password" : "Sign in using mobile OTP"}}
+
+                                                    </div>
+                                                    <!-- <div class="col-4">
+                                                        <hr class="m-0">
+                                                    </div> -->
+                                                </button>
+
+
+                                            </form>
+                                        </div>
+
+                                        <!-- <app-dwnld></app-dwnld> -->
+                                    </ng-container>
+
+
+
+                                    <!-- CHOOSE TENENT ACCOUNT COMPONENT  -->
+                                    <ng-container *ngIf="showOtpComponent">
+                                        <!-- back button  -->
+                                        <div class="mb-2 mt-3">
+                                            <span class="">
+                                                <a (click)="showOtpComponent = false"
+                                                    class="goBack fw-normal d-flex align-items-center gap-2">
+                                                    <i class="bi bi-arrow-left fs-4 "></i> <span>Go back</span></a>
+                                            </span>
+                                        </div>
+                                        <div class="mb-3 fs-5">
+                                            <span class="logoColor">
+                                                Four digit OTP has been sent successfully to <span
+                                                    class="fs-5 fw-medium"
+                                                    style="color:rgba(0, 0, 255, 0.796)">{{loginForm.value?.phone_number}}</span>
+                                                <i class="bi bi-check2-circle fw-bold fs-5" style="color:green"></i>
+                                            </span>
+                                        </div>
+           
+                                            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
+                                                 [config]="config"></ng-otp-input>
+
+                                            <div class="d-flex flex-column w-75 ">
+                                                <button type="submit" style="background-color: #1e336a;" class="btn text-white bg-logoColor rounded-3 py-2 fs-5 mb-3"
+                                                    (click)="confirmOtp()" [disabled]="otpProgress">
+                                                    <span *ngIf="otpProgress" class="spinner-border spinner-border-sm mr-1"></span>
+                                                    <span *ngIf="!otpProgress">Confirm OTP</span>
+                                                </button>
+
+                                                <!-- <button type="button"
+                                                    class="btn btn-primary rounded-3 py-2 fs-5 mb-3 text-nowrap"
+                                                    (click)="onResendOTP()" [disabled]="resendDisabled">
+                                                    Resend OTP
+                                                    <span *ngIf="countdown !== 0"> in {{countdown}}s</span>
+                                                </button> -->
+                                            </div>
+                         
+                                    </ng-container>
+                                </div>
+                            </div>
+
+
+                            <!-- end col -->
+
+                            <!-- <div class="col-lg-6 d-lg-flex d-none justify-content-end">
+                                <div class="float-end bg-light-blue d-flex align-items-center">
+                                    <app-carousel></app-carousel>
+                                </div>
+                            </div> -->
+
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </div>
+    <!-- end auth page content -->
+
+    <!-- footer -->
+    <!-- <app-auth-footer></app-auth-footer> -->
+    <!-- end Footer -->
+</div>
+<!-- end auth-page-wrapper -->

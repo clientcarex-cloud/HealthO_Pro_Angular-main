@@ -1,0 +1,927 @@
+<!-- ADD PATIENTS COMPONENT  -->
+<div class="container-full p-0  overflow-hidden" [style]="disableForm ? 'cursor: wait' : ''" *ngIf="!is_estimation">
+    <app-patient-offcanvas></app-patient-offcanvas>
+
+    <!-- page name and navigating page  -->
+    <div class="row mb-1 g-3 d-flex flex-wrap align-items-center justify-content-between" (click)="closeCanvas();">
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-1" (click)="$event.stopPropagation(); myDrop.close()">
+            <div class="d-flex w-100 justify-content-start align-items-center gap-3">
+                <span>
+                    <button (click)="navigateBack()" ngbTooltip="Go Back"
+                        class="border border-1 rounded-circle fs-5 bg-white text-center">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                </span>
+                <span class="fs-4 text-nowrap font-Readex text-nowrap">
+                    Add New Patient
+                </span>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-lg-4 col-11 d-flex justify-content-end flex-row gap-2"
+            (click)="$event.stopPropagation(); myDrop.close()">
+            <div ngbDropdown #myDrop="ngbDropdown" (click)="$event.stopPropagation(); myDrop.open()">
+                <button type="button" class="btn d-flex align-items-center" id="dropdownBasic1" ngbDropdownToggle>
+                    <i class="ri-settings-4-line fs-4"></i>
+                    <span class="badge settingNumber bg-info rounded-pill d-flex align-items-center">{{ setting.count }}
+                        <i class="ri-arrow-down-s-line"></i>
+                    </span>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="font-Readex">
+
+                    <span ngbDropdownItem>
+
+                        <app-checkbox activeText="Auto-Print Invoice" inactiveText="Auto Print Invoice"
+                            [checkboxValue]="setting.api" (onCheckboxValueChanged)="setAutoPrint(1, $event)"
+                            [showLabel]="false"></app-checkbox>
+                    </span>
+                    <div class="dropdown-divider my-0"></div>
+                    <span ngbDropdownItem>
+                        <app-checkbox activeText="Auto-Print Receipt" inactiveText="Auto Print Receipt"
+                            [checkboxValue]="setting.apr" (onCheckboxValueChanged)="setAutoPrint(2, $event)"
+                            [showLabel]="false"></app-checkbox>
+                    </span>
+                    <div class="dropdown-divider my-0"></div>
+                    <span ngbDropdownItem>
+                        <app-checkbox activeText="Show Remark" inactiveText="Show Remark"
+                            [checkboxValue]="setting.aprremark" (onCheckboxValueChanged)="setAutoPrint(3, $event)"
+                            [showLabel]="false"></app-checkbox>
+                    </span>
+                </div>
+            </div>
+
+            <div
+                class="addNewInfoOptions  d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-end justify-content-xs-center justify-md-content-end align-items-center gap-1">
+                <app-info-btn [title]="support?.name" [description]="support?.description"
+                    [youtubeLink]="support?.youtube_link" [articleLink]="support?.article_link"
+                    [steps]="support?.quick_steps"></app-info-btn>
+            </div>
+        </div>
+
+    </div>
+
+
+    <form [formGroup]="baseForm" (keydown.enter)="$event.preventDefault()"
+        (click)="closeCanvas();$event.stopPropagation(); myDrop.close()">
+
+        <div class="row mb-2" *ngIf="manualDateTime">
+            <div class="col-lg-2 col-12">
+                <app-datepicker labelText="Registration Date" [imp]="true" formControlName="added_on_time" [formSubmitted]="submitted"
+                classVal="form-control font-Readex flatpickr-input rounded-3" datePickerFormat="Y-m-d"></app-datepicker>
+            </div>
+        </div>
+
+        <div class="row mb-2 g-lg-2 g-2">
+            <!-- PATIENTS NAME, TITLE AND GENDER  -->
+            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-12">
+                        <span>Patient Name & Gender <span style="color:red">*</span></span>
+                    </div>
+                    <div class="col-12">
+                        <div class="row g-0">
+                            <!-- TITLE SELECT -->
+                            <div class="col-2">
+                                <select formControlName="title" id="title" name="patientName"
+                                    (change)="changeTitle($event)" [disabled]="disableForm"
+                                    [class.border-danger]="submitted && !baseForm.value.title"
+                                    class="form-select bg-soft-primary rounded-0 rounded-start"
+                                    aria-label="Text input with select button" placeholder="Select Title">
+                                    <option value="" disabled>Select Title</option>
+                                    <ng-container *ngFor="let title of titles">
+                                        <option [value]="title.id">
+                                            {{title.name}}</option>
+                                    </ng-container>
+                                </select>
+
+                            </div>
+
+                            <!-- PATIENT NAME INPUT  -->
+                            <div class="col-8">
+
+                                <app-input [removeCloseIcon]="false" [removeLabel]="true" placeHolder="Enter name"
+                                    formControlName="name" [applyUpperCase]="true" [formSubmitted]="submitted"
+                                    classVal="form-control rounded-0" [inputLength]="70" [applyAutoFocus]="true"
+                                    [applyAllowLettersOnly]="true" [applyEmptySpace]="true" [applyDot]="true"
+                                    [inputDisable]="disableForm"></app-input>
+
+                            </div>
+
+                            <!-- GENDER SELECT  -->
+                            <div class="col-2">
+                                <select formControlName="gender" aria-label="gender input with select button"
+                                    id="gender" class="form-select bg-soft-primary rounded-0 rounded-end"
+                                    [disabled]="disableForm" (change)="changeGender($event)"
+                                    aria-label="Text input with select button">
+                                    <option disabled>
+                                        <small> Select gender</small>
+                                    </option>
+                                    <ng-container *ngFor="let gender of genders">
+                                        <option [value]="gender.id" *ngIf="gender.is_active"
+                                            [selected]="baseForm.value.gender === gender.name">
+                                            {{gender.name}}</option>
+                                    </ng-container>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AGE AND YEAR  -->
+            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-12">
+                        <span>Age <span style="color:red">*</span></span>
+                    </div>
+                    <div class="col-12">
+                        <div class="row g-0">
+                            <!-- AGE INPUT  -->
+                            <div class="col-7">
+
+                                <app-input *ngIf="!years" [removeCloseIcon]="true" [removeLabel]="true"
+                                    formControlName="age" [applyAllowNumbersOnly]="true" [inputLength]="2"
+                                    [applyDot]="false" [formSubmitted]="submitted"
+                                    classVal="form-control rounded-0 rounded-start" [isReadOnly]="disableForm"
+                                    placeHolder="Enter age"></app-input>
+
+                                <app-datepicker datePickerFormat="Y-m-d" formControlName="dob"
+                                    [formSubmitted]="submitted" *ngIf="years" [removeIcon]="true"
+                                    [isReadOnly]="disableForm" [datePickerMaxDate]="this.currentDate"
+                                    classVal="form-control flat-picker rounded-0 rounded-start"></app-datepicker>
+                            </div>
+                            <div class="col-5">
+                                <select class="form-select rounded-0 rounded-end bg-soft-primary"
+                                    formControlName="ULabPatientAge" (change)="changeAges($event)"
+                                    aria-label="Text input with select button">
+                                    <option disabled>Select</option>
+                                    <ng-container *ngFor="let item of ages">
+                                        <option [value]="item.id" *ngIf="item.is_active"
+                                            [selected]="item.id === ages[0].id">{{item.name}}</option>
+                                    </ng-container>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOBILE NUMBER  -->
+            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12" >
+                <div class="row">
+                    <div class="col-12">
+                        <span>Mobile Number <span style="color:red">*</span></span>
+                    </div>
+                    <div class="col-12">
+                        <!-- MOBILE NUMBER INPUT  -->
+                        <app-input [removeLabel]="true" placeHolder="+ 91 " formControlName="mobile_number"
+                            classVal="form-control rounded-2" [formSubmitted]="submitted" [inputLength]="10" [applyDot]="false"
+                            [applyAutoFocus]="false" [applyAllowNumbersOnly]="true" [inputDisable]="disableForm">
+                        </app-input>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- REFFERED BY  -->
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12" >
+                <div class="row">
+                    <div class="col-12">
+                        <span>Referral Doctor</span>
+                    </div>
+                    <div class="col-12">
+
+                        <div class="row g-1">
+                            <div class="col-10">
+                                <ng-template #popContent>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-light">{{baseForm.value?.referral_doctor?.name}}</span>
+                                        <span class="fw-light">Ph no: {{baseForm.value?.referral_doctor.mobile_number}}</span>
+                                    </div>
+                                </ng-template>
+                                <app-select #refDocPop="ngbPopover" [ngbPopover]="baseForm.value?.referral_doctor ? popContent : null" triggers="mouseenter:mouseleave" placeHolder="Select Doctor" formControlName="referral_doctor"
+                                    selectBindLabel="name" selectBindId="id" [selectItems]="refDoctors"
+                                    [selectValue]="baseForm.value.referral_doctor"
+                                    classVal="fw-normal ng-select-container border-0 rounded-3"
+                                    (onCustomSearch)="getDoctorSearches($event)" [isLoading]="docLoading"
+                                    [emptyFound]="false" [notFound]="testTerm != '' ? ' Not Found' : 'Search Doctor'"
+                                    [inputDisable]="disableForm"></app-select>
+                            </div>
+                            <div class="col-2 d-flex align-items-center"
+                                *ngIf="user_permissions?.sa || user_permissions?.permissions?.includes(10)">
+                                <button tabindex="-1" [disabled]="disableForm" type="button" style="width: 22px; height: 22px" (click)="openXl(addRefDoc, '')"
+                                    class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                                    <i class="ri-add-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Address , attender name and FILES ATTACH  -->
+        <div class="row mb-2 g-sm-2 g-0" [@collapseExpand]="isCollapsed ? 'closed' : 'open'" *ngIf="!isCollapsed">
+            <div class="col-12">
+                <div class="row g-sm-2 g-3 align-items-center">
+
+                    <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-between">
+                                <span>Referral Lab</span>
+                                <span *ngIf="baseForm.value?.referral_lab" class="fw-semibold">₹{{formatIndianNumber(baseForm.value?.referral_lab?.available_balance)}} Balance</span>
+                            </div>
+                            <div class="col-12">
+                                <app-select placeHolder="Search Ref. Lab" formControlName="referral_lab"
+                                selectBindLabel="dispName" [selectItems]="refLabs"
+                                [selectValue]="null" (onSelectionChanged)="clearAllTests('partner')"
+                                classVal="fw-normal ng-select-container border-0 rounded-3"
+                                (onCustomSearch)="getLabSearches($event)" [isLoading]="refLabLoading"
+                                [emptyFound]="false" [notFound]=" 'Search Ref. Lab'"
+                                [inputDisable]="disableForm"></app-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <span>Company</span>
+                            </div>
+                            <div class="col-12">
+                                <app-select placeHolder="Search Company " formControlName="partner"
+                                selectBindLabel="name" [selectItems]="partners"
+                                [selectValue]="null" (onSelectionChanged)="clearAllTests('referral_lab')"
+                                classVal="fw-normal ng-select-container border-0 rounded-3"
+                                (onCustomSearch)="getPartnerSearches($event)" [isLoading]="partnersLoading"
+                                [emptyFound]="false" [notFound]=" 'Search Ref. Lab'"
+                                [inputDisable]="disableForm"></app-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <span>Privilege Card</span>
+                            </div>
+                            <div class="col-12">
+                                <div class="row align-items-center g-0">
+                                    <div [class.col-11]="card" [class.col-12]="!card">
+                                        <app-select placeHolder="Search with PC no. / Mobile no. " formControlName="privilege_membership"
+                                        selectBindLabel="name" [selectItems]="cards"
+                                        [selectValue]="null" (onSelectionChanged)="getPrevDisc(loyalPop)"
+                                        classVal="fw-normal ng-select-container border-0 rounded-3"
+                                        (onCustomSearch)="getCardSearches($event)" [isLoading]="prevCardLoading"
+                                        [emptyFound]="false" [notFound]=" 'Search with PC No.'"
+                                        [inputDisable]="disableForm"></app-select>
+                                    </div>
+                                    <div [class.col-1]="card" [class.d-none]="!card">
+                                        <button type="button" class="btn border-0 bg-transparent fs-3 p-0" #loyalPop="ngbPopover"
+                                        [ngbPopover]="card ? loyaltyCardPopContent : ''" [popoverTitle]="loyaltyCardPopTitle">
+                                        <i class="ri-information-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-6 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <span>Email</span>
+                            </div>
+                            <div class="col-12">
+                                <app-input [inputDisable]="disableForm" [removeLabel]="true" 
+                                    placeHolder="Enter Email" formControlName="email"
+                                     classVal="form-control rounded-2"
+                                    [formSubmitted]="submitted" [applyAutoFocus]="false">
+                                </app-input>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <span>Address</span>
+                            </div>
+                            <div class="col-12">
+                                <app-input [inputDisable]="disableForm" [removeLabel]="true" placeHolder="Enter Address"
+                                    formControlName="address" classVal="form-control rounded-2"
+                                    [formSubmitted]="submitted" [applyAutoFocus]="false"
+                                    [inputValue]="baseForm.value.address">
+                                </app-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <span>Attender Title & Name</span>
+                            </div>
+                            <div class="col-12">
+                                <div class="row g-0">
+                                    <!-- Attender TITLE SELECT -->
+                                    <div class="col-3">
+                                        <select id="title" name="patientName"
+                                            formControlName="attender_relationship_title"
+                                            class="form-select bg-soft-primary rounded-0 rounded-start"
+                                            aria-label="Text input with select button" placeholder="Select">
+                                            <option value="" disabled>Select</option>
+                                            <ng-container *ngFor="let title of attender_titles">
+                                                <option [value]="title.id">
+                                                    {{title.name}}</option>
+                                            </ng-container>
+                                        </select>
+                                    </div>
+
+                                    <!-- Attender NAME INPUT  -->
+                                    <div class="col-9">
+                                        <app-input [formSubmitted]="submitted" [applyAutoFocus]="false"
+                                            formControlName="attender_name" [applyAllowLettersOnly]="true"
+                                            [applyEmptySpace]="true" classVal="form-control rounded-0 rounded-end"
+                                            requiredMessage="Enter name" [spellcheck]="false"
+                                            [applyUpperCase]="true" [removeLabel]="true"
+                                            placeHolder="Enter name" [inputDisable]="disableForm"></app-input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12">
+                        <!-- FILE UPLOAD  -->
+                        <div for="fileUpload">Attach Prescription</div>
+                        <div class=" d-flex flex-row gap-2 rounded-3">
+                            
+                            <!-- Hidden file inputtt -->
+                            <label for="fileUpload" class="visually-hidden" >Upload Image</label>
+                            <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                                class="form-control bg-soft-primary rounded-5 d-none" (change)="onFileChanged($event)"
+                                name="fileUpload" id="fileUpload" accept="image/png, image/gif, image/jpeg">
+
+                            <!-- Button for uploading images -->
+                            <button type="button" (keydown.enter)="$event.stopPropagation()"
+                                class="input-group-text btn bg-white border border-light-blue rounded-3 d-flex gap-2 form-control align-items-center"
+                                (click)="file.click()">
+                                <i class="ri-upload-2-line"></i> Upload Image
+                            </button>
+
+                            <!-- View button (if file selected) -->
+                            <button type="button" *ngIf="baseForm.value.prescription_attach"
+                                class="input-group-text btn btn-secondary rounded-3"
+                                (click)="openXl(prescriptionAttach)">View Image</button>
+
+                            <!-- Clear button (if file selected) -->
+                            <button type="button" *ngIf="baseForm.value.prescription_attach"
+                                class="input-group-text btn border-danger rounded-3 btn-soft-danger"
+                                (click)="clearPrescription()">Remove</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12 d-flex align-items-center">
+                <span>{{ isCollapsed ? "If you want to add more details, " : "Hide additional patient details,"}}
+                </span>
+                <span>
+                    <button class="bg-transparent border-0 fw-semibold fs-6" tabindex="-1" >
+                        <span *ngIf="isCollapsed" (click)="toggleMoreOptions(false)" class="text-primary">Click
+                            here</span>
+                        <span *ngIf="!isCollapsed" (click)="toggleMoreOptions(true)" class="text-danger">Click
+                            here</span>
+                    </button>
+                </span>
+            </div>
+        </div>
+
+
+        <div class="row mb-2 d-lg-none d-md-none d-flex align-items-center">
+            <div class="col-12">
+                Add tests
+            </div>
+            <div class="col-12">
+                <div>
+
+                    <ng-autocomplete historyHeading="" [disabled]="disableForm" [isLoading]="searchLoading"
+                        [historyListMaxNumber]="0" [data]="searchData" [searchKeyword]="'name'"
+                        placeholder="Add Lab Tests / Packages" (inputChanged)="getSearches($event)"
+                        (selected)="onItemSelected($event);auto_complete_mobile.clear()" [minQueryLength]="2"
+                        (keydown.enter)="selectFirstOption($event);auto_complete_mobile.clear()" [itemTemplate]="itemTemplate"
+                        [notFoundTemplate]="notFoundTemplate" #auto_complete_mobile>
+                    </ng-autocomplete>
+                </div>
+            </div>
+        </div>
+
+        <!-- TESTS TABLE  -->
+        <ng-container [ngTemplateOutlet]="testsTable"></ng-container>
+
+        <div class="row mb-1">
+            <div class="d-flex justify-content-end align-items-end font-Readex">
+                <table class="billTable">
+                    <tbody class=" text-black">
+                        <ng-container *ngIf="user_permissions?.sa || user_permissions?.permissions?.includes(5)">
+
+                            <tr>
+                                <td class="td-color" style="vertical-align: bottom">Discount Type</td>
+                                <td >
+                                    <div class="d-flex gap-0 flex-row"  [ngbTooltip]="card ? 'Privilege card discount is selected.' : ''">
+                                        <div style="width:100px">
+                                            <select (change)="togglePercentage($event)" [disabled]="disableForm || card"
+                                                class="form-select bg-soft-primary rounded-0 rounded-start text-start font-Readex" placeholder="0">
+                                                <option class="fw-bold" value="%">%</option>
+                                                <option value="lumpsum" selected>₹</option>
+                                            </select>
+                                        </div>
+                                        <div style="width:135px">
+                                            <form [formGroup]="discountGroup">
+                                                <input [spellcheck]="false" #inputElement
+                                                    [(ngModel)]="discountGroup.value.discount_input"
+                                                    (input)="validatorsInput($event, inputElement)" formControlName="discount_input"
+                                                    class="form-control rounded-0 rounded-end text-end">
+                                                    <!-- <app-input [applyAllowNumbersOnly]="true"
+                                                    (onValueChanged)="validatorsInput($event)"
+                                                    classVal="form-control rounded-0 rounded-end text-end"
+                                                    formControlName="discount_input"></app-input> -->
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr
+                                *ngIf="baseForm.value.referral_doctor && discountGroup.value.discount_input && discountGroup.value.discount_input != '' && discountGroup.value.discount_input != 0">
+                                <td></td>
+                                <td>
+                                    <div class="d-flex flex-row gap-2">
+                                        <app-checkbox activeText="Discount by Ref. Doc"
+                                            formControlName="is_discount_amt_by_ref_doc"
+                                            inactiveText="Discount by Ref. Doc" [showLabel]="false"
+                                            classVal=""></app-checkbox>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="td-color">
+                                    Discount (₹)
+                                </td>
+                                <td class="text-end">
+                                    {{dispDiscount}}
+                                </td>
+                            </tr>
+
+                            <tr *ngIf="baseForm.get('privilege_membership')?.value && (tests_included.length!=0 || package_included.length !=0)">
+                                <td class="td-color">Privilege Card (₹)</td>
+                                <td>
+                                    <div class="d-flex gap-0 flex-row">
+                                        <div style="width:100px">
+                                            <select (change)="togglePercentage($event)" [disabled]="disableForm"
+                                                class="form-select bg-soft-primary rounded-0 rounded-start text-start font-Readex"
+                                                placeholder="0" formControlName="privilege_discount">
+                                                <option class="fw-bold" value="free" 
+                                                *ngIf="loyaltyComponent.returnFreePrivilegeCard('free_usages', 'availed_free_usages', 'Free')?.show">Free</option>
+                                                <option value="discount" selected  >Discount</option>
+                                            </select>
+                                        </div>
+                                        <div style="width:135px">
+                                             <app-input [applyAllowNumbersOnly]="true" [removeLabel]="true"
+                                                [inputDisable]="true" [inputValue]="prev_disc"
+                                                classVal="form-control rounded-0 rounded-end text-end"
+                                                ></app-input>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="padding: 0px 0px;">
+                                <td colspan="2">
+                                    <hr style="margin: 0px; color: black">
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <tr>
+                            <td class="td-color">Net Amount</td>
+                            <td class="text-end">
+                                {{netamount}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">
+                                <div class="d-flex flex-row align-items-center gap-2">
+                                    <div>Total Paid</div>
+                                    <!-- [ngbTooltip]="payModesCount==1 ? 'Add Paymode' : 'Remove Paymode'" -->
+                                    <div>
+
+                                        <button style="width: 22px; height: 22px"
+                                            (click)="payModesCount===1 ? add_remove_paymode(true) : add_remove_paymode(false)"
+                                            class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                                            <ng-container *ngIf="payModesCount===1">
+                                                <i class="ri-add-line"></i>
+                                            </ng-container>
+                                            <ng-container *ngIf="payModesCount===2">
+                                                <i class="ri-subtract-line"></i>
+                                            </ng-container>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </td>
+                            <td>
+                                <!-- first pay mode action  -->
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex gap-0 flex-row">
+                                        <select style="width:110px" (change)="HandlePayModeChange($event)"
+                                            class="form-select bg-soft-primary rounded-start rounded-0"
+                                            name="cashSelect" aria-label="Text input with select button"
+                                            formControlName="pay_mode_id">
+                                            <option disabled>Select Mode</option>
+                                            <ng-container *ngFor="let mode of payModes">
+                                                <option [value]="mode.id" *ngIf="mode.is_active">{{mode.name}}</option>
+                                            </ng-container>
+                                        </select>
+                                        <input style="width:125px" type="text" formControlName="paid_amount"
+                                            placeholder="" id="first_paid_input" autocomplete="off" autocorrect="off"
+                                            autocapitalize="none"
+                                            class="form-control rounded-end rounded-0 text-end fw-bold DMSans"
+                                            (input)="validatePaid($event)" [disabled]="totalAmount===0">
+                                    </div>
+                                    <small *ngIf="showReturn().bool && baseForm.get('pay_mode_id')?.value == 1"
+                                        class="text-end">
+                                        Return <span class="text-danger fw-medium">{{showReturn().val}}</span>
+                                    </small>
+                                </div>
+
+                                <!-- second pay mode option  -->
+                                <div class="d-flex flex-column mt-1" *ngIf="payModesCount===2">
+                                    <div class="d-flex gap-0 flex-row">
+                                        <form [formGroup]="secondMode" class="d-flex gap-0 flex-row">
+                                            <select style="width:110px"
+                                                class="form-select bg-soft-primary rounded-start rounded-0"
+                                                name="cashSelect" aria-label="Text input with select button"
+                                                formControlName="paymode">
+                                                <option disabled>Select Mode</option>
+                                                <ng-container *ngFor="let mode of extraPayModes">
+                                                    <option [value]="mode.id">{{mode.name}}</option>
+                                                </ng-container>
+                                            </select>
+                                            <input style="width:125px" type="number" formControlName="paidAmount"
+                                                placeholder=""
+                                                class="form-control rounded-end rounded-0 text-end fw-bold DMSans"
+                                                (input)="validateSecondModePaid($event)" [disabled]="totalAmount===0">
+                                        </form>
+                                    </div>
+                                    <small *ngIf="showReturn().bool && secondMode.get('paymode')?.value==1"
+                                        class="text-end">
+                                        Return <span class="text-danger fw-medium">{{showReturn().val}}</span>
+                                    </small>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="width:150px" class="text-danger fw-semibold ">
+                                Amount Due</td>
+                            <td style="width:235px" class="text-end text-danger fw-bold">
+                                <!-- {{dispAmount}} -->
+                                {{getDue()}}
+                            </td>
+                        </tr>
+                        <tr *ngIf="setting.aprremark">
+                            <td class="td-color" style="width:150px">
+                                Remarks</td>
+                            <td style="width:235px" class="text-end text-danger fw-bold">
+
+                                <app-input [applyAutoFocus]="true" placeHolder="" [inputValue]="remarkSave"
+                                    (onValueChanged)="remarkInput($event)"
+                                    classVal="form-control fw-light rounded-2 rounded-end" [inputDisable]="disableForm"
+                                    [removeLabel]="true"></app-input>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="row mb-2 g-2 justify-content-between align-items-end">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <div class="row g-2">
+
+                    <div class="col-lg-8 col-12">
+                        <ng-container *ngIf="user_permissions?.sa || user_permissions?.permissions?.includes(6)">
+                            <div class="row g-0 justify-content-start align-items-end ">
+
+                                <!-- DISCOUNTS SELECT  -->
+                                <div class="col-6">
+                                    <label class="form-label mb-0" for="printOptions">Special Discount</label>
+                                    <select name="printOptions" #discountType placeholder="select"
+                                        (change)="applyDiscount()" [disabled]="disableDiscount"
+                                        class="form-select w-100 bg-soft-primary rounded-start rounded-0">
+                                        <option disabled>Select Discount</option>
+                                        <option *ngIf="disableDiscount">No Discount here</option>
+                                        <ng-container *ngFor="let discount of discTypes">
+                                            <option [value]="discount.id" *ngIf="discount.is_active">{{discount.name}}
+                                            </option>
+                                        </ng-container>
+                                    </select>
+
+                                </div>
+
+                                <div class="col-6">
+                                    <button class="btn w-100 rounded-end rounded-0" (click)="validateDiscount()"
+                                        [ngClass]="isDiscountApplied ? 'btn-success' : 'btn-info'"
+                                        [disabled]="disableDiscount">
+                                        {{ isDiscountApplied ? 'Discount Applied' : 'Apply Discount' }}
+                                    </button>
+
+                                    <!-- <button (click)="test()">test</button> -->
+                                </div>
+                            </div>
+                            <div class="row  fw-normal" *ngIf="selectedDiscount.is_active">
+                                <small>{{selectedDiscount.name}} applied of <span
+                                        class="text-success">{{selectedDiscount.number}}
+                                        <span *ngIf="selectedDiscount.is_prcntg">%</span>
+                                        <span *ngIf="!selectedDiscount.is_prcntg">₹</span>
+                                        Discount</span>
+                                </small>
+                            </div>
+                        </ng-container>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 d-flex flex-column">
+                <ng-container *ngIf="!minimum_paid_amount.is_active || baseForm.get('referaal_lab')?.value">
+                    <button type="submit" (click)="paidAmountCheck() ? savePayment() : saveAndNext()"
+                        [class.btn-primary]="!paidAmountCheck()" [disabled]="inProgress"
+                        [class.btn-success]="paidAmountCheck()" class="btn rounded-1 ">
+                        <div class="d-flex flex-row align-items-center justify-content-center gap-2" *ngIf="inProgress">
+                            <span class="spinner-border spinner-border-sm mr-1 "></span>
+                            <span> Saving.. Please Wait..</span>
+                        </div>
+                        <span *ngIf="!inProgress">{{ paidAmountCheck() ? 'Pay & '+ this.getNextPrint() : 'Save & '+
+                            this.getNextPrint()}}</span>
+                    </button>
+                </ng-container>
+                <ng-container *ngIf="minimum_paid_amount.is_active">
+                    <button type="submit" (click)="savePayment()" [disabled]="inProgress"
+                        class="btn rounded-1 btn-success">
+                        <div class="d-flex flex-row align-items-center justify-content-center gap-2" *ngIf="inProgress">
+                            <span class="spinner-border spinner-border-sm mr-1 "></span>
+                            <span> Saving.. Please Wait..</span>
+                        </div>
+                        <span *ngIf="!inProgress">Pay & Next</span>
+                    </button>
+                </ng-container>
+
+
+            </div>
+        </div>
+
+    </form>
+</div>
+
+
+<div class="container-full" style="min-height: 65vh" *ngIf="is_estimation">
+    <div class="row mb-3">
+        <div class="col-12">
+            <ng-container [ngTemplateOutlet]="testsTable"></ng-container>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end">
+            <button (click)="printQuotation()" class="btn btn-success rounded-3 btn-lg">Print</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #notFoundTemplate let-notFound>
+    <div [innerHTML]="returnNotFoundHTML()" *ngIf="testTerm && testTerm != '' && !searchLoading"></div>
+</ng-template>
+
+<ng-template #testsTable>
+    <div class="row mb-2  rounded-3 p-0 g-0">
+        <div class="border border-bottom-0 rounded-top bg-white font-Readex" style="min-height:225px; ">
+            <table class="table table-hover bg-white rounded-3">
+                <thead class="bg-soft-primary text-muted">
+                    <tr class=" fw-light">
+                        <th class="sort1 text-nowrap fw-medium" data-sort="sno" style='width:20px;'>S.no</th>
+                        <th class="sort1 text-nowrap fw-medium fullWidthColumn" data-sort="testName">Test Name</th>
+                        <td *ngIf="!inProgress"></td>
+                        <th class="sort1 text-nowrap fw-medium ps-2" data-sort="status">Status</th>
+                        <th class="sort1 text-nowrap fw-medium text-end" data-sort="total">Total (₹)</th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let test of selectedTests; let i = index">
+                    <tr class=" td-color">
+                        <td class="fs-5 text-black text-nowrap">{{ i + 1 }}.</td>
+                        <td>
+                            <div class="d-flex flex-row align-items-center gap-3">
+                                <div class="d-flex flex-column gap-0">
+                                    <div class="d-flex gap-2 align-items-center">
+
+                                        <span class="fw-medium text-nowrap fs-lg-5 fs-6 text-black">
+                                            {{removeDigitsAfterPlus(test.name) }}
+                                        </span>
+                                        
+                                        <small *ngIf="test.sourcing_lab" >
+                                            <small 
+                                                class="bg-dark fw-light d-flex align-items-center text-white rounded-3 px-1">
+                                               {{test?.sourcing_lab?.partner?.organization_name}}
+                                            </small>
+                                        </small>
+
+                                    </div>
+                                    <small>{{ test.date }}</small>
+                                </div>
+                                <div class="di cursor-pointer" (click)="toggleAccordionnn(test.id + 'pkg')"
+                                    *ngIf="test.package">
+                                    <i [ngClass]="{'rotate-chevron': true, 'rotate-up': activeId === test.id + 'pkg'}"
+                                        class="fas fa-chevron-down text-black"></i>
+                                </div>
+                            </div>
+
+                        </td>
+                        <td class="text-danger text-center fs-4" *ngIf="!inProgress">
+                            <app-deletebutton btnClassVal="bg-transparent fs-6 border-0" placement="bottom"
+                                ngbTooltip="Remove Test" deleteIconClass="bi bi-x-lg text-danger"
+                                (click)="deleteTest(i, test)" *ngIf="test.canRemove"></app-deletebutton>
+                        </td>
+                        <td>
+                            <select *ngIf="!test.package"
+                                class="form-select-control border-light-blue px-2 py-1 rounded"
+                                (change)="applyStatus(i, $event)">
+                                <ng-container *ngFor="let item of status">
+                                    <option [selected]="item.id == 1" [value]="item.id">{{ item.name }}</option>
+                                </ng-container>
+                            </select>
+                        </td>
+                        <td class="text-end">{{ test.total }}</td>
+                    </tr>
+
+                    <!-- Place the package test rows inside the outer ng-container loop -->
+                    <tr *ngIf="test.package  && activeId === test.id + 'pkg'" style="background-color: aliceblue;">
+                        <td colspan="5" class="bg-muted py-1">
+                            <div aria-labelledby="tableDropdown"
+                                [ngClass]="{'active': activeId === test.id + 'pkg'}"
+                                class="testsTable  bg-white border border-black mx-5 px-5 rounded-3">
+                                <table class="table">
+
+                                    <tbody>
+                                        <tr *ngFor="let item of test.package_tests; let i = index">
+                                            <td class="text-nowrap fw-medium py-1">
+                                                <!-- {{ item.name }} -->
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <span class="fw-medium text-nowrap fs-lg-5 fs-6 text-black">
+                                                        {{item.name}}
+                                                    </span>
+                                                    <small *ngIf="item?.sourcing_lab" >
+                                                        <small 
+                                                            class="bg-dark fw-light d-flex align-items-center text-white rounded-3 px-1">
+                                                            {{item?.sourcing_lab?.partner?.organization_name}}
+                                                        </small>
+                                                    </small>
+        
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div
+            class="px-2 py-1 d-flex justify-content-between align-items-center font-Readex bg-white border rounded-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <div class="ng-autocomplete d-lg-flex d-md-flex d-none">
+
+                    <ng-autocomplete #auto_complete historyHeading="" [disabled]="disableForm" [isLoading]="searchLoading"
+                        [historyListMaxNumber]="0" [data]="searchData" [searchKeyword]="'name'"
+                        placeholder="Add Lab Tests / Packages" [spellcheck]="false"
+                        (selected)="onItemSelected($event);auto_complete.clear()" [itemTemplate]="itemTemplate"
+                        [notFoundTemplate]="notFoundTemplate" [minQueryLength]="2"
+                        (keydown.enter)="selectFirstOption($event);auto_complete.clear()" (inputChanged)="getSearches($event)">
+                    </ng-autocomplete>
+                </div>
+
+                <!-- <div *ngIf="showPNDT">
+                    <button class="btn btn-soft-danger border-danger rounded-3"
+                        (click)="openXl(PNDTForm, 'xl', false)">Fill PNDT Form</button>
+                </div> -->
+            </div>
+
+
+            <div class="text-black fw-medium fs-6 text-end">
+                {{getTotalTestsAmount()}}
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #itemTemplate let-item>
+
+    <a class="py-1 px-2 d-flex justify-content-between align-items-center border-bottom">
+
+        <span class="d-flex flex-column">
+            
+            <span *ngIf="!item?.lab_tests" [innerHTML]="removeDigitsAfterPlus(item.name)"
+            class="fw-normal fs-6"></span>
+
+            <span *ngIf="item?.lab_tests" [innerHTML]="item.name" class="fw-normal fs-6"></span>
+            
+            <small *ngIf="!item?.lab_tests && item?.sourcing_lab">
+                <small class="item-type text-white  px-2 py-0 me-2 rounded bg-dark"
+                [innerHTML]="item?.sourcing_lab?.partner?.organization_name || item?.sourcing_lab?.organization_name"
+               ></small>
+
+               <!-- [innerHTML]="item?.sourcing_lab?.initiator == b_id ? 'Process by ' + item?.sourcing_lab?.partner?.organization_name : 'From ' + item?.sourcing_lab?.partner?.organization_name " -->
+            </small>
+        
+        </span>
+
+
+        <small class="d-flex justify-content-end align-items-center">
+
+            <small *ngIf="!item?.lab_tests && item.short_code && item.short_code!==''"
+                class="item-type text-black  px-2 py-0 me-2 rounded bg-soft-warning"
+                [innerHTML]="item.short_code"></small>
+
+            <small>
+                <small *ngIf="!item?.lab_tests"
+                class="item-type text-black px-2  py-0 rounded bg-soft-danger"
+                [innerHTML]="item.department"></small>
+            </small>
+
+            <small *ngIf="!item?.lab_tests"
+                class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                [innerHTML]="( baseForm.get('referral_lab')?.value || baseForm.get('partner')?.value ) && item?.revised_price && item?.revised_price?.revised_price ? item?.revised_price.revised_price : item.price"></small>
+
+            <small *ngIf="item?.lab_tests" class="item-type text-dark px-2 py-0 rounded "
+                [innerHTML]="'...Package'"></small>
+            <small *ngIf="item?.lab_tests"
+                class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                [innerHTML]="'Tests : ' + item?.lab_tests.length"></small>
+            <small *ngIf="item?.lab_tests"
+                class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                [innerHTML]="item.offer_price"></small>
+
+        </small>
+    </a>
+</ng-template>
+
+<ng-template #prescriptionAttach let-modal>
+    <app-view-image [image]="baseForm.value.prescription_attach"></app-view-image>
+</ng-template>
+
+
+<ng-template #addRefDoc let-modal>
+    <div class="modal-body pt-2 bg-white">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12">
+                    <app-doctor-details [hideTitle]="true"></app-doctor-details>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #loyaltyCardPopTitle>
+    <div class="d-flex flex-column" *ngIf="card">
+        <span class="fw-medium">{{card?.card?.name}}</span>
+        <small class="fw-light">{{card?.name}}</small>
+        <!-- <div> {{"₹ " + card?.card_cost}}</div> -->
+    </div>
+    <div class="text-muted" *ngIf="!card">
+        Select Card to see details
+    </div>
+</ng-template>
+
+<ng-template #loyaltyCardPopContent>
+    <app-pop-loyalty #loyaltyComponent [card]="card"></app-pop-loyalty>
+</ng-template>
+
+<app-pop-loyalty class="d-none" #loyaltyComponent [card]="card || null"></app-pop-loyalty>

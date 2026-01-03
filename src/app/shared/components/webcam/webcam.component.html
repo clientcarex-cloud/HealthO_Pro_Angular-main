@@ -1,0 +1,57 @@
+<!-- <p>webcam works!</p> -->
+<div style="text-align:center" *ngIf="false">
+	<div class="d-flex flex-column">
+		<!-- <webcam [height]="500" [width]="500" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" *ngIf="showWebcam"
+		 [allowCameraSwitch]="allowCameraSwitch" [switchCamera]="nextWebcamObservable" [videoOptions]="videoOptions" (cameraSwitched)="cameraWasSwitched($event)"
+		 (initError)="handleInitError($event)"></webcam> -->
+		<br/>
+
+		<div class="d-flex flex-column">
+			<div class="d-flex">
+				<button class="btn btn-dark fs-5 rounded-3" (click)="triggerSnapshot();" title="Take Picture">
+					Capture
+				</button>
+			</div>
+
+			<button class="btn bg-white border fs-5 rounded-3 d-flex align-items-center justify-content-center" 
+			(click)="showNextWebcam(true);" title="Switch Camera">
+				<span>Switch Camera</span>
+				<i class="ri-camera-switch-line"></i>
+			</button>
+		</div>
+	</div>
+</div>
+
+<div class="container-full">
+	<div class="row mb-2">
+		<div class="col-12 d-flex justify-content-center align-items-center ">
+		<webcam class="border border-2 border-dark p-2" [height]="500" [width]="500" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" *ngIf="showWebcam"
+		 [allowCameraSwitch]="allowCameraSwitch" [switchCamera]="nextWebcamObservable" [videoOptions]="videoOptions" (cameraSwitched)="cameraWasSwitched($event)"
+		 (initError)="handleInitError($event)"></webcam>
+		</div>
+	</div>
+
+	<div class="row mb-2 justify-content-center align-items-center">
+		<div class="col-3 d-flex justify-content-center align-items-center">
+			<button class="btn btn-dark fs-5 rounded-3" (click)="triggerSnapshot();" title="Take Picture">
+				Capture
+			</button>
+		</div>
+	</div>
+
+	<div class="row justify-content-center align-items-center" *ngIf="multipleWebcamsAvailable">
+		<div class="col-3 d-flex justify-content-center align-items-center">
+			<button class="btn bg-white border fs-5 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow" 
+			(click)="showNextWebcam(true);" title="Switch Camera">
+				<span>Switch Camera</span>
+				<i class="ri-camera-switch-line"></i>
+			</button>
+		</div>
+	</div>
+
+</div>
+
+<!-- <h4 *ngIf="errors.length > 0">Messages:</h4>
+<ul *ngFor="let error of errors">
+	<li>{{error | json}}</li>
+</ul> -->

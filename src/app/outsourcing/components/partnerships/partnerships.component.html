@@ -1,0 +1,110 @@
+<div class="container-full">
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row g-lg-2 g-2  align-items-center justify-content-between">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="tabsNavigation d-flex">
+                <ul ngbNav #nav="ngbNav"
+                    class="nav nav-section-custom mb-2 font-inter" [activeId]="activeTab">
+                    <li [ngbNavItem]="1"  (click)="activeTab = 1">
+                        <a ngbNavLink>Out-Sourcings</a>
+                        <ng-template ngbNavContent>
+                            <app-collabs #outsource sourcing_term="initiator="></app-collabs>
+                        </ng-template>
+                    </li>
+                    <li  [ngbNavItem]="2"  (click)="activeTab = 2">
+                        <a ngbNavLink>Referring Lab</a>
+                        <ng-template ngbNavContent >
+                            <app-collabs #referral sourcing_term="acceptor=" [is_referring]="true"></app-collabs>
+                        </ng-template>
+                    </li>
+
+                    <li  [ngbNavItem]="3"  (click)="activeTab = 3">
+                        <a ngbNavLink>Company</a>
+                        <ng-template ngbNavContent>
+                            <app-company #company></app-company>
+                        </ng-template>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-12 col-lg-4 col-sm-12">
+            <div class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+                
+                <ng-container *ngIf="activeTab != 3">
+                    <app-addnewbutton  buttonText="Requests" (click)="openModal(requests, {size: '', centered: true})"></app-addnewbutton>
+                    <app-addnewbutton *ngIf="activeTab == 1" buttonText="Find Collaborator" (click)="openModal(collaboration, {size: '', centered: true})"></app-addnewbutton>
+                    <app-addnewbutton buttonText="Add {{activeTab == 1 ? 'OS' : 'RL'}} Lab" (click)="openModal(addLab, {size: '', centered: true})"></app-addnewbutton>
+                </ng-container>
+
+                <app-addnewbutton *ngIf="activeTab == 3" buttonText="Add Company" (click)="openModal(addCompany, {size: '', centered: true})"></app-addnewbutton>
+                
+                <app-info-btn></app-info-btn>
+            </div>
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+
+</div>
+
+
+<ng-template #addCompany let-modal>
+    <div class="modal-header align-items-center modal-bg">
+        <span class="modal-title fs-4">Company Details</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full modal-bg">
+        <app-add-company #companyComp (saved)="saveCompany($event)"></app-add-company>
+    </div>
+
+    <div class="modal-footer py-1 modal-bg">
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-success fs-5 rounded-3" (click)="companyComp.saveApiCall()">Save</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #collaboration let-modal>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Find Collaborator</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <app-lab-partner></app-lab-partner>
+    </div>
+</ng-template>
+
+<ng-template #addLab let-modal>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">{{activeTab == 1 ? 'Out-Sourcing ' : 'Referring '}} Collaborator</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+        <app-add-lab [is_initiator]="activeTab == 1" (saved)="getSource()"></app-add-lab>
+    </div>
+</ng-template>
+
+<ng-template #requests let-modal>
+    <div class="modal-header align-items-center" style="background-color: #F8FAFC;">
+        <span class="modal-title fs-4">Requests</span>
+        <button (click)="modalService.dismissAll()" class="btn-close"></button>
+    </div>
+
+    <div class="modal-body container-full" style="background-color: #F8FAFC;">
+         <app-requests-labs></app-requests-labs>
+    </div>
+</ng-template>
+
+

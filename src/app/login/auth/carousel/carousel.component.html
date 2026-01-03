@@ -1,0 +1,9 @@
+<ngb-carousel [showNavigationArrows]="false">
+    <ng-template ngFor let-slider [ngForOf]="pics">
+      <ng-template [ngIf]="slider.is_active">
+        <ng-template ngbSlide>
+          <img [src]="slider.image" class="images">
+        </ng-template>
+      </ng-template>
+    </ng-template>
+  </ngb-carousel>

@@ -1,0 +1,45 @@
+
+<div class="container-full">
+
+    <div class="row mb-3" *ngIf="whatsAppSecretKey">
+        <div class="col-12">
+            Current Secret Key 
+        </div>
+        <div class="col-12">
+            <textarea class="form-control rounded-3" style="font-size: 12px" [value]="whatsAppSecretKey?.secret_key" [disabled]="true"></textarea>
+        </div>
+    </div>
+
+    <div class="row mb-3" *ngIf="whatsAppSecretKey">
+        <div class="col-12">
+            Current Phone ID
+        </div>
+        <div class="col-12">
+            <textarea class="form-control rounded-3" style="font-size: 12px" [disabled]="true"
+             [value]="whatsAppSecretKey?.phone_id"></textarea>
+        </div>
+    </div>
+
+
+    <form [formGroup]="baseForm">
+        <div class="row mb-3">
+            <div class="col-12">
+                <app-input labelText="Secret Key" labelClass="form-label mb-1"
+                placeHolder="" formControlName="secret_key" [formSubmitted]="submitted"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-8">
+                <app-input labelText="Phone ID" labelClass="form-label mb-1"
+                placeHolder="" formControlName="phone_id"  [formSubmitted]="submitted"></app-input>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end">
+            <button (click)="saveApiCall()" class="btn btn-success rounded-3 fs-5">Update</button>
+        </div>
+    </div>
+</div>

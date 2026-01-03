@@ -1,0 +1,60 @@
+<div class="container-fluid mx-2">
+    <div class="row my-2 mb-1 border-5 border-start border-primary rounded-2 ps-2 pe-3">
+        <div class="col-8">
+            <div class="col-12">
+                <span class="fw-medium fs-5">Import Tests</span>
+              </div>
+              <div class="col-12">
+                <span class="text-wrap td-color">Check the essential departments test required for Business</span>
+              </div>
+        </div>
+
+        <div class="col-4"  *ngIf="!copied">
+            <div class="d-flex justify-content-end">
+                <button (click)="postDepartmentsForSetup()" class="btn btn-success rounded-3 px-3">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row my-3">
+        <div class="col-12">
+          <app-datatable>
+            <ng-container class="tableheader">
+                <th>Department</th>
+                <th>
+                    <div class="d-flex align-items-center " *ngIf="checkSelectAll() && copied">
+                        <app-checkbox classVal="" inactiveText="" activeText="" 
+                        (onCheckboxValueChanged)="selectAll($event)"
+                        [showLabel]="false"></app-checkbox>
+                    <span>Select</span>
+                    </div>
+                </th>
+            </ng-container>
+  
+            <ng-container class="tablebody">
+                <tr *ngFor="let item of departments">
+                    <td class="py-1 fs-5 fw-medium">
+                        {{item.name}}
+                    </td>
+                    <td>
+                        <ng-container *ngIf="!checkCopiedOrNot(item.name)">
+                            <app-checkbox classVal="" inactiveText="" activeText="" 
+                            [checkboxValue]="checkCopiedOrNot(item.name)" [inputDisabled]="checkCopiedOrNot(item.name)"
+                            (onCheckboxValueChanged)="selectedDepartments($event, item)"
+                            [showLabel]="false"></app-checkbox>
+                        </ng-container>
+
+                        <ng-container *ngIf="checkCopiedOrNot(item.name)">
+                            <span class="text-success">Imported</span>
+                        </ng-container>
+
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+        </div>
+      </div>
+
+
+
+</div>

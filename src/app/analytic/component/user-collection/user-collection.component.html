@@ -1,0 +1,262 @@
+<app-layout [showMap]="false" [showNav]="true" [showPageTitle]="false" [displayInformation]="false" [labPackage]="false"
+    [showNav]="false">
+
+    <ng-container class="addNewoptions">
+        <app-addnewbutton buttonText="Add Employee"></app-addnewbutton>
+        <app-info-btn></app-info-btn>
+    </ng-container>
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+
+    <ng-container class="datepicker">
+        <app-datepicker-section [initDate]="true" (dateRangeSelected)="getRangeValue($event)"
+            [selectToday]="true"></app-datepicker-section>
+    </ng-container>
+
+    <ng-container class="selectPrint">
+        <app-select [selectItems]="reports" [selectValue]="reports && reports[0] ? reports[0]: []"
+            selectBindLabel="name" [placeHolder]="'Select Report'"
+            (onSelectionChanged)="selectShirtReportTemplate($event)"></app-select>
+
+    </ng-container>
+
+    <ng-container class="selectComp">
+        <div class="d-flex flex-row gap-1">
+            <button class="btn btn-primary rounded-3 text-nowrap" [disabled]="viewPrintLoading || printLoading" (click)="getShiftReport(true)">
+                <!-- <span *ngIf="viewPrintLoading">Please Wait</span> -->
+                <span *ngIf="viewPrintLoading" class="spinner-border spinner-border-sm mr-1"></span> 
+               
+                <span *ngIf="!viewPrintLoading">Preview</span>
+            </button>
+            <button class="btn btn-success rounded-3" (click)="getShiftReport(false)" [disabled]="viewPrintLoading || printLoading" >
+                <!-- <span *ngIf="printLoading">Please Wait</span> -->
+                <span *ngIf="printLoading" class="spinner-border spinner-border-sm mr-1"></span> 
+                <span *ngIf="!printLoading">Export</span>
+            </button>
+
+        </div>
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+
+   <!--
+    <ng-container class="extratableheader">
+        <tr class="text-muted bg-white">
+            <th rowspan="2" class="text-black fs-5" *ngIf="staffs && staffs?.length != 0">
+                <app-checkbox
+                    [ngbTooltip]="(SR_template && SR_template?.id == 5) ? SR_template.name + ' gives for all users' : 'Select All Staffs'"
+                    placement="right" [removeActInc]="true" labelClass="d-none" classVal="" [showLabel]="false"
+                    [removeLabel]="true"
+                    [inputDisabled]="viewPrintLoading || printLoading || (SR_template && SR_template?.id == 5)"
+                    [checkboxValue]="staffs.length == selected_staffs_for_prints.length && staffs.length != 0"
+                    (onCheckboxValueChanged)="selectAllStaffs($event)"></app-checkbox>
+            </th>
+            <th rowspan="2" class="text-black text-nowrap" *ngIf="false">ID & DOJ</th>
+            <th rowspan="2" class="text-nowrap"><span>Name & Job Title</span></th>
+            <th rowspan="2" class="text-nowrap"><span>Mobile Number</span></th>
+            <th colspan="2" class="text-nowrap text-center"><span>Collections</span></th>
+            <th colspan="2" class="text-nowrap text-center"><span>Refund</span></th>
+            <th colspan="2" class="text-nowrap text-center"><span>Expense</span></th>
+            <th  colspan="2" class="text-nowrap text-center"><span>Collection</span></th>
+        </tr>
+    </ng-container>
+    <ng-container class="tableheader">
+        
+        <th class="text-nowrap"><span>Total Cash</span></th>
+        <th class="text-nowrap"><span>Total Online</span></th>
+        <th class="text-nowrap"><span>Cash</span></th>
+        <th class="text-nowrap"><span>Online</span></th>
+        <th class="text-nowrap"><span>Cash</span></th>
+        <th class="text-nowrap"><span>Online</span></th>
+        <th class="text-nowrap"><span>Net Cash</span></th>
+        <th class="text-nowrap"><span>Net Online</span></th>
+
+    </ng-container>
+
+    -->
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-black fs-5" *ngIf="staffs && staffs?.length != 0">
+                    <app-checkbox
+                        [ngbTooltip]="(SR_template && SR_template?.id == 5) ? SR_template.name + ' gives for all users' : 'Select All Staffs'"
+                        placement="right" [removeActInc]="true" labelClass="d-none" classVal="" [showLabel]="false"
+                        [removeLabel]="true"
+                        [inputDisabled]="viewPrintLoading || printLoading || (SR_template && SR_template?.id == 5)"
+                        [checkboxValue]="staffs.length == selected_staffs_for_prints.length && staffs.length != 0"
+                        (onCheckboxValueChanged)="selectAllStaffs($event)"></app-checkbox>
+                </th>
+
+                <th class="text-nowrap"><span>Staff</span></th>
+                <!-- <th class="text-nowrap"><span>Mobile No.</span></th> -->
+                <th class="text-nowrap"><span>Total Cash Coll.</span></th>
+                <th class="text-nowrap"><span>Total Online Coll.</span></th>
+                <th class="text-nowrap"><span>Cash Refund</span></th>
+                <th class="text-nowrap"><span>Online Refund</span></th>
+                <th class="text-nowrap"><span>Cash Expense</span></th>
+                <th class="text-nowrap"><span>Online Expense</span></th>
+                <th class="text-nowrap"><span>Net Cash Coll.</span></th>
+                <th class="text-nowrap"><span>Net Online Coll.</span></th>
+                <!-- <th>Action</th> -->
+
+            </ng-container>
+            <ng-container class="tablebody">
+
+                <tr *ngFor="let item of staffs; let i = index" class="td-color">
+
+                    <td class="text-black fs-5" *ngIf="staffs.length != 0">
+                        <app-checkbox
+                            [ngbTooltip]="(SR_template && SR_template?.id == 5) ? SR_template.name + ' gives for all users' : 'Select ' + item.staff.name"
+                            placement="right" [removeActInc]="true" labelClass="d-none" classVal="" [showLabel]="false"
+                            [removeLabel]="true" [checkboxValue]="checkDoc(item.staff.id)"
+                            (onCheckboxValueChanged)="Handle_print_report($event,item.staff)"
+                            [inputDisabled]="viewPrintLoading || printLoading || (SR_template && SR_template?.id == 5)"></app-checkbox>
+                  
+                    </td>
+                    <td>
+                        <app-patient-details name="{{item.staff?.name}}" time="{{item?.staff?.mobile_number}}{{item?.staff?.role ? ', ' + item.staff.role : ''}}" [query]="query"></app-patient-details>
+                    </td>
+                    <!-- <td class="text-nowrap">
+                        <small>
+                            +91 <span *ngIf="item.staff.mobile_number">
+                                <ngb-highlight [result]="item.staff.mobile_number.toString()"
+                                    [term]="query"></ngb-highlight>
+                            </span>
+                        </small>
+                    </td> -->
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.total_cash_collection)}}
+                    </td>
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.total_online_collection)}}
+                    </td>
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.total_cash_refund)}}
+                    </td>
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.total_online_refund)}}
+                    </td>
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.total_cash_expenses)}}
+                    </td>
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.total_online_expenses)}}
+                    </td>
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.net_cash_collection)}}
+                    </td>
+
+                    <td class="fw-semibold text-black">
+                        {{formatNumber(item.net_online_collection)}}
+                    </td>
+
+
+
+                    <!-- <td>
+                            <div class="d-flex flex-row gap-2">
+                                <button class="btn bg-transparent p-0 fs-4" ngbTooltip="Preview">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+    
+                                <button class="btn bg-transparent p-0 fs-4" ngbTooltip="Print">
+                                    <i class="ri-printer-line"></i>
+                                </button>
+                            </div>
+                        </td> -->
+
+                </tr>
+
+
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngIf="!staffs || staffs.length === 0">
+                    <td colspan="9">
+                        <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                            style="vertical-align: middle;min-height: 100px;">
+
+                            <span *ngIf="query!==''">
+                                No Data Found with Search Query " <span class="fw-bold text-black">{{query}}</span> "
+                            </span>
+
+                            <span *ngIf="query==='' && !pageLoading">
+                                No staffs registered on this day.
+                            </span>
+
+                            <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text-black pt-2 fw-light">Loading</div>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+            (pageChange)="onPageChange($event)">
+        </app-pagination>
+    </ng-container>
+</app-layout>
+
+
+
+<ng-template #reportModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+        <div>
+            <button (click)="print()" class="btn shadow btn-success me-2 rounded-3">Print</button>
+            <button (click)="export()" class="btn shadow btn-success me-2 rounded-3">Export</button>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+
+
+    <div class="modal-body p-0">
+        <div class="container-full py-0 px-3" style="background-color: #F8FAFC;">
+            <div class="row p-0 g-0" id="report">
+            </div>
+
+            <!-- <iframe [src]="" -->
+        </div>
+    </div>
+
+</ng-template>

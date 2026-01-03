@@ -1,0 +1,7 @@
+.rotate-chevron {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .rotate-chevron.rotate-up {
+    transform: rotate(180deg);
+  }

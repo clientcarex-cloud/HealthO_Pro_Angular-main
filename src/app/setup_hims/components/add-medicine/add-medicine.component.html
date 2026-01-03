@@ -1,0 +1,103 @@
+<form [formGroup]="baseForm" (ngSubmit)="saveApiCall()">
+    <div class="container-full">
+        <div class="row mb-3">
+            <div class="col-lg-9 col-12">
+                <app-input labelText="Item Name" labelClass="form-label mb-1" [imp]="true"
+                [formSubmitted]="submitted" formControlName="name" placeHolder="Enter name"></app-input>
+            </div>
+
+            <div class="col-lg-3 col-12">
+                <app-input labelText="Bar Code" labelClass="form-label mb-1" placeHolder="" classVal="form-control fw-semibold rounded-3"
+                [formSubmitted]="submitted" formControlName="short_code"></app-input>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-lg-9 col-12">
+              <app-input labelText="Composition" labelClass="form-label mb-1" [imp]="false"
+              [formSubmitted]="submitted" formControlName="composition" placeHolder="Enter name"></app-input>
+          </div>
+
+          <div class="col-lg-3 col-12">
+            <app-input labelText="HSN Code" labelClass="form-label mb-1" placeHolder="" classVal="form-control fw-semibold rounded-3"
+            [formSubmitted]="submitted" formControlName="hsn_number"></app-input>
+        </div>
+
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-lg-8 col-4">
+                <app-select labelText="Operational Type" labelClass="form-label mb-1" [imp]="true" [formSubmitted]="submitted"
+                [selectItems]="operational_types" selectBindLabel="name" placeHolder="Select Type" formControlName="operation_type"></app-select>
+            </div>     
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="row g-1">
+                    <div class="col-10">
+                        <app-select labelText="Category" labelClass="form-label mb-1"
+                        [imp]="true" [formSubmitted]="submitted" [removeMessage]="true" selectBindLabel="name"
+                        [selectItems]="categories" placeHolder="Select Category" formControlName="category" ></app-select>
+                    </div>
+                    <div class="col-2 d-flex flex-column">
+                    <label for="addFor" class="form-label mb-1 visibility-none">i</label>
+                        <button type="button" style="width: 22px; height: 22px" name="addFor"
+                            (click)="openModal(rommTypeModal, { size: '', })"
+                            class="bg-soft-primary rounded-circle border d-flex align-items-center justify-content-center">
+                            <i class="ri-add-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+          <div class="col-lg-4 col-6">
+            <app-num-input labelText="Discount(%)" [removeLabel]="false" labelClass="form-label mb-1" [imp]="true" [maintainLimit]="true" classVal="form-control fw-semibold rounded-3"
+            [formSubmitted]="submitted" formControlName="discount" placeHolder="Enter Number"></app-num-input>
+          </div>
+
+          <!-- <div class="col-lg-4 col-6">
+            <app-input labelText="M.R.P" labelClass="form-label mb-1" [imp]="true" classVal="form-control fw-semibold rounded-3"
+            [formSubmitted]="submitted" formControlName="price" placeHolder="Enter Number" [applyAllowNumbersOnly]="true"></app-input>
+          </div> -->
+
+          <div class="col-lg-4 col-6">
+            <app-num-input labelText="CGST/SGST(%)" [removeLabel]="false" labelClass="form-label mb-1" [imp]="true" classVal="form-control fw-semibold rounded-3" 
+            [maintainLimit]="true" [formSubmitted]="submitted" formControlName="tax" placeHolder="Enter Number" ></app-num-input>
+          </div>
+
+        </div>
+    </div>
+</form>
+
+
+<ng-template #rommTypeModal let-modal>
+
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+      <span class="modal-title fs-5" id="modal-basic-title">Add Category</span>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+    <div class="modal-body " style="background-color: #F8FAFC; ">
+      <form [formGroup]="typeForm">
+        <div class="container-full">
+          <div class="row">
+            <div class="col-12">
+              <app-input labelText="Name" labelClass="form-label mb-1" [imp]="true" [removeCloseIcon]="true" formControlName="name"
+              placeHolder="" [applyAllowLettersOnly]="true" [applyEmptySpace]="true" [formatLetter]="true" [applyAutoFocus]="true"
+              [inputLength]="100" classVal="form-control fs-6 fw-semibold rounded-3" [formSubmitted]="submitted"></app-input>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  
+    <div class="modal-footer bg-light-blue py-1 px-3 border-top">
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-success rounded-3 fs-5" (click)="saveCategory(modal);">Save</button>
+      </div>
+    </div>
+  
+  </ng-template>

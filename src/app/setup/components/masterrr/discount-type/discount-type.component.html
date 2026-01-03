@@ -1,0 +1,201 @@
+<div class="container-fluid py-2 px-3" style="min-height: 500px;">
+
+    <div class="row mb-3 g-3 justify-content-between">
+        <div class="col-lg-6 col-12">
+            <!-- Discount Types -->
+            <div class="row border-5 border-start border-primary rounded-2 ps-2">
+                <div class="col-12">
+                    <span class="fw-medium fs-5">Discount Types</span>
+                </div>
+                <div class="col-12">
+                    <span class="text-wrap td-color">Turn on/off essential features required for Discount Types</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON FOR ADDING TESTS  -->
+        <div class="col-lg-6 col-12 d-flex justify-content-lg-end justify-content-start">
+            <app-addnewbutton (onAddNewClick)="openXl(addDiscount)" buttonText="Add Discount" 
+                content="content"></app-addnewbutton>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-12">
+            <app-datatable>
+                <ng-container class="tableheader">
+                    <th style="width:3px">
+                        <div class="d-flex flex-column gap-0 p-0">
+                          <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                          <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                        </div>
+                    </th>
+                    <th>Name</th>
+                    <th class="text-right">Number</th>
+                    <th>Active</th>
+                </ng-container>
+
+                <ng-container class="tablebody td-color">
+                    <!-- (click)="openDiscount(type)" -->
+                    <tr *ngFor="let type of types" >
+                        <td></td>
+                        <td class="fw-normal fs-5 text-black">{{type.name}}</td>
+                        <td class="fw-medium fs-5 text-black">
+                            <span *ngIf="!type.is_percentage">
+                                {{formatCurrency(type.number)}}
+                            </span>
+
+                            <span *ngIf="type.is_percentage">
+                                {{getFormatedVal(type.number) + " %"}}
+                            </span>
+                        </td>
+                        <td>
+                            <app-checkbox [showLabel]="false" inactiveText="" activeText="" (onCheckboxValueChanged)="doActiveInactiveDiscount(type, $event)"
+                            [checkboxValue]="type.is_active"></app-checkbox>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+<ng-template #addDiscount let-modal>
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue border-bottom">
+        <span class="modal-title fs-5" id="modal-basic-title">Add Discount</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');this.submitted=false;"></button>
+    </div>
+    <form [formGroup]="discountForm" (ngSubmit)="saveDiscount()">
+        <div class="modal-body font-Readex" style="background-color: #F8FAFC; ">
+
+            <div class="container-full">
+
+                <div class="row g-2 ">
+
+                    <!-- name input  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <div class="col-12">Discount Name <span class="text-danger">*</span></div>
+                            <div class="col-12">
+                                <!-- Name Input  -->
+                                <app-input [removeLabel]="true" placeHolder=""  (onValueChanged)="formatString($event, 'name')"
+                                    [formSubmitted]="submitted" formControlName="name" [applyAutoFocus]="true" [applyAllowLettersOnly]="true" [applyEmptySpace]="true"
+                                    classVal="form-control fw-semibold py-2 fs-5 rounded-3"></app-input>
+                            </div>
+                        </div>
+                    </div>
+
+                       <!-- name input  -->
+                       <div class="col-12 mb-2">
+                        <div class="row">
+                            <div class="col-12">Discount Number <span class="text-danger">*</span></div>
+                            <div class="col-12">
+                                <div class="row align-items-center">
+                                    <div class="col-9">
+                                         <!-- Name Input  -->
+                                <input type="number" formControlName="number"  [class.border-danger]="submitted && !discountForm.value.number  && discountForm.value.number !==0"
+                                [placeholder]="discountForm.get('is_percentage')?.value ? '%' : '₹'"
+                                class="form-control rounded-3 py-2 fs-5 fw-bold " (input)="validateDiscount($event)">
+                                    </div>
+                                    <div class="col-3">
+                                        <app-checkbox (onCheckboxValueChanged)="discountPercentage()" formControlName="is_percentage" [formSubmitted]="submitted"
+                                        classVal="form-check" [showLabel]="false" activeText="%" inactiveText="%"></app-checkbox>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- is percentage  -->
+                     <div class="col-12 mb-2">
+                        <app-checkbox formControlName="is_active" [formSubmitted]="submitted"
+                        classVal="form-switch" [showLabel]="false" activeText="Is Active" inactiveText="Is Active"></app-checkbox>
+                    </div>
+                 
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-footer py-0 px-3 font-Readex bg-light-blue border-top font-Readex">
+            <button type="submit" class="btn btn-success shadow rounded-3"
+>
+               Save Discount<span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span>
+            </button>
+        </div>
+    </form>
+</ng-template>
+
+
+<ng-template #UpdateDiscount let-modal>
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue border-bottom">
+        <span class="modal-title fs-5" id="modal-basic-title">Add Discount</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');this.submitted=false;"></button>
+    </div>
+    <form [formGroup]="discountForm" (ngSubmit)="updateDiscount()">
+        <div class="modal-body font-Readex" style="background-color: #F8FAFC; ">
+
+            <div class="container-full">
+
+                <div class="row g-2 ">
+
+                    <!-- name input  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <div class="col-12">Discount Name <span class="text-danger">*</span></div>
+                            <div class="col-12">
+                                <!-- Name Input  -->
+                                <app-input [removeLabel]="true" placeHolder=""  (onValueChanged)="formatString($event, 'name')"
+                                    [formSubmitted]="submitted" formControlName="name" [applyAutoFocus]="true" [applyAllowLettersOnly]="true" [applyEmptySpace]="true"
+                                    classVal="form-control fw-semibold py-2 fs-5 rounded-3"></app-input>
+                            </div>
+                        </div>
+                    </div>
+
+                       <!-- name input  -->
+                       <div class="col-12 mb-2">
+                        <div class="row">
+                            <div class="col-12">Discount Number <span class="text-danger">*</span></div>
+                            <div class="col-12">
+                                <div class="row align-items-center">
+                                    <div class="col-9">
+                                         <!-- Name Input  -->
+                                <input type="number" formControlName="number"  [class.border-danger]="submitted && !discountForm.value.number  && discountForm.value.number !==0"
+                                [placeholder]="discountForm.get('is_percentage')?.value ? '%' : '₹'"
+                                class="form-control rounded-3 py-2 fs-5 fw-bold " (input)="validateDiscount($event)">
+                                    </div>
+                                    <div class="col-3">
+                                        <app-checkbox (onCheckboxValueChanged)="discountPercentage()" formControlName="is_percentage" [formSubmitted]="submitted"
+                                        classVal="form-check" [showLabel]="false" activeText="%" inactiveText="%"></app-checkbox>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- is percentage  -->
+                     <div class="col-12 mb-2">
+                        <app-checkbox formControlName="is_active" [formSubmitted]="submitted"
+                        classVal="form-switch" [showLabel]="false" activeText="Is Active" inactiveText="Is Active"></app-checkbox>
+                    </div>
+                 
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-footer py-0 px-3 font-Readex bg-light-blue border-top font-Readex">
+            <button type="submit" class="btn btn-success shadow rounded-3"
+>
+               Update<span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span>
+            </button>
+        </div>
+    </form>
+</ng-template>

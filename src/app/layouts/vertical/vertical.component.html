@@ -1,0 +1,47 @@
+<div class="container-full"  *ngIf="isExpired && !isSubscribeRoute"
+style="pointer-events: none; top: 50px; z-index: 999;position: fixed; width:-webkit-fill-available;">
+<div class="row unlock justify-content-center ">
+    <div class="col-12 d-flex align-items-center justify-content-center" style="height: 100vh;">
+        <button class="btn d-flex bg-transparent flex-column align-items-center justify-content-center fs-5"
+            style="pointer-events: auto;">
+            <span class="td-color">Your Subscription Plan Was Expired</span>
+            <span>Please Contact Admin</span>
+        </button>
+    </div>
+</div>
+</div>
+
+
+<!-- *ngIf="online" -->
+<div id="layout-wrapper" style="background-color: #F8FAFC;min-height:100vh" >
+    <!-- Top Bar -->
+     
+    <app-topbar (mobileMenuButtonClicked)="onToggleMobileMenu()" (branchChanged)="loadPage()"></app-topbar>
+    <!-- Side Bar -->
+    
+    <app-sidebar></app-sidebar>
+    
+    <div class="main-content" [class.blur-effect]="isExpired && !isSubscribeRoute" *ngIf="isComponentVisible">
+        <div class="page-content" style="background-color: #F8FAFC">
+        
+            <div class="container-fluid" style="background-color: #F8FAFC">
+                <!-- *ngIf="!isSubscribeRoute" -->
+                <app-subscription-notice [show]="!isSubscribeRoute"></app-subscription-notice>
+                <!-- Main Content -->
+                
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+        <!-- Footer -->
+        <!-- <app-footer></app-footer> -->
+    </div>
+
+  </div>
+
+
+
+  <!-- <app-offline *ngIf="!online"></app-offline> -->
+  <!-- <div id="print-page"></div> -->
+  <iframe id="printFrame" style="width: 0px; height: 0px; position: absolute;"></iframe>
+  <!-- Right Side Bar -->
+  <!-- <app-rightsidebar  (settingsButtonClicked)="onSettingsButtonClicked()"></app-rightsidebar> -->

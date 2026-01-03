@@ -1,0 +1,11 @@
+<div class="modal-wrapper">
+    <div class="modal-header bg-light">
+        <input [attr.id]="lblId" class="toggle" type="checkbox" #chk>
+        <label [attr.for]="lblId" class="lbl-toggle" (click)="toggleContent()">{{panelTitle}}</label>
+    </div>
+    <div class="collapsible-content" [attr.id]="pnlId" #pnl>
+        <div class="modal-body">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+.search-btn-icon {
+  font-size: 14px;
+  position: absolute;
+  top: 0;
+  right: 25px;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  opacity: 0.5;
+  margin-top: 14px;
+}
+
+.search-btn-icon:hover {
+  opacity: 1;
+}
+
+.search-btn-icon:before,
+.search-btn-icon:after {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  content: " ";
+  height: 12px;
+  width: 2px;
+  background-color: gray;
+}
+
+.search-btn-icon:before {
+  transform: rotate(45deg);
+}
+
+.search-btn-icon:after {
+  transform: rotate(-45deg);
+}/*# sourceMappingURL=searchbox.component.css.map */

@@ -1,0 +1,71 @@
+<app-master pageTitle="">
+    <ng-container class="searchbox">
+        <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)">
+        </app-searchbox>
+    </ng-container>
+    <ng-container class="addnew">
+        <app-addnewbutton buttonText="Add Renewal" content="content" (onAddNewClick)="addItem(content)">
+        </app-addnewbutton>
+    </ng-container>
+    <ng-container class="datacontent">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="sort1" data-sort="renewedDate">Renewed On</th>
+                <th class="sort1" data-sort="extendedDate">Extended Expiry</th>
+                <th class="sort1 fullWidthColumn" data-sort="remarks">Remarks</th>
+                <th class="sort1">Action</th>
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let data of dataList$ | async">
+                    <td>
+                        {{data.renewedDate}}
+                    </td>
+                    <td>
+                        {{data.extendedDate}}
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="data.remarks" [term]="service.searchTerm">
+                        </ngb-highlight>
+                    </td>                        
+                    <td>
+                        <div class="d-flex gap-2">
+                            <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)" [buttonDisabled]="data.disabled">
+                            </app-deletebutton>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>        
+    </ng-container>
+    <ng-container class="paginationcontent">
+        <app-pager>
+            <ng-container class="pager">
+                <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                    (pageChange)="service.page = $event">
+                </app-pagination>
+            </ng-container>
+        </app-pager>
+    </ng-container>
+</app-master>
+
+<!-- Add New Renewal -->
+<ng-template #content role="document">
+    <app-newmodel modelTitle="New Renewal" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3">
+                    <app-datepicker labelText="New Expiry"
+                    placeHolder="Enter New Expiry" formControlName="newExpiry"
+                    [formSubmitted]="submitted" requiredMessage="New Expiry is required"
+                    [datePickerMinDate]="minExpDate"
+                    [applyAutoFocus]="true"></app-datepicker>                    
+                </div>
+                <div class="mb-3">
+                    <app-input labelText="Remarks" placeHolder="Enter Remarks" formControlName="remarks"
+                    [formSubmitted]="submitted" requiredMessage="Renewal remarks is required"
+                    maxLengthMessage="Renewal remarks should not exceed 500 chars"></app-input>                    
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

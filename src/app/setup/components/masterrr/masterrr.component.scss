@@ -1,0 +1,37 @@
+
+
+.bg-status{
+    background: rgba(134, 205, 226, 0.15);
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.02) inset;
+}
+
+.active{
+    color: #000;
+    background: #FFF;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.03);
+}
+
+.inactive{
+    color:#0E4EA3;
+}
+
+.inactive:hover{
+    color: #000;
+}
+
+.shiftReport{
+    background-color: #29BADB;
+}
+
+.b-secondary{
+    border: 1px solid #ced4da;
+}
+
+.th-color{
+    color: var(--Palette-Blue-Gray-500, #64748B);
+}
+
+.td-color{
+    color: var(--Palette-Blue-Gray-600, #475569);
+    letter-spacing: 0.492px;
+}

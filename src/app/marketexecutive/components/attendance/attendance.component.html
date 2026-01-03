@@ -1,0 +1,176 @@
+<!-- <p>executive-visits works!</p> -->
+<!-- EMPLOYEE COMPONENT  -->
+<app-layout [showMap]="false" [showNav]="false" [showPageTitle]="false" [displayInformation]="false"
+    [labPackage]="false">
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker">
+        <!-- <app-datepicker-section (dateRangeSelected)="getRangeValue($event)"
+            [selectToday]="true"></app-datepicker-section> -->
+        <!-- <app-datepicker></app-datepicker> -->
+        <app-datepicker #datePicker datePickerFormat="Y-m-d"  placeHolder="Today's" 
+        (dateValueChange)="getRangeValue($event)" 
+      ></app-datepicker>
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+          <ng-container class="tableheader">
+
+            <th>S.no</th>
+            <th class="text-nowrap">Name & Ph No.</th>
+            <th class="text-nowrap">Check-In</th>
+            <th class="text-nowrap">Check-Out</th>
+            <th class="text-nowrap">Hrs. Worked</th>
+            <th class="text-nowrap">Attendance Status</th>
+            <th class="text-nowrap">Extra Hours</th>
+            <th class="text-nowrap">Deficit Hours</th>
+            <!-- <th class="text-nowrap">Late Check-In</th>
+            <th class="text-nowrap">Late Check-Out</th>
+            <th class="text-nowrap">Early Check-In</th>
+            <th class="text-nowrap">Early Check-Out</th> -->
+            <!-- <th class="text-nowrap">Deduction Rate</th> -->
+            <!-- <th class="text-nowrap">Early Check-Out</th> -->
+          </ng-container>
+          
+          <ng-container class="tablebody">
+            <tr *ngFor="let staff of staffs; let i = index">
+                <td><span class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</span></td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <img class="me-2 rounded-circle" style="width:27px; height: 27px; object-fit: contain;"
+                                    [src]="staff?.lab_staff?.profile_pic && staff?.lab_staff?.profile_pic != '' ? staff?.lab_staff?.profile_pic : '/assets/images/no-profile-picture-icon.svg'">
+                        </div>
+                        <app-patient-details name="{{staff?.lab_staff?.name}}" time="{{staff?.lab_staff?.mobile_number}}"></app-patient-details>
+                    </div>
+                </td>
+                <td>
+                    <app-patient-details (dblclick)="openMap(lefleatMap, staff, true)" name="{{timeSrvc.getOnlyTime(staff?.check_in_time)}}" [nameClass]="'text-success text-nowrap fs-6 fw-medium'" [trnc_length]="150"
+                    trnc_word="{{staff?.check_in_address}}" trnc_class="text-nowrap td-color text-truncate"></app-patient-details>
+                </td>
+                <td>
+                    <ng-container *ngIf="staff?.check_out_time">
+                        <app-patient-details (dblclick)="openMap(lefleatMap, staff, false)" name="{{timeSrvc.getOnlyTime(staff?.check_out_time)}}" [nameClass]="'text-danger text-nowrap fs-6 fw-medium'" [trnc_length]="150"
+                            trnc_word="{{staff?.check_out_address}}" trnc_class="text-nowrap td-color text-truncate"></app-patient-details>
+                    </ng-container>
+                    <ng-container>
+                        <button (click)="checkOut(staff)" *ngIf="!is_sa && !staff?.check_out_time"
+                        class="btn btn-danger rounded-3 px-2 text-nowrap shadow">Check-Out</button>
+                    </ng-container>
+                    
+                </td>
+                <td>{{staff.total_worked_hours}}</td>
+                <td>{{staff?.attendance_status}}</td>
+                <td>
+                    <span *ngIf="staff?.extra_hours && staff?.extra_hours!=''" class="text-nowrap">{{staff?.extra_hours}}</span>
+                </td>
+                <td>
+                    <span *ngIf="staff?.deficit_hours && staff?.deficit_hours!=''" class="text-nowrap" >{{staff?.deficit_hours}}</span>
+                </td>
+                <!-- <td class="text-danger">{{staff?.late_check_in}}</td>
+                <td>{{staff?.late_check_out}}</td>
+                <td class="text-success">{{staff?.early_check_in}}</td>
+                <td class="text-danger">{{staff?.early_check_out}}</td> -->
+            </tr>
+
+
+          </ng-container>
+
+        </app-datatable>
+      </ng-container>
+
+    <ng-container class="paginationEntries">
+        <div id="mapp" class="rounded-3" style="height: 0px;"></div>
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+            (pageChange)="onPageChange($event)">
+        </app-pagination>
+    </ng-container>
+</app-layout>
+
+
+
+<ng-template #lefleatMap let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom fs-5">
+        <span class="modal-title" id="modal-basic-title">{{selectedItem?.is_start ? 'Start Location Address' : 'End Location Address' }} | {{selectedItem?.name}} |
+            {{selectedItem?.mobile_number}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body p-2">
+        <div class="container-full ">
+            <div class="row ">
+                <div class="col-12">
+                    <app-gmap [showRoute]="true" [locations]="selectedItem?.locations" popUpText="{{selectedItem?.lab_staff?.name}} | {{timeSrvc.decodeTimestamp(selectedItem?.is_start ? selectedItem?.check_in_time : selectedItem?.check_out_time)}}"></app-gmap>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #attendanceModal let-modal>
+    <div class="modal-header py-2 px-3 fs-5">
+        <span class="modal-title" id="modal-basic-title">
+            <!-- {{selectedItem?.is_start ? 'Start Location Address' : 'End Location Address' }} | {{selectedItem?.name}} | {{selectedItem?.mobile_number}} -->
+        </span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body p-2">
+        <div class="container-full ">
+            <div class="row mb-3">
+                <div class="col-12 fs-3 fw-semibold text-center">
+                    {{lab_staff?.name}}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-center align-items-center">
+                    <img style="width: 200px; height: 200px"
+                    [src]=" lab_staff && lab_staff.profile_pic ? lab_staff.profile_pic : '/assets/images/no-profile-picture-icon.svg'"
+                    class="rounded-circle object-cover ">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-center align-items-center" (click)="postCheckIn()">
+                    <button class="btn btn-success rouned-3 fs-5">Punch In</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 text-center font-monsterract fw-bold">
+                    {{getCurrentTime()}}
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

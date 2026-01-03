@@ -1,0 +1,21 @@
+.bg-status {
+    background: rgba(134, 205, 226, 0.15);
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.02) inset;
+  }
+  
+// .inactive {
+//   color: #0E4EA3;
+// }
+
+.inactive:hover {
+  color: #000;
+}
+
+.td-color {
+  color: var(--Palette-Blue-Gray-600, #475569);
+  letter-spacing: 0.492px;
+}
+
+td,th{
+  white-space: nowrap;
+}

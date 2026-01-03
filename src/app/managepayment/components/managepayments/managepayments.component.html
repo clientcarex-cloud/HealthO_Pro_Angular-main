@@ -1,0 +1,297 @@
+<!-- MANAGE PAYMENTS COMPONENTS  -->
+<!-- <app-layout [showMap]="false" [showNav]="true" [showPageTitle]="false" [displayInformation]="false"
+  [labPackage]="false"> -->
+
+<app-layout [showMap]="false" [showPageTitle]="false" [displayInformation]="false" [labPackage]="false"
+  [extraFilter]="true" [showSelectPrint]="false" [extraFilterSecond]="true" [showNav]="true">
+
+  <ng-container class="tabsNavigation">
+    <div class="btn-group d-flex flex-wrap rounded-pill font-inter">
+      <button type="button" class="btn rounded-pill border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'All' }" (click)="setActiveButton('All')">
+        All
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'Dues' }"
+        (click)="setActiveButton('Dues')">
+        Dues
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'Partial' }"
+        (click)="setActiveButton('Partial')">
+        Partial
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'Refund' }"
+        (click)="setActiveButton('Refund')">
+        Refund
+      </button>
+      <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+        [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'Paid' }"
+        (click)="setActiveButton('Paid')">
+        Paid
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-container class="addNewoptions">
+    <app-info-btn></app-info-btn>
+  </ng-container>
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search " [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)" [selectToday]="true"></app-datepicker-section>
+  </ng-container>
+<!-- 
+  <ng-container class="selectPrint">
+    <app-select-print (printClicked)="testing()" [items]="selectPrintItem" [disableSelect]="true"></app-select-print>
+  </ng-container>
+
+  <ng-container class="selectComp">
+    <app-select [selectItems]="staffs" [labelText]="''" selectBindLabel="name" [multipleSelect]="false"
+      (onSelectionChanged)="selectStaff($event)" placeHolder='Select User'></app-select>
+  </ng-container> -->
+
+  <ng-container class="extraFilter" >
+    <app-select [selectItems]="staffs" [labelText]="''" selectBindLabel="name" [multipleSelect]="false"
+      (onSelectionChanged)="selectStaff($event)" placeHolder='Select User'></app-select>
+  </ng-container>
+
+  <ng-container class="extraFilterSecond">
+    <div class="d-flex flex-row gap-2">
+      <button (click)="testing(true)" class="btn btn-success rounded-3">Print</button>
+      <button (click)="testing(false)" class="btn btn-primary rounded-3">Export</button>
+    </div>
+  </ng-container>
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="text-black" style="width: 10px">Sno.</th>
+        <th>
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Patients</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0"
+              *ngIf="patients && patients.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th class="">Lab Test</th>
+        <th class="">Packages</th>
+        <th class="text-nowrap">Ref Dr.</th>
+        <th class=" text-end">Total(₹)</th>
+        <th class=" text-end">Discount</th>
+        <th class=" text-end">Net Total</th>
+        <th class=" text-end">Paid</th>
+        <th class=" text-end">Refund</th>
+        <th class=" text-end">Total Due</th>
+      </ng-container>
+      <ng-container class="tablebody">
+        <tr *ngFor="let patient of patients; let i = index" class="td-color" (click)="showPatient(patient)">
+          <td class="text-black">{{ (page_number * page_size) - page_size + i + 1 }}</td>
+          <td>
+            <app-patient-details name="{{patient.name}}" [query]="query"
+              time="{{ timeSrvc.decodeTimestamp(patient.added_on) }}"></app-patient-details>
+          </td>
+          <td>
+            <div class="d-flex flex-column" ngbTooltip="{{concatenateShortCodes(patient, true, false)}}">
+              <small class="text-black text-truncate"
+                style="max-width: 150px;">{{concatenateShortCodes(patient, true, false)}}</small>
+              <small>Total: {{ patient?.lab_tests.length }}</small>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex flex-column" *ngIf="patient?.lab_packages" ngbTooltip="{{concatenateShortCodes(patient, false, true)}}">
+              <small class="text-black text-truncate"
+                style="max-width: 150px;">{{concatenateShortCodes(patient, false, true)}}</small>
+              <small>Total: {{ patient?.lab_packages?.length }}</small>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex flex-column">
+              <small class="text-black">{{patient?.doctor_name}}</small>
+              <!-- <small *ngIf="patient?.referral_lab">Ref Lab - <span class="text-black">{{patient?.referral_lab}}</span></small>
+              <small *ngIf="patient?.partner">Company - <span class="text-black">{{patient?.partner}}</span></small> -->
+            </div>
+          </td>
+          <td class=" text-end">
+            {{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_cost : '--'}}
+          </td>
+          <td class=" text-end">
+            {{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_discount : '--' }}
+          </td>
+          <td class=" text-end">
+            {{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_cost -
+            checkInvoice(patient.patient_invoice).total_discount : '--'
+            }}
+          </td>
+          <td class=" text-end">
+            {{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_paid : '--'}}
+          </td>
+          <td class=" text-end">
+            {{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_refund : '--'}}
+          </td>
+          <td class="text-end">
+            {{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_due : '--' }}
+          </td>
+        </tr>
+
+
+        <tr *ngIf="!patients || patients.length === 0">
+          <td colspan="11">
+            <div class="td-color fs-6 font-monsterract d-flex align-items-center justify-content-center "
+              style="vertical-align: middle;min-height: 100px;">
+              <!-- NO PATIENTS -->
+            </div>
+          </td>
+        </tr>
+
+        <tr class="bg-status py-2">
+          <td colspan="5"></td>
+          <td class="fw-semibold text-end">
+            {{ formatIndianNumber(getTotalCost()) }}
+          </td>
+          <td class="fw-semibold text-end">
+            {{ formatIndianNumber(getTotalDiscount()) }}
+          </td>
+          <td class="fw-semibold text-end">
+            {{ formatIndianNumber(getTotalAmount()) }}
+          </td>
+          <td class="fw-semibold text-end">
+            {{ formatIndianNumber(getTotalPaid()) }}
+          </td>
+          <td class="fw-semibold text-end">
+            {{ formatIndianNumber(getTotalRefund()) }}
+          </td>
+          <td class="fw-semibold text-end">
+            {{ formatIndianNumber(getTotalDue()) }}
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+
+    <!-- <table id="patientsDataTable" class="table table-striped-columns table-bordered inter-font" cellspacing="0" style="border-collapse:collapse; width:100%;">
+      <thead class="table-borderless">
+        <tr>
+          <th class="patientPrintHeader text-center" colspan="14">Patient List</th>
+        </tr>
+
+        <tr *ngIf="date && date!= ''">
+          <th class="patientPrintHeader text-center" colspan="14">{{timeSrvc.dateAsString(date, true, false)}}</th>
+        </tr>
+        <tr *ngIf="!date ||date== ''">
+          <th colspan="7" class="patientPrintHeader text-center text-nowrap">{{timeSrvc.dateAsString(from_date, true, false)}}</th>
+          <th colspan="7" class="patientPrintHeader text-center text-nowrap">{{timeSrvc.dateAsString(from_date, true, false)}}</th>
+        </tr>
+        <tr>
+					<th class="patientPrintHeader text-black" style="width: 10px;">#</th>
+					<th class="patientPrintHeader text-nowrap">Reg Date</th>
+					<th class="patientPrintHeader text-nowrap">Visit Id</th>
+					<th class="patientPrintHeader text-nowrap">Ptn Name</th>
+					<th class="patientPrintHeader text-nowrap">Mobile No.</th>
+					<th class="patientPrintHeader  text-nowrap">Lab Test</th>
+					<th class="patientPrintHeader text-nowrap">Ref Dr.</th>
+					<th class="patientPrintHeader text-nowrap">Ref Lab</th>
+					<th class="patientPrintHeader  text-end">Total(₹)</th>
+					<th class="patientPrintHeader  text-end">Discount</th>
+					<th class="patientPrintHeader  text-end text-nowrap">Net Total</th>
+					<th class="patientPrintHeader  text-end">Paid</th>
+					<th class="patientPrintHeader  text-end">Refund</th>
+					<th class="patientPrintHeader  text-end text-nowrap">Total Due</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let patient of printPatients; let i = index" class="td-color" (click)="showPatient(patient)">
+          <td class="patientPrintColumn text-black">
+            <small>{{i+1}}.</small>
+          </td>
+          <td class="patientPrintColumn">
+            <app-small-text classVal="text-nowrap" text="{{timeSrvc.formatDateWithDiv(patient.added_on, '-')}}"></app-small-text>
+          </td>
+          <td class="patientPrintColumn">
+            <app-small-text class="text-nowrap" text="{{patient.visit_id}}"></app-small-text>
+          </td>
+          <td class="fw-semibold lineHeight patientPrintColumn">
+            <app-small-text class="lineHeight" text="{{patient.name}}"></app-small-text>
+          </td>
+          <td class="patientPrintColumn">
+            <app-small-text text="{{patient.mobile_number}}"></app-small-text>
+          </td>
+          <td class="lineHeight patientPrintColumn">
+            <div class="d-flex flex-column">
+              <app-small-text classVal="lineHeight" text="{{concatenateShortCodes(patient)}}"></app-small-text>
+              <app-small-text class="fw-semibold" text="Total: {{ patient.lab_tests.length }}"></app-small-text>
+            </div>
+          </td>
+          <td class="patientPrintColumn">
+            <app-small-text class="text-black" *ngIf="patient?.referral_doctor">{{patient?.doctor_name}}</app-small-text>
+          </td>
+          <td class="patientPrintColumn">
+            <app-small-text *ngIf="patient?.referral_lab">Ref Lab - <span class="text-black">{{patient?.referral_lab}}</span></app-small-text>
+          </td>
+          <td class="patientPrintColumn text-end">
+            <app-small-text text="{{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_cost : '--'}}"></app-small-text>
+          </td>
+          <td class="patientPrintColumn text-end">
+            <app-small-text text="{{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_discount : '--' }}"></app-small-text>
+          </td>
+          <td class="patientPrintColumn text-end">
+            <app-small-text text="{{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_cost - checkInvoice(patient.patient_invoice).total_discount : '--'}}"></app-small-text>
+          </td>
+          <td class="patientPrintColumn text-end">
+            <app-small-text text="{{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_paid : '--'}}"></app-small-text>
+          </td>
+          <td class="patientPrintColumn text-end">
+            <app-small-text text="{{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_refund : '--'}}"></app-small-text>
+          </td>
+          <td class="patientPrintColumn text-end">
+            <app-small-text text="{{ patient.patient_invoice ? checkInvoice(patient.patient_invoice).total_due : '--' }}"></app-small-text>
+          </td>
+        </tr>
+      </tbody>
+    </table> -->
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <div class="d-flex">
+      <ngb-pagination [collectionSize]="all_count ? all_count : 0" [(page)]="page_number" [maxSize]="3"
+        (pageChange)="onPageChange($event)" [pageSize]="page_size" [rotate]="true" [boundaryLinks]="true"
+        class="custom-pagination">
+        <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+        <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+      </ngb-pagination>
+    </div>
+  </ng-container>
+
+</app-layout>

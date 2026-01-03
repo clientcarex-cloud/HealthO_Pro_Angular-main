@@ -1,0 +1,139 @@
+<!-- EXPENSES COMPONENT  -->
+<app-layout [showNav]="false" [displayInformation]="false" [labPackage]="false">
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)" [selectToday]="true"></app-datepicker-section>
+</ng-container>
+
+  <ng-container class="selectPrint">
+    <!-- <app-select-print></app-select-print>
+    <button (click)="testing()">test</button> -->
+    <div class="d-flex flex-row gap-2">
+      <button (click)="testing(true)" class="btn btn-success rounded-3">Print</button>
+      <button (click)="testing(false)" class="btn btn-primary rounded-3">Export</button>
+    </div>
+  </ng-container>
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="text-black">S.no</th>
+        <th><span>Expense Name</span></th>
+        <th class="text-nowrap">Invoice No.</th>
+        <th class="text-nowrap">Account To</th>
+        <th class=""><span>Authorized</span></th>
+        <th class="text-nowrap"><span>Paid To</span></th>
+
+        <th><span>Remarks</span></th>
+        <th><span>Mode</span></th>
+        <th class="text-end"><span>Amount</span></th>
+      </ng-container>
+      <ng-container class="tablebody">
+        <tr *ngFor="let item of expenses;let i = index" class="td-color" (click)="selected_item = item ; openModal(Expense, {size: 'lg', centered: true})">
+          <td class="text-black  ">
+            {{i+1}}
+          </td>
+          <td>
+            <app-patient-details name="{{item.expense_type?.name}}" time="{{timeSrvc.dateAsString(item.expense_date, false)}}" [query]="query"></app-patient-details>
+          </td>
+          <td>
+            <small>
+              {{item?.invoice_no}}
+            </small>
+          </td>
+          <td class="text-black">
+            {{item.account_to?.name}}
+          </td>
+          <td>
+            <app-patient-details name="{{item.authorized_by}}" time="{{timeSrvc.decodeTimestamp(item.added_on)}}" [query]="query"></app-patient-details>
+          </td>
+          <td class="text-black">
+            {{item.paid_to?.name}}
+          </td>
+
+          <td>
+            <small>{{item?.description || "-"}}</small>
+          </td>
+          <td>
+            <small>{{item.pay_mode?.name}}</small>
+          </td>
+          <td class="text-end text-black">
+            {{item.amount}}
+          </td>
+        </tr>
+        <tr class="bg-status" *ngIf="expenses && expenses.length != 0">
+          <td colspan="8" class="text-end fw-semibold">Total :</td>
+          <td class="text-end fw-semibold fs-5">{{totalAmount}}</td>
+        </tr>
+      </ng-container>
+
+      <ng-container class="tablebody" *ngIf="!expenses || expenses.length === 0">
+        <tr>
+            <td colspan="9">
+                <div class="text-black fs-6 font-monsterract d-flex align-items-center justify-content-center" style="vertical-align: middle;min-height: 100px;">
+                  No Data
+                </div>
+            </td>
+        </tr>
+    </ng-container>
+    </app-datatable>
+
+  </ng-container>
+
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <div class="d-flex">
+      <ngb-pagination [collectionSize]="all_count ? all_count : 0" [(page)]="page_number" [maxSize]="3"
+      (pageChange)="onPageChange($event)"
+        [pageSize]="page_size" [rotate]="true" [boundaryLinks]="true" class="custom-pagination">
+        <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+        <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+      </ngb-pagination>
+    </div>
+  </ng-container>
+</app-layout>
+
+
+
+<ng-template #Expense let-modal>
+    <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+      <span class="modal-title" id="modal-basic-title">Update Expense</span>
+      <button type="button" class="btn-close" aria-label="Close"
+        (click)="modal.dismiss('Cross click'); "></button>
+    </div>
+    <div class="modal-body font-Readex">
+      <app-addexpense [expense]="selected_item" #updateComp (saved)="getData()"></app-addexpense>
+    </div>
+    <div class="modal-footer py-1 px-3 font-Readex bg-light-blue font-Readex">
+      <button type="button" class="btn btn-success rounded-3" (click)="updateComp.saveApiCalll('expense')">
+        Save
+      </button>
+    </div>
+</ng-template>

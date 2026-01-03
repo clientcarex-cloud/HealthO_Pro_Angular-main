@@ -1,0 +1,207 @@
+<!-- EMPLOYEE COMPONENT  -->
+<app-layout [showMap]="false" [showNav]="true" [showPageTitle]="false" [displayInformation]="true" [labPackage]="false"
+    [showNav]="false" [extraFilter]="true" [extraFilterSecond]="true" [showSelectPrint]="false">
+
+    <ng-container class="addNewoptions">
+        <app-addnewbutton buttonText="Add Employee"></app-addnewbutton>
+        <app-info-btn></app-info-btn>
+    </ng-container>
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+        (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker" *ngIf="analyticsShow">
+        <app-datepicker-section [initDate]="true" (dateRangeSelected)="getRangeValue($event)"
+        [selectToday]="true"></app-datepicker-section>
+    </ng-container>
+
+    <ng-container class="extraFilter" *ngIf="analyticsShow">
+        <div class="d-flex flex-row gap-1">
+            <ng-container *ngTemplateOutlet="previewPrint"></ng-container>
+          </div>
+    </ng-container>
+
+    <ng-template #previewPrint>
+        <button class="btn btn-primary rounded-3"  [disabled]="printLoading || viewPrintLoading" (click)="printAllReports(true)">
+          <span *ngIf="!printLoading">Preview</span>
+          <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="printLoading">
+            <span class="visually-hidden">Please wait...</span>
+          </div>
+        </button>
+    
+        <button class="btn btn-success rounded-3" (click)="printAllReports(false)" [disabled]="printLoading || viewPrintLoading">
+          <span *ngIf="!viewPrintLoading">Export</span>
+          <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="viewPrintLoading">
+            <span class="visually-hidden">Please wait...</span>
+          </div>
+        </button>
+    </ng-template>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+        name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option [value]="all_count">All</option>
+      </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th *ngIf="!analyticsShow" class="text-black text-nowrap">ID & DOJ</th>
+                <th *ngIf="analyticsShow">
+                    <app-checkbox ngbTooltip="Select All" placement="right" [removeActInc]="true" labelClass="d-none"
+                    classVal="" [showLabel]="false" [removeLabel]="true" [inputDisabled]="printLoading"
+                    [checkboxValue]="staffs.length === selected_docs_for_prints.length && staffs.length !== 0"
+                    (onCheckboxValueChanged)="selectAllDocs($event)"></app-checkbox>
+                </th>
+                <th class="text-nowrap"><span>Name & Job Title</span></th>
+                <th class="text-nowrap"><span>Mobile Number</span></th>
+                <th class="text-nowrap"><span>Employment Type</span></th>
+                <th class="text-nowrap">Last Seen</th>
+                <th class="text-center"><span class="text-nowrap">Edit & Login Access</span></th>
+            </ng-container>
+            <ng-container class="tablebody ">
+                <tr *ngFor="let item of staffs" class="td-color">
+                    <td (click)="showStaff(item.id)" *ngIf="!analyticsShow">
+                        <app-patient-details [name]="item.id.toString()" [query]="query" [time]="formatDate(item.added_on)"></app-patient-details>
+                    </td>
+
+                    <td class="text-black fs-5 "  *ngIf="analyticsShow">
+                        <app-checkbox *ngIf="!item.is_duplicate" [ngbTooltip]="'Select ' + item.name" placement="right"
+                          [removeActInc]="true" labelClass="d-none" classVal="" [showLabel]="false" [removeLabel]="true"
+                          [inputDisabled]="printLoading" [checkboxValue]="checkDoc(item.id)"
+                          (onCheckboxValueChanged)="Handle_print_report($event,item)"></app-checkbox>
+                      </td>
+
+                    <td (click)="showStaff(item.id)">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <img class="me-2 rounded-circle" style="width:27px; height: 27px; object-fit: contain;"
+                                        [src]="item?.profile_pic && item?.profile_pic != '' ? item?.profile_pic : '/assets/images/no-profile-picture-icon.svg'">
+                            </div>
+                            <app-patient-details [name]="item.name" [query]="query" time="{{item.role ? item.role.name ? item.role.name : '-': '-'}}"></app-patient-details>
+                        </div>
+                    </td>
+                    <td (click)="showStaff(item.id)" class=" text-nowrap">
+                        +91
+                        <span *ngIf="item.mobile_number">
+                            <ngb-highlight [result]="item.mobile_number.toString()"
+                                [term]="query"></ngb-highlight>
+                        </span>
+                        <span *ngIf="!item.mobile_number">
+                            --
+                        </span>
+                    </td>
+                    <!-- <td (click)="showStaff(item.id)">
+                        <div class="d-flex flex-column justify-content-start">
+                            <span class="text-black text-nowrap">
+                                {{item.branch ? item.department.name ? item.department.name : "-": "-"}}
+                            </span>
+                        </div>
+                    </td> -->
+
+                    <td (click)="showStaff(item.id)">
+                        <div class="d-flex flex-column justify-content-start">
+                            <span class="text-black text-nowrap">
+                                {{item.employement_type ? item.employement_type.name ? item.employement_type.name : "-":
+                                "-"}}
+                            </span>
+                        </div>
+                    </td>
+
+                    <td class="cursor-pointer">
+                         <app-patient-details (click)="openMap(lefleatMap, item, true, false)"
+                          name="{{item?.last_seen?.address_at_last_seen ? item?.last_seen?.last_seen_on ? timeSrvc.dateAsString(item?.last_seen?.last_seen_on, true, true) : '' : '-'}}"
+                          time="{{item?.last_seen?.address_at_last_seen}}"></app-patient-details>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-row justify-content-center align-items-center gap-2">
+                            <span>
+                                <button (click)="showStaff(item.id)" class="btn btn-transparent rounded-circle"
+                                    ngbTooltip="Edit Employee">
+                                    <i class="ri-edit-2-line fs-4"></i>
+                                </button>
+                            </span>
+
+                            <span class="fw-medium text-black text-nowrap">
+                                <!-- ngbPopover="Can't Disable Super Admin Access. Kindly Change the role and try again." -->
+                                <app-checkbox [showLabel]="false" [checkboxValue]="item.is_login_access || item.is_superadmin" triggers="mouseenter:mouseleave"m
+                                    [inputDisabled]="item.is_superadmin" 
+                                    (onCheckboxValueChanged)="toggleAccess(item, $event)" inactiveText=""
+                                    activeText=""></app-checkbox>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+            all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+      </ng-container>
+    
+      <ng-container class="pager">
+        <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </ng-container>
+</app-layout>
+
+<ng-template #lefleatMap let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom fs-5">
+        <span class="modal-title" id="modal-basic-title">{{selectedItem?.is_start ? 'Start Location Address' : 'End Location Address' }} | {{selectedItem?.name}} |
+            {{selectedItem?.mobile_number}}</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body p-2">
+        <div class="container-full ">
+            <div class="row ">
+                <div class="col-12">
+                    <app-gmap [showRoute]="selectedItem?.showRoute" [locations]="selectedItem?.locations"
+                    popUpText="{{selectedItem?.name}} | {{timeSrvc.decodeTimestamp(selectedItem?.last_seen?.last_seen_on)}}"
+                    showRouteText="{{selectedItem?.lab_staff?.name}} | {{timeSrvc.decodeTimestamp(selectedItem?.end_time)}}"
+                    ></app-gmap>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+
+<ng-template #reportModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+      <div>
+        <button (click)="print()" class="btn shadow btn-success me-2 rounded-3">Print Report</button>
+        <button (click)="export()" class="btn shadow btn-success me-2 rounded-3">Export</button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+  
+  
+    <div class="modal-body p-0" style="background-color: #F8FAFC;">
+      <div class="container-full py-0 px-3 font-inter">
+        <div class="row p-0 g-0 d-flex justify-content-center" id="report">
+        </div>
+      </div>
+    </div>
+  
+  </ng-template>

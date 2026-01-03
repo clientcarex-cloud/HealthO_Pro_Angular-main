@@ -1,0 +1,840 @@
+<div class="container-full">
+    <div class="row">
+        <div class="col-lg-4 col-12 d-flex flex-row align-items-center gap-3">
+
+            <button (click)="navigateBack()" ngbTooltip="Go Back"
+                class="border border-1 rounded-circle fs-5 bg-white text-center">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+
+            <div class="fs-5 fw-semibold d-flex align-items-center">
+                <span>Patient Details</span>
+            </div>
+        </div>
+        <div class="col-lg-8 col-12 d-flex flex-row justify-content-end align-items-center gap-3">
+
+            <div class="d-flex flex-row align-items-center gap-1">
+                <span class="td-color">Visit ID: </span>
+                <span class="text-danger fw-semibold">{{ptn?.visit_id}}</span>
+            </div>
+
+            <div class="d-flex flex-row align-items-center gap-1">
+                <span class="td-color">MR No: </span>
+                <span class="text-danger fw-semibold">{{ptn?.mr_no}}</span>
+            </div>
+
+            <div class="d-flex flex-row align-items-center gap-1">
+                <span class="td-color">Name: </span>
+                <span class="fw-semibold">{{ptn?.name}}</span>
+            </div>
+
+            <div class="d-flex flex-row align-items-center gap-1">
+                <span class="td-color">Age/Gender: </span>
+                <span class="fw-semibold">{{ptn?.age}}/{{ptn?.gender}}</span>
+            </div>
+
+            <app-info-btn></app-info-btn>
+
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-12">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs-custom" [(activeId)]="activeTab" (shown)="applyFocus()">
+                <li ngbNavItem [ngbNavItem]="1">
+                    <a ngbNavLink>Rooms</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="rooms"></ng-container>
+                    </ng-template>
+                </li>
+
+                <li ngbNavItem [ngbNavItem]="2">
+                    <a ngbNavLink>Services</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="services"></ng-container>
+                    </ng-template>
+                </li>
+
+                <li ngbNavItem [ngbNavItem]="3">
+                    <a ngbNavLink>Medicines</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="medicines"></ng-container>
+                    </ng-template>
+                </li>
+
+                <li ngbNavItem [ngbNavItem]="4">
+                    <a ngbNavLink>Tests</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="tests"></ng-container>
+                    </ng-template>
+                </li>
+
+                <li ngbNavItem [ngbNavItem]="5">
+                    <a ngbNavLink>Vitals</a>
+                    <ng-template ngbNavContent>
+                        <ng-container *ngTemplateOutlet="vitals"></ng-container>
+                    </ng-template>
+                </li>
+
+            </ul>
+        </div>
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #rooms>
+    <div class="container-full bg-soft-primary border border-primary p-2 rounded-3 my-2">
+        <div class="row mb-2">
+
+            <div class="col-12 mb-1 fw-semibold">
+                Allocate Room/Bed
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <app-datepicker placeHolder="Admitted Date & Time" labelText="" [selectToday]="true"
+                    [dateValue]="admitted_date" (dateValueChange)="admitDate($event)" datePickerFormat="Y-m-d, H:i"
+                    [allowTime]="true" classVal="form-control flatpickr-input rounded-3"></app-datepicker>
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <button class="btn btn-primary rounded-3" (click)="openModal(bookRoom, { size: '' })">Allocate
+                    Room</button>
+            </div>
+        </div>
+
+        <div class="row mb-2" *ngIf="selectedRoom">
+
+            <div class="col-lg-8 col-12">
+                <div class="row">
+                    <div class="col-lg-2 d-flex flex-column">
+                        <span class="td-color">Floor<span class="text-danger">*</span></span>
+                        <span class="fw-semibold">{{selectedRoom?.room?.floor?.name || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-2 d-flex flex-column">
+                        <span class="td-color">Room No.<span class="text-danger">*</span></span>
+                        <span class="fw-semibold">{{selectedRoom?.room?.room_number || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-2 d-flex flex-column">
+                        <span class="td-color">Room Name<span class="text-danger">*</span></span>
+                        <span class="fw-semibold">{{selectedRoom?.room?.name || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-2 d-flex flex-column">
+                        <span class="td-color">Bed No.<span class="text-danger">*</span></span>
+                        <span class="fw-semibold">{{selectedRoom?.room?.selectedBed?.bed_number || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-1 d-flex flex-column justify-content-center">
+                        <button class="btn btn-success rounded-3 fs-5" (click)="updatePatient()">Save</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <span class="td-color">Want to check the availability ? </span>
+                <button (click)="openModal(checkAvailiablity, { size: '' })"
+                    class="text-primary btn btn-sm fw-semibold">Check availability</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container-full">
+        <div class="row">
+            <div class="col-12">
+                <app-datatable tableHeaderClass="text-muted bg-soft-primary">
+                    <ng-container class="tableHeader">
+                        <th class="sort1 text-nowrap fw-medium" data-sort="sno" style='width:20px;'>S.no</th>
+                        <th>Name</th>
+                        <th>Room No.</th>
+                        <th>Bed No.</th>
+                        <th>Vacated At</th>
+                        <!-- <th class="sort1 text-nowrap fw-medium text-end" data-sort="total">Total (₹)</th> -->
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <tr *ngFor="let item of patientRooms; let i = index">
+                            <td class="fs-5 text-black text-nowrap">{{ i + 1 }}.</td>
+                            <td>
+                                <app-patient-details name="{{item?.room.name}}"
+                                    time="{{item?.admitted_date}}"></app-patient-details>
+                            </td>
+                            <td>
+                                <app-patient-details name="{{item?.room.room_number}}"
+                                    time="{{item?.room?.room_type?.name}}"></app-patient-details>
+                            </td>
+                            <td>
+                                <span class="fw-semibold fs-5"> {{item?.room.booked_bed_number}}</span>
+                            </td>
+                            <td class="width-200">
+                                <ng-container *ngIf="item.room?.vacated_date else PatientVacateDatePicker">
+                                    <div class="ps-2">
+                                        <app-patient-details name="{{item?.room.vacated_date}}" time="{{item?.room?.turn_around_time}}"></app-patient-details>
+                                    </div>
+                                </ng-container>
+                                <ng-template #PatientVacateDatePicker>
+                                    <div class="d-flex flex-column gap-1 justify-content-center align-items-center">
+                                        <div *ngIf="item.room?.patientVacateDate">
+                                            <button class="btn btn-sm btn-success rounded-3 text-nowrap" (click)="vacateDate(item?.room)">Save,
+                                                {{item?.room?.patientVacateDate}}</button>
+                                        </div>
+                                        <div>
+                                            <app-datepicker placeHolder="Set Vacate Date" labelText=""
+                                                datePickerFormat="Y-m-d, H:i" [allowTime]="true"
+                                                classVal="form-control flatpickr-input rounded-3"
+                                                [datePickerMinDate]="item.minimumDate"
+                                                (dateValueChange)="setVacateDate(item?.room, $event)"></app-datepicker>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #services>
+
+    <div class="container-full bg-soft-primary border border-primary p-2 rounded-3 my-2">
+        <div class="row mb-2">
+
+            <div class="col-12 mb-1 fw-semibold">
+                Add Service
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <app-datepicker placeHolder="Added Date & Time" labelText="" [selectToday]="true"
+                    [dateValue]="admitted_date" (dateValueChange)="admitDate($event)" datePickerFormat="Y-m-d, H:i"
+                    [allowTime]="true" classVal="form-control flatpickr-input rounded-3"></app-datepicker>
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <app-select [selectItems]="departments || []" [selectValue]="selectedDepartment"
+                    classVal="ng-select-container" selectBindLabel="name" placeHolder="Select Department"
+                    (onSelectionChanged)="selectDepartment($event)"></app-select>
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <ng-container *ngTemplateOutlet="serviceSearch"></ng-container>
+            </div>
+        </div>
+
+        <div class="row mb-2" *ngIf="selectedService">
+
+            <div class="col-lg-8 col-12">
+                <div class="row">
+                    <div class="col-lg-3 col-12 d-flex flex-column">
+                        <span class="td-color">Service Name<span class="text-danger">*</span></span>
+                        <span class="fw-semibold">{{selectedService?.name || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-3 col-12 d-flex flex-column">
+                        <span class="td-color">Department</span>
+                        <span class="fw-semibold">{{ selectedService?.department?.name || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-1 d-flex flex-column justify-content-center">
+                        <button class="btn btn-success rounded-3 fs-5" (click)="updatePatient()">Save</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="container-full">
+        <div class="row">
+            <div class="col-12">
+                <app-datatable tableHeaderClass="text-muted bg-soft-primary">
+                    <ng-container class="tableHeader">
+                        <th class="sort1 text-nowrap fw-medium" data-sort="sno" style='width:20px;'>S.no</th>
+                        <th class="sort1 text-nowrap " data-sort="testName">Service Name</th>
+                        <th class="sort1 text-nowrap " data-sort="testName">Department</th>
+                    </ng-container>
+                    <ng-container class="tablebody" *ngFor="let service of patientServices; let i = index">
+                        <tr class=" td-color">
+                            <td class="fs-5 text-black text-nowrap">{{ i + 1 }}.</td>
+                            <td>
+                                <app-patient-details name="{{service.name}}"
+                                    time="{{service.added_on}}"></app-patient-details>
+                            </td>
+                            <td class="td-color">{{service.department}}</td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #serviceSearch>
+    <div class="ng-autocomplete d-lg-flex d-md-flex d-none">
+
+        <ng-template #itemTemplate let-item>
+            <a class="py-1 px-2 d-flex justify-content-between align-items-center border-bottom">
+
+                <span class="d-flex flex-column">
+                    <span *ngIf="!item?.lab_tests" [innerHTML]="removeDigitsAfterPlus(item.name)"
+                        class="fw-normal fs-6"></span>
+                </span>
+
+                <small class="d-flex justify-content-end align-items-center">
+                    <small *ngIf="item.short_code && item.short_code!==''"
+                        class="item-type text-black  px-2 py-0 me-2 rounded bg-soft-warning"
+                        [innerHTML]="item.short_code"></small>
+
+                    <small>
+                        <small *ngIf="!item?.lab_tests" class="item-type text-black px-2  py-0 rounded bg-soft-danger"
+                            [innerHTML]="item.department.name">
+                        </small>
+                    </small>
+                </small>
+            </a>
+        </ng-template>
+
+        <ng-autocomplete #auto_complete historyHeading="" [isLoading]="searchLoading" [historyListMaxNumber]="0"
+            [data]="searchData" [searchKeyword]="'name'" placeholder="Add Services" [spellcheck]="false"
+            (selected)="onServiceItemSelected($event);auto_complete.clear()" [itemTemplate]="itemTemplate"  (inputCleared)="searchData = []"
+            [notFoundTemplate]="notFoundTemplate" [minQueryLength]="2" (inputChanged)="getHospitalServices($event)">
+        </ng-autocomplete>
+
+    </div>
+</ng-template>
+
+
+<ng-template #medicines>
+
+    <div class="container-full bg-soft-primary border border-primary p-2 rounded-3 my-2">
+        <div class="row mb-2">
+
+            <div class="col-12 mb-1 fw-semibold">
+                Add Medicine
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <ng-container *ngTemplateOutlet="medicineSearch"></ng-container>
+            </div>
+        </div>
+
+        <div class="row mb-2" *ngIf="selectedMedicine">
+
+            <div class="col-lg-12 col-12">
+                <div class="row">
+                    <div class="col-lg-4 col-12 d-flex flex-column">
+                        <span class="td-color">Medicine Name</span>
+                        <span class="fw-semibold">{{selectedMedicine.stock?.showName || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-2 col-12 d-flex flex-column">
+                        <span class="td-color">Batch No</span>
+                        <span class="fw-semibold">{{selectedMedicine.stock?.batch_number || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-2 col-12 d-flex flex-column">
+                        <span class="td-color">Expiry Date</span>
+                        <span class="fw-semibold">{{ selectedMedicine?.stock?.expiry_date || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-2 col-12 d-flex flex-column">
+                        <span class="td-color">Quantity</span>
+                        <span class="d-flex">
+                            <app-num-input #numInput [removeLabel]="true" [inputValue]="selectedMedicine.quantity"
+                            classVal="form-control rounded-0 rounded-start fw-semibold" inputId="quantityInput"
+                            [maintainLimit]="true" [limit]="selectedMedicine.stock.available_quantity" (inputValueChange)="writeQuantity($event)"
+                            placeHolder="Enter Pcs"></app-num-input>
+
+                            <select class="form-select rounded-0 rounded-end bg-soft-primary" (change)="writeIsStrips($event)">
+                                <option disabled>Select</option>
+                                <option [value]="true" [selected]="selectedMedicine.is_strips">Strips</option>
+                                <option [value]="false" [selected]="!selectedMedicine.is_strips">Tablets</option>
+                            </select>
+                        </span>
+                    </div>
+
+                    <div class="col-lg-1 d-flex flex-column justify-content-center">
+                        <span class="visibility-none">Department</span>
+                        <button class="btn btn-success rounded-3 fs-5" (click)="updatePatient()">Save</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container-full">
+        <div class="row">
+            <div class="col-12">
+                <app-datatable tableHeaderClass="text-muted bg-soft-primary">
+                    <ng-container class="tableHeader">
+                        <th class="sort1 text-nowrap fw-medium" data-sort="sno" style='width:20px;'>S.no</th>
+                        <th class="sort1 text-nowrap fw-medium fullWidthColumn" data-sort="testName">Name</th>
+                        <th class="sort1 text-nowrap fw-medium" data-sort="status">Batch No.</th>
+                        <th class="sort1 text-nowrap fw-medium" data-sort="status">Expiry Date</th>
+                        <th class="sort1 text-nowrap fw-medium" data-sort="status">Pack</th>
+                        <th class="sort1 text-nowrap fw-medium" data-sort="status">Quantity</th>
+
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <tr *ngFor="let med of patientMedicines; let i = index">
+                            <td class="fs-5 text-black text-nowrap">{{ i + 1 }}.</td>
+                            <td>
+                                <app-patient-details name="{{med?.stock?.showName}}"
+                                    time="{{med?.added_on}}"></app-patient-details>
+                            </td>
+
+                            <td class="fw-semibold text-black text-nowrap">{{med?.stock?.batch_number}}</td>
+                            <td class="fw-semibold text-black text-nowrap">{{med?.stock?.expiry_date}}</td>
+                            <td class="fw-semibold text-black text-nowrap">{{med?.stock?.packs}}</td>
+
+                            <td class="fw-semibold text-black text-nowrap width-200">
+                                <div class="d-flex">
+
+                                    <app-input [removeLabel]="true" [inputValue]="med.quantity" *ngIf="!med?.canRemove"
+                                        classVal="form-control rounded-0 rounded-start fw-semibold"
+                                        placeHolder="Enter Pcs" [inputDisable]="true"></app-input>
+
+                                    <select class="form-select rounded-0 rounded-end bg-soft-primary" [disabled]="true">
+                                        <option disabled>Select</option>
+                                        <option [value]="true" [selected]="med.is_strips">Strips</option>
+                                        <option [value]="false" [selected]="!med.is_strips">Tablets</option>
+                                    </select>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #medicineSearch>
+    <div class="ng-autocomplete d-lg-flex d-md-flex d-none">
+
+        <ng-template #itemTemplate let-item>
+            <a class="px-2 py-1 fs-6 d-flex justify-content-between">
+                <div [innerHTML]="item?.showName"></div>
+                <div class="d-flex gap-2">
+                    <small class="td-color" [innerHTML]="item?.manufacturer?.name"></small>
+                    <small class="rounded-3 fw-semibold" *ngIf="item?.expiry_date" [innerHTML]="item?.expiry_date"></small>
+                    <small class="bg-soft-primary rounded-3 px-2 fw-semibold" *ngIf="item?.batch_number" [innerHTML]="item?.batch_number"></small>
+                    <small class="bg-soft-danger rounded-3 px-2 fw-semibold" [innerHTML]="item?.available_quantity+ ' pcs'"></small>
+                </div>
+            </a>
+        </ng-template>
+
+        <ng-autocomplete #auto_complete historyHeading="" [focusFirst]="true"
+            [isLoading]="searchLoading" [historyListMaxNumber]="0" [data]="searchData" searchKeyword="showName"
+            placeholder="Search" [spellcheck]="false"  (inputCleared)="searchData = []"
+            (selected)="onMedicineItemSelected($event, false ); auto_complete.clear()" [itemTemplate]="itemTemplate"
+            [notFoundTemplate]="notFoundTemplate" (inputChanged)="getMedSearches($event)">
+        </ng-autocomplete>
+    </div>
+</ng-template>
+
+<ng-template #tests>
+    <div class="container-full bg-soft-primary border border-primary p-2 rounded-3 my-2">
+        <div class="row mb-2">
+
+            <div class="col-12 mb-1 fw-semibold">
+                Add Test
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <app-datepicker placeHolder="Added Date & Time" labelText="" [selectToday]="true"
+                    [dateValue]="admitted_date" (dateValueChange)="admitDate($event)" datePickerFormat="Y-m-d, H:i"
+                    [allowTime]="true" classVal="form-control flatpickr-input rounded-3"></app-datepicker>
+            </div>
+
+            <div class="col-lg-2 col-12">
+                <app-select [selectItems]="departments || []" [selectValue]="selectedDepartment"
+                    classVal="ng-select-container" selectBindLabel="name" placeHolder="Select Department"
+                    (onSelectionChanged)="selectDepartment($event)"></app-select>
+            </div>
+
+            <div class="col-lg-4 col-12">
+                <ng-container *ngTemplateOutlet="testsSearch"></ng-container>
+            </div>
+        </div>
+
+        <div class="row mb-2" *ngIf="selectedTest">
+
+            <div class="col-lg-8 col-12">
+                <div class="row">
+                    <div class="col-lg-4 col-12 d-flex flex-column">
+                        <span class="td-color">Test Name<span class="text-danger">*</span></span>
+                        <span class="fw-semibold">{{selectedTest?.name || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-3 col-12 d-flex flex-column">
+                        <span class="td-color">Department</span>
+                        <span class="fw-semibold">{{ selectedTest?.department || "-"}}</span>
+                    </div>
+
+                    <div class="col-lg-3 col-12 d-flex flex-column">
+                        <span class="td-color">Status</span>
+                         <select class="form-select form-select-sm py-0 fs-6 fw-semibold" (change)="patientTestStatus($event)">
+                            <option [value]="2" [selected]="selectedTest?.patientStatus == 2">General</option>
+                            <option [value]="10" [selected]="selectedTest?.patientStatus == 10">Emergency</option>
+                         </select>
+                    </div>
+
+                    <div class="col-lg-1 d-flex flex-column justify-content-center">
+                        <button class="btn btn-success rounded-3 fs-5" (click)="updatePatient()">Save</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container-full">
+        <div class="row">
+            <div class="col-12">
+                <app-datatable tableHeaderClass="text-muted bg-soft-primary">
+                    <ng-container class="tableHeader">
+                        <th class="sort1 text-nowrap fw-medium" data-sort="sno" style='width:20px;'>S.no</th>
+                        <th class="sort1 text-nowrap " data-sort="testName">Test Name</th>
+                        <th class="sort1 text-nowrap " data-sort="testName">Department</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </ng-container>
+                    <ng-container class="tablebody" *ngFor="let test of patientTests; let i = index">
+                        <tr class="text-nowrap td-color">
+                            <td class="fs-5 text-black text-nowrap">{{ i + 1 }}.</td>
+                            <td>
+                                <app-patient-details name="{{test.name}}"
+                                    time="{{test.added_on}}"></app-patient-details>
+                            </td>
+                            <td class="td-color">
+                                <small>{{test.department | uppercase}}</small>
+                            </td>
+                            <td>
+
+                                 <ng-template #patientStatusDisp>
+                                    <span class="ps-2">{{test.status}}</span>
+                                 </ng-template>
+
+                                <select *ngIf="test.status !== 'Cancelled' && !test?.status?.toLowerCase().includes('completed') else patientStatusDisp"
+                                    class="form-select-control border-light-blue px-2 py-1 truncate w-100 rounded-3"
+                                    style="max-width:250px" (change)="changeStatus(test, $event)">
+
+                                    <ng-container *ngFor="let item of getStatuses(test.status)">
+                                        <option [value]="item.id" [selected]="test.status === item.name">
+                                            {{item.name}}
+                                        </option>
+                                    </ng-container>
+
+                                </select>
+                            </td>
+                            <td class="width-100">
+                                <button *ngIf="test?.action" [disabled]="test?.isLoading"
+                                (click)="printReport(test)" class="btn btn-sm btn-primary rounded-3">
+                                <span class="spinner-border spinner-border-sm mr-1" *ngIf="test?.isLoading"></span>
+                                <span *ngIf="!test?.isLoading">View Report</span>
+                            </button>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+
+    </div>
+</ng-template>
+
+<ng-template #testsSearch>
+    <div class="ng-autocomplete d-lg-flex d-md-flex d-none">
+
+        <ng-template #itemTemplate let-item>
+
+            <a class="py-1 px-2 d-flex justify-content-between align-items-center border-bottom">
+                <span class="d-flex flex-column">
+            
+                    <span *ngIf="!item?.lab_tests" [innerHTML]="removeDigitsAfterPlus(item.name)"
+                    class="fw-normal fs-6"></span>
+
+                    <span *ngIf="item?.lab_tests" [innerHTML]="item.name" class="fw-normal fs-6"></span>
+                    
+                    <small *ngIf="!item?.lab_tests && item?.sourcing_lab">
+                        <small class="item-type text-white  px-2 py-0 me-2 rounded bg-dark"
+                        [innerHTML]="item?.sourcing_lab?.partner?.organization_name || item?.sourcing_lab?.organization_name"
+                    ></small>
+
+                    </small>
+                
+                </span>
+
+
+                <small class="d-flex justify-content-end align-items-center">
+
+                    <small *ngIf="!item?.lab_tests && item.short_code && item.short_code!==''"
+                        class="item-type text-black  px-2 py-0 me-2 rounded bg-soft-warning"
+                        [innerHTML]="item.short_code"></small>
+
+                    <small>
+                        <small *ngIf="!item?.lab_tests"
+                        class="item-type text-black px-2  py-0 rounded bg-soft-danger"
+                        [innerHTML]="item.department"></small>
+                    </small>
+
+                    <small *ngIf="!item?.lab_tests"
+                        class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                        [innerHTML]="( baseForm.get('referral_lab')?.value || baseForm.get('partner')?.value ) && item?.revised_price && item?.revised_price?.revised_price ? item?.revised_price.revised_price : item.price"></small>
+
+                    <small *ngIf="item?.lab_tests" class="item-type text-dark px-2 py-0 rounded "
+                        [innerHTML]="'...Package'"></small>
+                    <small *ngIf="item?.lab_tests"
+                        class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                        [innerHTML]="'Tests : ' + item?.lab_tests.length"></small>
+                    <small *ngIf="item?.lab_tests"
+                        class="item-type text-black  fw-bold px-2 py-0 ms-2 rounded bg-soft-primary"
+                        [innerHTML]="item.offer_price"></small>
+
+                </small>
+            </a>
+        </ng-template>
+
+        <ng-autocomplete #auto_complete historyHeading="" [isLoading]="searchLoading"
+            [historyListMaxNumber]="0" [data]="searchData" [searchKeyword]="'name'"
+            placeholder="Add Lab Tests" [spellcheck]="false" [focusFirst]="true"
+            (selected)="onItemSelected($event); auto_complete.clear()" (inputCleared)="searchData = []" [itemTemplate]="itemTemplate"
+            [notFoundTemplate]="notFoundTemplate" [minQueryLength]="2"
+            (inputChanged)="getSearches($event)">
+        </ng-autocomplete>
+    </div>
+</ng-template>
+
+<ng-template #vitals>
+    <form [formGroup]="baseForm">
+        <div class="container-full bg-soft-primary border border-primary p-2 rounded-3 my-2">
+
+            <div class="row mb-2">
+
+                <div class="col-12 mb-1 fw-semibold">
+                    Add Vitals
+                </div>
+    
+                <div class="col-lg-2 col-12">
+                    <app-datepicker placeHolder="Admitted Date & Time" labelText="" [selectToday]="true"
+                        [dateValue]="admitted_date" (dateValueChange)="admitDate($event)" datePickerFormat="Y-m-d, H:i"
+                        [allowTime]="true" classVal="form-control flatpickr-input rounded-3"></app-datepicker>
+                </div>
+
+            </div>
+
+            
+            <!-- blood presure, height, spo2 -->
+            <div class="row mb-2">
+
+                <!-- blood pressure  -->
+                <div class="col-lg-4 col-12">
+                    <div class="row align-items-center flex-nowrap">
+                        <div class="col-4 text-end">
+                            Blood Pressure :
+                        </div>
+        
+                        <div class="col-5">
+                            <div class="row g-1">
+                                <div class="col-6">
+                                    <app-input inputId="bloodPressure" [inputLength]="3" [removeCloseIcon]="true" [removeLabel]="true" formControlName="bp1" [formSubmitted]="submitted"
+                                    classVal="form-control fw-semibold form-control-sm rounded-0 py-0" placeHolder="" [applyAllowNumbersOnly]="true" [applyDot]="false"></app-input>
+                                </div>
+                                <div class="col-6">
+                                    <app-input [removeCloseIcon]="true" [inputLength]="3"  [removeLabel]="true" [formSubmitted]="submitted" formControlName="bp2"
+                                    classVal="form-control fw-semibold form-control-sm rounded-0 py-0" placeHolder="" [applyAllowNumbersOnly]="true" [applyDot]="false"></app-input>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="col-3">
+                            mm Hg
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- spo2 -->
+                <div class="col-lg-4 col-12">
+                    <div class="row align-items-center flex-nowrap">
+                        <div class="col-4 text-end">
+                            SPO2 :
+                        </div>
+        
+                        <div class="col-8">
+                            <app-input [removeCloseIcon]="true" [removeLabel]="true" formControlName="spo2"
+                            classVal="form-control fw-semibold form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- height -->
+                <div class="col-lg-4 col-12">
+                    <div class="row align-items-center flex-nowrap">
+                        <div class="col-4 text-end">
+                            GRBS :
+                        </div>
+        
+                        <div class="col-5">
+                            <app-input [inputLength]="3"  [removeCloseIcon]="true" [removeLabel]="true" formControlName="grbs" [applyAllowNumbersOnly]="true" [applyDot]="true"
+                            classVal="form-control fw-semibold form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                        </div>
+        
+                        <div class="col-3">
+                            mg/dL
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        
+            <!-- pulse, weight, temperaturw  -->
+            <div class="row mb-2">
+        
+        
+                <div class="col-lg-4 col-12">
+                    <div class="row align-items-center flex-nowrap">
+                        <div class="col-4 text-end text-nowrap">
+                            Pulse Rate :
+                        </div>
+        
+                        <div class="col-5">
+                            <app-input [removeCloseIcon]="true" [removeLabel]="true" formControlName="pulse" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                            classVal="form-control fw-semibold form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                        </div>
+        
+                        <div class="col-3">
+                            Minutes
+                        </div>
+                    </div>
+                    </div>
+        
+                    <div class="col-lg-4 col-12">
+                    <div class="row align-items-center flex-nowrap">
+                        <div class="col-4 text-end">
+                            Weight :
+                        </div>
+        
+                        <div class="col-5">
+                            <app-input [inputLength]="3"  [removeCloseIcon]="true" [removeLabel]="true" formControlName="weight" [applyAllowNumbersOnly]="true" [applyDot]="true"
+                            classVal="form-control fw-semibold form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                        </div>
+        
+                        <div class="col-3">
+                            Kg
+                        </div>
+                    </div>
+                    </div>
+        
+        
+                    <div class="col-lg-4 col-12">
+                    <div class="row align-items-center flex-nowrap">
+                        <div class="col-4 text-end">
+                            Temperature :
+                        </div>
+        
+                        <div class="col-5">
+                            <app-input [inputLength]="3"  [removeCloseIcon]="true" [removeLabel]="true" formControlName="temperature" [applyAllowNumbersOnly]="true" [applyDot]="true"
+                            classVal="form-control fw-semibold form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                        </div>
+        
+                        <div class="col-3">
+                            ° F
+                        </div>
+                    </div>
+                    </div>
+        
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex flex-row justify-content-end">
+                    <div class="d-flex">
+                        <button class="btn btn-success rounded-3 fs-5" (click)="updatePatient()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="container-full">
+        <div class="row">
+            <div class="col-12">
+                <app-datatable tableHeaderClass="text-muted bg-soft-primary">
+                    <ng-container class="tableHeader">
+                        <th class="sort1 text-nowrap fw-medium" data-sort="sno" style='width:20px;'>S.no</th>
+                        <th class="sort1 text-nowrap " data-sort="testName">Date & Time</th>
+                        <th class="sort1 text-nowrap " data-sort="testName">Blood Pressure</th>
+                        <th>SPO2</th>
+                        <th>Weight</th>
+                        <th class="text-nowrap">Pulse Rate</th>
+                        <th>Temperatue</th>
+                        <th>GRBS</th>
+                    </ng-container>
+                    <ng-container class="tablebody" *ngFor="let item of patientVitals; let i = index">
+                        <tr class="text-nowrap fw-semibold">
+                            <td class="fs-5 text-black text-nowrap">{{ i + 1 }}.</td>
+                            <td><span>{{item.added_on}}</span></td>
+                            <td>
+                                <span>{{item.bp1}} - {{item.bp2}} mm Hg</span>
+                            </td>
+                            <th><span>{{item.spo2}}%</span></th>
+                            <th><span>{{item.weight}} kg</span></th>
+                            <th><span>{{item.pulse_rate}} Minutes</span></th>
+                            <th><span>{{item.temperature}} °F</span></th>
+                            <th><span>{{item.grbs}} mg/dL</span></th>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #notFoundTemplate let-notFound>
+    <div [innerHTML]="'Not Found'" *ngIf="!searchLoading"></div>
+</ng-template>
+
+
+
+
+
+
+
+
+<!-- Modals  -->
+<ng-template #bookRoom let-modal>
+    <div class="modal-header py-2 px-3 d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Select Room</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <app-patient-room (saved)="roomSelected($event)"></app-patient-room>
+    </div>
+</ng-template>
+
+<ng-template #checkAvailiablity let-modal>
+    <div class="modal-header py-2 px-3 d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Check Availability</span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <app-patient-room (saved)="roomSelected($event)"></app-patient-room>
+    </div>
+</ng-template>

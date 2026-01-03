@@ -1,0 +1,18 @@
+<div class="{{divClass}}" [style]="'min-height: '+ height + 'px'">
+<!-- <div class="table-card mt-0 mb-1 border rounded-3"> -->
+    <table [class]="tableClass">
+        <thead *ngIf="!removeHeader">
+            <ng-content select=".extratableheader"></ng-content>
+            <tr [class]="tableHeaderClass">
+                <ng-content select=".tableheader"></ng-content>
+            </tr>
+       
+        </thead>
+        <tbody [class]="tableBodyClass">
+            <ng-content select=".tablebody"></ng-content>
+        </tbody>
+        <!-- <tfoot>
+            <ng-content select=".tablefoot"></ng-content>
+        </tfoot> -->
+    </table>
+</div>

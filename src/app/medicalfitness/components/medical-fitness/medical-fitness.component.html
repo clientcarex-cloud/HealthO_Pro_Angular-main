@@ -1,0 +1,636 @@
+<app-layout [showMap]="false" [showPageTitle]="false" [displayInformation]="false" [labPackage]="false" 
+[extraFilter]="true" [showSelectPrint]="false" [extraFilterSecond]="true">
+    <ng-container class="tabsNavigation">
+        <div class="btn-group d-flex flex-wrap rounded-pill font-inter">
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton === 'All' }"
+                (click)="setStatus('All')">
+                All
+            </button>
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive text-nowrap"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm text-nowrap': activeButton === 'pending' }"
+                (click)="setStatus('pending')">
+                Pending
+            </button>
+
+            <button type="button" class="btn rounded-pill ms-1 border-0 inactive"
+                [ngClass]="{ 'active bg-white text-dark shadow-sm': activeButton == 'reported' }"
+                (click)="setStatus('reported')">
+                Printed
+            </button>
+
+        </div>
+    </ng-container>
+
+    <ng-container class="addNewoptions">
+        <app-info-btn></app-info-btn>
+    </ng-container>
+
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker">
+        <span *ngIf="dept===''">
+            <app-datepicker #datePicker datePickerFormat="Y-m-d" dateMode="range" placeHolder="No Medical Examinations Dept."
+                [disableDate]="true"
+                (dateValueChange)="getRangeValue($event)"></app-datepicker>
+        </span>
+
+
+        <span *ngIf="dept!==''">
+            <app-datepicker-section (dateRangeSelected)="getRangeValue($event)"
+                [selectToday]="true"></app-datepicker-section>
+        </span>
+
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-nowrap text-black">Sno.</th>
+                <th class="sort1 text-nowrap fullWidthColumn " sortable="name">
+                    <div class="d-flex gap-5 align-items-center justify-content-start">
+                        <div>Patients</div>
+                        <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="patients && patients.length != 0">
+                            <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                            <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                        </div>
+                    </div>
+                </th>
+                <th class="sort1 text-nowrap">Age & Gender</th>
+                <th class="sort1 text-nowrap" style="min-width: 100px">Patient IDs</th>
+                <th><span>Lab Test</span></th>
+                <th><span>Status</span></th>
+                <th>Report</th>
+                <th class="text-center" *ngIf="activeButton==='reported' || activeButton==='All'">
+                    Action
+                </th>
+                
+            </ng-container>
+            <ng-container class="tablebody" *ngFor="let item of patients; let i = index">
+                <tr class="font-Readex td-color">
+                    <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+                    <td>
+                        <div class="d-flex flex-row gap-1">
+                            <span class="text-black text-nowrap fs-6 fw-medium"
+                                *ngIf="item.title!== null">{{item.LabPatientTestID.patient.title}}</span>
+                            <span class="text-black text-nowrap fs-6 fw-medium">
+                                <ngb-highlight [result]="item.LabPatientTestID.patient.name"
+                                    [term]="query"></ngb-highlight>
+                            </span>
+                        </div>
+                        <small class="text-nowrap">
+                            {{timeSrvc.decodeTimestamp(item.added_on)}}
+                        </small>
+                    </td>
+
+                    <td>
+                        <div class="d-flex flex-column">
+                            <small class="text-nowrap">
+                                {{item?.LabPatientTestID?.patient?.ULabPatientAge == 'DOB' ?
+                                item?.LabPatientTestID?.patient.dob + " " +
+                                item?.LabPatientTestID?.patient?.ULabPatientAge : item?.LabPatientTestID?.patient.age +
+                                " " + item?.LabPatientTestID?.patient?.ULabPatientAge }}
+                            </small>
+                            <small class="td-color text-nowrap">{{item?.LabPatientTestID?.patient?.gender}}</small>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="container-full flex-column IDs" style=" min-width: 130px">
+                            <div class="row IDs g-0 d-flex flex-nowrap align-items-end justify-content-between">
+                                <div class="col-4 px-0 d-flex flex-row flex-nowrap" style="vertical-align: bottom;">
+                                    <small style="vertical-align: bottom;">
+                                        <small class="d-flex flex-row text-nowrap" style="vertical-align: bottom;">
+                                            MR NO :
+                                        </small>
+                                    </small>
+                                </div>
+                                <div class="col-8 ps-0 d-flex flex-row">
+                                    <ngb-highlight [result]="item.LabPatientTestID.patient.mr_no"
+                                        [term]="query"></ngb-highlight>
+                                </div>
+                            </div>
+                            <div class="row IDs g-0 d-flex flex-nowrap align-items-center">
+                                <div class="col-4 px-0">
+                                    <small>
+                                        <small class="d-flex flex-row text-nowrap">
+                                            VISIT ID :
+                                        </small>
+                                    </small>
+                                </div>
+                                <div class="col-8 ps-0">
+                                    <ngb-highlight [result]="item.LabPatientTestID.patient.visit_id"
+                                        [term]="query"></ngb-highlight>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="text-black text-wrap">
+                        <span>
+                            <ngb-highlight [result]="item.LabPatientTestID.name" [term]="query">
+                            </ngb-highlight>
+                        </span>
+                    </td>
+
+                    <td>
+                        <span
+                            *ngIf="item.LabPatientTestID.status_id.includes('Emergency') || item.LabPatientTestID.status_id.includes('Urgent')">
+                            <span class="text-danger rounded-3 px-1 py-1">{{item.LabPatientTestID.status_id}}</span>
+                        </span>
+                        <span
+                            *ngIf="!item.LabPatientTestID.status_id.includes('Emergency') && !item.LabPatientTestID.status_id.includes('Urgent')">
+                            <span class="rounded-3 px-1 py-1">{{item.LabPatientTestID.status_id}}</span>
+                        </span>
+                    </td>
+
+                    <!-- <td> -->
+                    <!-- <app-select placeHolder="" [selectItems]="LIMSSelectData"
+                        selectBindLabel="added_on"></app-select> -->
+                    <!-- <select class="form-select py-1 px-2 border rounded-3" placeholder="Select" style="min-width: 100px;font-size: 11px"
+                        (change)="openLIMSIntegration($event, item)">
+                            <option selected class="td-color">
+                                <small>
+                                    Select 
+                                </small>
+                            </option>
+                            <ng-container *ngFor="let item of LIMSSelectData">
+                                <option [value]="item.id">{{item.added_on}}</option>
+                            </ng-container>
+                        </select> -->
+                    <!-- <button  style="font-size: 11px" *ngIf="item.tpaData" class="logoColor border-0 p-0 bg-transparent" (click)="openTPA(item)">Open</button> -->
+                    <!-- </td> -->
+
+                    <td>
+                        <ng-container
+                            *ngIf="!item.phlebotomist && !item.LabPatientTestID.status_id.includes('Completed') && !item.LabPatientTestID.status_id.includes('Authorization')">
+                            
+                            <!-- <app-btn classVal="btn btn-sm btn-primary text-nowrap rounded-3"
+                                [buttonText]="'Create Report'" content="content" [isLoading]="item.loading"
+                                (click)="sendUltraCreateReportStatus(item)" *ngIf="!item.is_report_generated"></app-btn> -->
+
+                                <button class="btn btn-sm btn-primary text-nowrap rounded-3" *ngIf="!item.is_report_generated"
+                                (click)="sendUltraCreateReportStatus(item)" >
+                                    <div *ngIf="item?.loading" class="spinner-border" role="status" style="height: 13px; width: 13px" >
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <span *ngIf="!item?.loading">Create Report</span>
+                                </button>
+                                
+                            <app-draftreport *ngIf="item.is_report_generated" [isLoading]="item.loading"
+                                (click)="reportModal(content, item)"></app-draftreport>
+
+                        </ng-container>
+
+                        <ng-container
+                            *ngIf="item.LabPatientTestID.status_id.includes('Completed') || item.LabPatientTestID.status_id.includes('Authorization Pending') || activeButton=='reported'">
+
+                            <app-draftreport *ngIf="item.is_report_generated" buttonText="Printed"
+                                classVal="btn btn-sm btn-primary rounded-3 text-nowrap" [isLoading]="item.loading"
+                                (click)="reportModal(content, item, true)"></app-draftreport>
+                        </ng-container>
+
+                    </td>
+                    <td class="text-center" *ngIf="activeButton==='reported' || activeButton==='All'">
+
+                        <div ngbDropdown container="body" 
+                        *ngIf="item.LabPatientTestID.status_id.includes('Completed') || item.LabPatientTestID.status_id.includes('Authorization Pending')">
+
+                        <button class="bg-transparent border-0 rounded-circle" ngbDropdownToggle>
+                            <span class="dropdown-arrow fs-6"></span>
+                        </button>
+
+                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+
+                            <button class="btn btn-success btn-sm rounded-3 px-3" ngbDropdownItem
+                            (click)="printReportForEdit(item)" [disabled]="item.printLoading">
+                            <span *ngIf="!item.printLoading">Print Report</span>
+                            <span *ngIf="item.printLoading" class="spinner-border spinner-border-sm mr-1"></span>
+                        </button>
+
+                        <button class="btn btn-success btn-sm rounded-3 px-3" *ngIf="item.LabPatientTestID.status_id.includes('Completed') || item.LabPatientTestID.status_id.includes('Authorization Pending')"
+                        (click)="printCertificate(item)" [disabled]="item.printLoading" ngbDropdownItem>
+                        <span *ngIf="!item.printLoading">Print Certificate</span>
+                        <span *ngIf="item.printLoading" class="spinner-border spinner-border-sm mr-1"></span>
+                    </button>
+
+                        </div>
+                    </div>
+
+                    </td>
+                </tr>
+            </ng-container>
+
+            <ng-container class="tablebody" *ngIf="this.dept!==''">
+                <tr *ngIf="!patients || patients.length === 0">
+                    <td colspan="9">
+                        <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                            style="vertical-align: middle;min-height: 100px;">
+                            <!-- NO PATIENTS -->
+                            <span *ngIf="query!==''">
+                                No Data Found with Search Query "<span class="fw-bold text-black">{{query}}</span>"
+                            </span>
+
+                            <span *ngIf="query==='' && !pageLoading">
+                                No patients registered on this day.
+                            </span>
+
+                            <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text-black pt-2 fw-light">Loading</div>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+
+            <ng-container class="tablebody" *ngIf="this.dept===''">
+                <tr *ngIf="!patients || patients.length === 0">
+                    <td colspan="9">
+                        <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                            style="vertical-align: middle;min-height: 100px;">
+                            <!-- NO PATIENTS -->
+                            <span *ngIf="query!==''">
+                                No Data Found with Search Query "<span class="fw-bold text-black">{{query}}</span>"
+                            </span>
+
+                            <span *ngIf="query==='' && !pageLoading">
+                                No Radiology Tests
+                            </span>
+
+                            <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text-black pt-2 fw-light">Loading</div>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <div class="d-flex">
+            <ngb-pagination [collectionSize]="all_count ? all_count : 0" [(page)]="page_number" [maxSize]="3"
+                (pageChange)="onPageChange($event)" [pageSize]="page_size" [rotate]="true" [boundaryLinks]="true"
+                class="custom-pagination">
+                <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+                <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+            </ngb-pagination>
+        </div>
+    </ng-container>
+
+
+</app-layout>
+
+
+<ng-template #content let-modal>
+    <div
+        class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex flex-lg-row flex-column gap-2  justify-content-between align-items-center">
+
+        <app-patient-title [title]="title" [patient]="patient"></app-patient-title>
+
+        <div class="d-flex align-items-center justify-content-end gap-2">
+
+            <div *ngIf="patient.printed" class="d-flex flex-row gap-2">
+                <button class="btn bg-white border rounded-3 d-flex flex-row gap-1" 
+                (click)=" modal.dismiss('Cross click'); reportModal(content, patient)" *ngIf="is_superadmin">
+                    Edit Report <i class="ri-edit-2-line fs-5"></i>
+                </button>
+                <button class="btn btn-success px-3 rounded-3 shadow" [disabled]="patient.loading"
+                    (click)="printReportForEdit(patient)">
+                    <span *ngIf="!patient.loading">Print</span>
+                    <span *ngIf="patient.loading" class="spinner-border spinner-border-sm mr-1"></span>
+                </button>
+            </div>
+
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="submitted=false;changesMade ? openModalWarning(warningModal, '') : modal.dismiss('Cross click');resetRemark()"></button>
+        </div>
+    </div>
+    <div class="modal-body pb-1" [style]="'background-color: #F8FAFC;' + (saveLoading || saveAuthLoading ? 'cursor: wait;' : '')">
+        <div class="container-full pb-3" style="height: 75vh !important;">
+
+            <!-- <div class="row mb-2" *ngIf="patient?.LabPatientTestID?.department">
+                <div class="col-12 text-center">
+                    <span class="fs-4 fw-normal underline">
+                        <u>Department of {{patient?.LabPatientTestID?.department}}</u>
+                    </span>
+                </div>
+            </div> -->
+
+            <!-- MODAL TABLE  -->
+            <div class="row font-DMSans mb-3" *ngFor="let report of reportTableData; let i = index">
+
+                <div class="col-12 mb-1 text-center">
+                    <span class="fs-4 fw-light font-Readex">
+                        {{report.groupname}}
+                    </span>
+                </div>
+
+                <app-datatable tableClass="table table-striped" tableHeaderClass="bg-dark text-white" class="mb-3">
+                    <ng-container class="tableheader">
+                        <th class="border-end border-white">Parameter</th>
+                        <th class="text-center border-end border-white"
+                            style="min-width: 210px;max-width: 210px;width: 210px">Value</th>
+                        <th class="text-center border-end border-white">Unit</th>
+                        <th class="text-center border-end border-white">Reference Range</th>
+                        <th class="text-center border-end border-white">Bold</th>
+                    </ng-container>
+
+                    <ng-container class="tablebody">
+
+                        <tr class="bg-white font-Readex" *ngFor="let item of report.parameters">
+
+                            <td class="border-end">
+                                <div class="d-flex flex-column ">
+                                    <span class="fs-5 fw-medium">
+                                        {{item.parameter}}
+                                    </span>
+                                    <small class="font-italic td-color">
+                                        <i>{{item?.method ? item?.method : ''}}</i>
+                                    </small>
+                                </div>
+                            </td>
+                            <td colspan="1" class="py-2 border-end text-center">
+
+                                <div style="min-width: 200px;" *ngIf="!item.select">
+                                    <input id="report-input-{{item.id}}" [class]="item.is_value_bold ? 'form-control rounded-3 shadow border-1 py-1 fw-bold' : 'form-control rounded-3 shadow border-1 py-1 fw-medium'"
+                                    [disabled]="patient.printed || saveLoading || saveAuthLoading" [style]="patient.printed ? 'cursor: not-allowed;' : ''"
+                                    [value]="item.value" [ngbTypeahead]="search"
+                                    (input)="onReportValueChange($event, item)"
+                                    [focusFirst]="true" (selectItem)="onReportValueSelected($event, item.id)"
+                                    >
+                                </div>
+
+                                <div style="min-width: 200px;" *ngIf="item.select">
+                                    <select [disabled]="patient.printed || saveLoading || saveAuthLoading" class="form-select rounded-3 shadow" (change)="onReportValueChange($event, item)">
+                                        <ng-container *ngFor="let val of item.selectOptions">
+                                            <option [selected]="item.value == val" [value]="val">{{val}}</option>
+                                        </ng-container>
+                                    </select>
+                                </div>
+
+                              </td>
+                            <td class="fs-6 text-center border-end">{{item.units}}</td>
+
+                            <td class="text-center border-end">
+                                <div [innerHTML]="withoutSpecChars(item.referral_range)"></div>
+                            </td>
+                            <td class="text-center border-end">
+                                <div class="d-flex justify-content-center ">
+                                    <app-checkbox activeText="" inactiveText="" [showLabel]="false" tab_idx="-1"
+                                        classVal="form-check" [checkboxValue]="item.is_value_bold" [inputDisabled]="patient.printed || saveLoading || saveAuthLoading"
+                                        (onCheckboxValueChanged)="checkBold($event, item.id, item)"></app-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+
+                    <ng-container class="tablebody">
+                        <tr *ngIf="!reportTableData || reportTableData.length === 0">
+                            <td colspan="4">
+                                <div class="td-color fs-6 py-5 font-monsterract fw-medium d-flex flex-column align-items-center justify-content-center"
+                                    style="vertical-align: middle;min-height: 100px;">
+                                    <!-- NO PATIENTS -->
+                                    <!-- <img src="/assets/images/file.png" style="width:17%"> -->
+                                    <!-- <span>NO DATA</span> -->
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+
+                </app-datatable>
+            </div>
+
+            <div class="row" *ngIf="lab_remark && lab_remark !== '<p></p>' && lab_remark !== ''">
+                <div class="col-12 fs-4 fw-medium">
+                    Remarks
+                </div>
+                <div class="col-12">
+                    <div [innerHTML]="lab_remark"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REMARKS AND AUTHORIZE PASSKEY  -->
+    <div class="bg-light-blue mt-3 px-2 py-1 rounded-bottom overflow-hidden border-top" *ngIf="!patient.printed">
+        <!-- REMARKS AND AUTHORIZE PASSKEY  -->
+        <div class="row g-2 justify-content-end">
+            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+                <div class="row g-0 justify-content-start">
+                    <div class="col-2 d-flex justify-content-center text-center">
+                        <button (click)="openModalWarning(RemarkModal, '')"
+                            class="btn btn-info w-100 shadow rounded-3">Remarks</button>
+                    </div>
+                    <div class="col-10">
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 ">
+                <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-primary px-3 rounded-3 shadow" (click)="onSubmit(false);"
+                        [disabled]="saveLoading || saveAuthLoading">
+                        <div class="spinner-border" role="status" style="height: 13px; width: 13px" *ngIf="saveLoading">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Save
+                    </button>
+                    <button class="btn btn-success rounded-3 shadow" (click)="onSubmit(true);"
+                        [disabled]="saveLoading || saveAuthLoading">
+                        <div class="spinner-border" role="status" style="height: 13px; width: 13px"
+                            *ngIf="saveAuthLoading">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        {{ isAuth ? "Send for Dr.Authorization" : "Mark as Complete"}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #wordReport let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+ 
+        <app-patient-title [techPage]="false" [patient]="patient" [title]="title"></app-patient-title>
+
+        <div class="d-flex align-items-center gap-2">
+
+            <div *ngIf="patient.printed">
+                <button class="btn btn-success px-3 rounded-3 shadow" [disabled]="patient.printLoading"
+                    (click)="printReportForEdit(patient)">
+                    <span *ngIf="!patient.printLoading">Print</span>
+                    <span *ngIf="patient.printLoading" class="spinner-border spinner-border-sm mr-1"></span>
+                </button>
+            </div>
+
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="submitted=false;fullScreen= false;changesMade ? openModalWarning(warningModal, '') : modal.dismiss('Cross click');resetRemark()"></button>
+        </div>
+    </div>
+
+
+    <div class="modal-body p-0 h-100">
+        <app-dev-rich #devRichEdit 
+        [isDisabled]="patient.printed && !is_superadmin"
+        [rtf_content]="reportTableData[0]?.rtf_content_report"
+        [blankDocumentWithHeader]="reportTableData[0]?.rtf_content_header"
+        [content]="htmlData" 
+        [loadRTF]="true" 
+        [fullScreen]="fullScreen"
+        [showHeader]="true"
+        [content]="reportTableData[0].report" 
+        [header_to_diplay_in_every_page]="htmlHeader"
+        (fullscreenClicked)="handleFullscreenClickIframe($event)" 
+        [patient]="patient"
+        (extractedContentChange)="handleExtractedContentChange($event)">
+    </app-dev-rich>
+    </div>
+
+    <div class="modal-footer d-flex flex-row aligns-items-center p-0" *ngIf="!(patient.printed && !is_superadmin)">
+        <div class="bg-white border-bottom-0 w-100 px-2 py-1 d-flex flex-row gap-2 justify-content-between align-items-center">
+            <div class="d-flex flex-row gap-2">
+
+            </div>
+
+            <div class="d-flex flex-row gap-2 ">
+                <button class="btn btn-sm fs-4 p-0 bg-transparent" ngbTooltip="Preview Print" (click)="devRichEdit.openPreview()">
+                    <i class="ri-printer-line"></i>
+                  </button>
+
+                <button [disabled]="saveLoading || saveAuthLoading" (click)="devRichEdit.saveReport(false)"
+                class="btn btn-primary d-flex align-items-center gap-2 border rounded-3" placement="top">
+                    <span *ngIf="!saveLoading">Save</span>
+                    <span *ngIf="saveLoading">Saving..</span>
+                </button>
+
+                <button [disabled]="saveLoading || saveAuthLoading" (click)="devRichEdit.saveReport(true)"
+                class="btn btn-success d-flex align-items-center gap-2 border rounded-3 text-nowrap" 
+                placement="top"
+                [ngbTooltip]="isAuth ? 'Save & Send for Dr.Authorization' : 'Mark as Complete'">
+                <span *ngIf="!saveAuthLoading">{{isAuth ? "Send for Dr.Authorization" : 'Mark as Complete'}}</span>
+                <span *ngIf="saveAuthLoading">Saving & Sending..</span>
+            </button>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+
+
+<!-- close modal  -->
+<ng-template #warningModal let-modal>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 fs-5">
+                    Are you sure you want to exit without saving ?
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer py-1 px-3  d-flex justify-content-end">
+        <button class="btn btn-danger rounded-3" (click)="submitted=false;modal.dismiss('Cross click')">
+            No, Stay
+        </button>
+
+        <button class="btn btn-success rounded-3"
+            (click)="changesMade=false;modalService.dismissAll(); lab_remark = ''">
+            Yes, Exit
+        </button>
+    </div>
+</ng-template>
+
+
+<ng-template #RemarkModal let-modal>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12 fs-5 mb-2">
+                    Add Remark
+                </div>
+
+                <div class="col-12">
+                    <textarea class="fw-medium form-control rounded-3 border-2 bg-white" [value]="lab_remark"
+                        style="min-height: 150px" (input)="writeRemark($event)"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer py-1 px-3  d-flex justify-content-end">
+        <button class="btn btn-success shadow rounded-3" (click)="submitted=false;modal.dismiss('Cross click')">
+            Save & Close
+        </button>
+
+        <button class="btn btn-danger shadow rounded-3"
+            (click)="changesMade=false;modal.dismiss('Cross click'); lab_remark = ''">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+
+
+<ng-template #TPAModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn-close btn-sm" aria-label="Close"
+                (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex flex-row">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,131 @@
+<app-panel panelTitle="Configuration" [expandPanel]="true">
+    <form (ngSubmit)="saveConfig()" [formGroup]="smsConfigForm" [id]="smsConfigFormId">
+        <div class="row mb-1">
+            <div class="col-md-4 mb-1 mb-md-0">
+                <app-select labelText="Trans. Provider" placeHolder="Select Trans. Provider" formControlName="transProvider"
+                selectBindLabel="name" selectBindId="id" [selectItems]="transProviders"
+                [formSubmitted]="submitted" requiredMessage="Trans. Provider is required"
+                [applyAutoFocus]="true"></app-select>                
+            </div>
+            <div class="col-md-4 mb-1 mb-md-0">
+                <app-input labelText="Trans. Sender Id" placeHolder="Enter Trans. Sender Id" formControlName="transSenderId"
+                [formSubmitted]="submitted" requiredMessage="Trans. Sender Id is required"
+                maxLengthMessage="Trans. Sender Id should not exceed 50 chars"></app-input>
+            </div>
+            <div class="col-md-4 mb-1 mb-md-0">
+                <app-input labelText="Entity Id" placeHolder="Enter Entity Id" formControlName="entityId"
+                [formSubmitted]="submitted" requiredMessage="Entity Id is required"
+                maxLengthMessage="Entity Id should not exceed 25 chars"
+                [applyAllowNumbersOnly]="true"></app-input>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-4 mb-1 mb-md-0">
+                <app-select labelText="Promo Provider" placeHolder="Select Promo Provider" formControlName="promoProvider"
+                selectBindLabel="name" selectBindId="id" [selectItems]="promoProviders"
+                [formSubmitted]="submitted" requiredMessage="Promo Provider is required"></app-select>                
+            </div>
+            <div class="col-md-4 mb-1 mb-md-0">
+                <app-input labelText="Promo Sender Id" placeHolder="Enter Promo Sender Id" formControlName="promoSenderId"
+                [formSubmitted]="submitted" requiredMessage="Promo Sender Id is required"
+                maxLengthMessage="Promo Sender Id should not exceed 50 chars"></app-input>
+            </div>
+            <div class="col-md-2 mb-1 mb-md-0">
+                <app-checkbox labelText="Status" [formSubmitted]="submitted" formControlName="status"></app-checkbox>                
+            </div>
+            <div class="col-md-2 mb-1 mb-md-0 align-self-center">
+                <div class="hstack gap-2 justify-content-end">
+                    <app-submitbutton [formId]="smsConfigFormId"></app-submitbutton>                    
+                </div>
+            </div>
+        </div>
+    </form>
+</app-panel>
+<br/>
+<app-panel panelTitle="Summary">
+    <div class="row mb-1">
+        <div class="col-md-4 mb-1 mb-md-0">
+            <app-input labelText="Total" placeHolder="" [inputValue]="service.smsSummary?.total" [isReadOnly]="true"></app-input>
+        </div>
+        <div class="col-md-4 mb-1 mb-md-0">
+            <app-input labelText="Used" placeHolder="" [inputValue]="service.smsSummary?.used" [isReadOnly]="true"></app-input>
+        </div>
+        <div class="col-md-4 mb-1 mb-md-0">
+            <app-input labelText="Balance" placeHolder="" [inputValue]="service.smsSummary?.balance" [isReadOnly]="true"></app-input>                      
+        </div>
+    </div>
+</app-panel>
+<br/>
+<app-panel panelTitle="Purchase">
+    <app-master pageTitle="">
+        <ng-container class="searchbox">
+            <app-searchbox (searchTermChange)="service.onSearchTermUpdate($event)" [applyAutoFocus]="false">
+            </app-searchbox>
+        </ng-container>
+        <ng-container class="addnew">
+            <app-addnewbutton buttonText="Add SMS" content="content" (onAddNewClick)="addItem(content)">
+            </app-addnewbutton>
+        </ng-container>
+        <ng-container class="datacontent">
+            <app-datatable>
+                <ng-container class="tableheader">
+                    <th class="sort1" data-sort="purchaseDate">Added On</th>
+                    <th class="sort1" data-sort="count">SMS Count</th>
+                    <th class="sort1 fullWidthColumn" data-sort="remarks">Remarks</th>
+                    <th class="sort1">Action</th>
+                </ng-container>
+                <ng-container class="tablebody">
+                    <tr *ngFor="let data of dataList$ | async">
+                        <td>
+                            {{data.purchaseDate}}
+                        </td>
+                        <td>
+                            {{data.count}}
+                        </td>
+                        <td>
+                            <ngb-highlight [result]="data.remarks" [term]="service.searchTerm">
+                            </ngb-highlight>
+                        </td>                        
+                        <td>
+                            <div class="d-flex gap-2">
+                                <app-deletebutton content="content" (onDeleteClick)="deleteItem(data)" [buttonDisabled]="data.disabled">
+                                </app-deletebutton>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </ng-container>
+        <ng-container class="paginationcontent">
+            <app-pager>
+                <ng-container class="pager">
+                    <app-pagination [collectionSize]="(total$ | async)!" [page]="service.page" [pageSize]="service.pageSize"
+                        (pageChange)="service.page = $event">
+                    </app-pagination>
+                </ng-container>
+            </app-pager>
+        </ng-container>
+    </app-master>
+</app-panel>
+
+<!-- Purchase New SMS -->
+<ng-template #content role="document">
+    <app-newmodel modelTitle="SMS Purchase" [modal]="modalRef" [formId]="baseFormId">
+        <ng-container class="modalBody">
+            <form (ngSubmit)="saveItem()" [formGroup]="baseForm" [id]="baseFormId">
+                <div class="mb-3">
+                    <app-input labelText="SMS Count" placeHolder="Enter SMS Count" formControlName="smsCount"
+                    [formSubmitted]="submitted" requiredMessage="SMS Count is required"
+                    maxLengthMessage="Enter SMS Count between 1 and 1,00,000"
+                    [applyAutoFocus]="true"
+                    [applyAllowNumbersOnly]="true"></app-input>                    
+                </div>
+                <div class="mb-3">
+                    <app-input labelText="Remarks" placeHolder="Enter Remarks" formControlName="remarks"
+                    [formSubmitted]="submitted" requiredMessage="SMS remarks is required"
+                    maxLengthMessage="SMS remarks should not exceed 500 chars"></app-input>                   
+                </div>
+            </form>
+        </ng-container>
+    </app-newmodel>
+</ng-template>

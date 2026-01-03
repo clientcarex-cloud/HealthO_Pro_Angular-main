@@ -1,0 +1,15 @@
+<div class="container-full overflow-hidden">
+    <div class="d-flex justify-content-center align-items-center bg-primary rounded-0" style="height: 100vh">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex flex-column align-items-center">
+                    <span class="text-white font-monsterract fs-4">Oops! you're offline</span>
+                    <span class="text-white font-monsterract fs-3">Check your internet connection</span>
+                    <button class="text-white bg-transparent border-0 fs-3"  [class.rotate-animation]="isRotating">
+                        <i  (click)="reload()" class="ri-refresh-line rotate-animation"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

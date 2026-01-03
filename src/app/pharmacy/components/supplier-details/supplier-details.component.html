@@ -1,0 +1,123 @@
+<app-layout [showNav]="false" [showPageTitle]="false" [showMap]="false" [displayInformation]="false" 
+[labPackage]="false">
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+          (searchTermChange)="searchQuery($event)"></app-searchbox>
+      </ng-container>
+
+      <!-- <ng-container class="datepicker">
+        <app-datepicker #datePicker datePickerFormat="Y-m-d" dateMode="range" placeHolder="All Time (Active)" 
+         (dateValueChange)="getRangeValue($event)" 
+       ></app-datepicker>
+    </ng-container> -->
+
+    <!-- <ng-container class="selectPrint">
+        <app-select-print></app-select-print>
+    </ng-container> -->
+
+    <!-- <ng-container class="selectComp">
+        <app-select placeHolder="Select Doctor"></app-select>
+    </ng-container> -->
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+          name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option [value]="all_count">All</option>
+        </select>
+      </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <app-datatable>
+            <ng-container class="tableheader">
+              <th class="serialNumber">Sno.</th>
+              <th>Name</th>
+              <th>Contact Person</th>
+              <th>Address</th>
+              <th>Invoice</th>
+            </ng-container>
+            <ng-container class="tablebody" *ngFor="let item of suppliers; let i=index">
+              <tr>
+                <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+                <td class="fw-semibold">
+                  <app-patient-details name="{{item.name}}" time="{{item?.supplier_type?.name}}"></app-patient-details>
+                </td>
+                <td>
+                  <app-patient-details name="{{item.contact_person}}" time="{{item.mobile_number}}"></app-patient-details>
+                </td>
+                <td>
+                  <app-small-text [text]="item.address"></app-small-text>
+                </td>
+                <td>
+                  <button (click)="selected_item = item ; openModal(addInvoice, { size: 'xl', fullscreen: false})"
+                  class="btn btn-primary btn-sm rounded-3">Create</button>
+                </td>
+              </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+</ng-container>
+
+</app-layout>
+
+
+<ng-template #addUpdateSupplier let-modal>
+  <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+      <span class="modal-title fs-5" id="modal-basic-title">
+          Add Supplier
+      </span>
+      <button type="button" class="btn-close" aria-label="Close"
+          (click)="modal.dismiss('Cross click');"></button>
+  </div>
+
+  <div class="modal-body">
+      <app-add-supplier #supplier (saved)="modalService.dismissAll();getData()"></app-add-supplier>
+  </div>
+
+  <div class="modal-footer py-1 px-3 bg-light-blue border-top d-flex justify-content-end">
+      
+      <button type="button" class="btn btn-success rounded-3 fs-5" aria-label="Close"
+          (click)="supplier.saveApiCall()">Save</button>
+  </div>
+</ng-template>
+
+<ng-template #addInvoice let-modal>
+  <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+      <span class="modal-title fs-5" id="modal-basic-title">
+          Invoice
+      </span>
+      <button type="button" class="btn-close" aria-label="Close"
+          (click)="modal.dismiss('Cross click');"></button>
+  </div>
+
+  <div class="modal-body">
+      <app-add-invoice [supplier]="selected_item"></app-add-invoice>
+  </div>
+
+  <div class="modal-footer py-1 px-3 bg-light-blue border-top d-flex justify-content-end">
+      
+      <!-- <button type="button" class="btn btn-success rounded-3 fs-5" aria-label="Close"
+          (click)="supplier.saveApiCall()">Save</button> -->
+  </div>
+</ng-template>

@@ -1,0 +1,8 @@
+<li [ngbNavItem]="tabIndex" (click)="tabClicked()" [id]="tabId">
+    <a ngbNavLink>
+        <ng-content select=".tabitemheader"></ng-content>
+    </a>  
+    <ng-template ngbNavContent>
+        Dummy Content
+    </ng-template>
+</li>

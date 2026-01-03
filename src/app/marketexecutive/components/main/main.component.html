@@ -1,0 +1,156 @@
+<!-- <p>main works!</p> -->
+
+<div class="container-full font-Readex">
+
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="tabsNavigation d-flex">
+                <ul ngbNav #nav="ngbNav"  [activeId]="activeTab"
+                    class="nav nav-section-custom mb-2 font-inter d-flex flex-sm-wrap flex-md-nowrap flex-sm-nowrap flex-lg-nowrap justify-content-sm-start justify-content-md-center justify-content-lg-center justify-content-xl-center justify-content-center align-items-center">
+                    <li [ngbNavItem]="1" (click)="activeTab = 1; updateLocation()" *ngIf="is_sa">
+                        <a ngbNavLink>Executives</a>
+                        <ng-template ngbNavContent>
+                            <app-executives></app-executives>
+                        </ng-template>
+                    </li>
+                    <li [ngbNavItem]="5" (click)="activeTab = 5; updateLocation()">
+                        <a ngbNavLink>Targets</a>
+                        <ng-template ngbNavContent>
+                            <app-targets #targetPage></app-targets>
+                        </ng-template>
+                    </li>
+                    <li [ngbNavItem]="2"  (click)="activeTab = 2; updateLocation()">
+                        <a ngbNavLink>Visits</a>
+                        <ng-template ngbNavContent>
+                            <app-executive-visits #exeVisits></app-executive-visits>
+                        </ng-template>
+                    </li>
+                    <li [ngbNavItem]="3"  (click)="activeTab = 3; updateLocation()">
+                        <a ngbNavLink>Attendance</a>
+                        <ng-template ngbNavContent>
+                            <app-attendance></app-attendance>
+                        </ng-template>
+                    </li>
+                    <li [ngbNavItem]="4"  (click)="activeTab = 4; updateLocation()" *ngIf="is_sa">
+                        <a ngbNavLink>Payroll</a>
+                        <ng-template ngbNavContent>
+                            <app-payroll></app-payroll>
+                        </ng-template>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-12 col-lg-4 col-sm-12">
+            <div class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+                
+                <ng-container *ngIf="activeTab == 1">
+                    <button class="btn bg-white rounded-3 border mb-2" routerLink="/marketingexecutive/view"> Add Executive</button>
+                </ng-container>
+
+                <ng-container *ngIf="activeTab == 3">
+                    <button class="btn bg-white rounded-3 border mb-2" (click)="openModal(manageLeaves, { size: 'xl', centered: true })">Manage Leaves</button>
+                    <button class="btn bg-white rounded-3 border mb-2" *ngIf="is_sa" (click)="openModal(leavePolicy, { size: '', centered: true })">Leave Policy</button>
+                </ng-container>
+
+                <ng-container *ngIf="activeTab == 5">
+                    <button class="btn bg-white border rounded-3 mb-2 d-flex justify-content-between align-items-center fw-medium" *ngIf="is_sa" (click)="openModal(visualizeMap, { size: 'xl' })">
+                        <i class="ri-line-chart-line fs-5"></i>
+                    </button>
+                    <button class="btn bg-primary text-white rounded-3 mb-2" *ngIf="is_sa" (click)="taskModal(addTarget, true)">Assign Target</button>
+
+                </ng-container>
+
+                <ng-container *ngIf="activeTab == 2">
+                    <button class="btn bg-primary text-white rounded-3 mb-2" *ngIf="is_sa" (click)="taskModal(addVisit, true)">Assign Task</button>
+                    <button class="btn bg-white rounded-3 border mb-2"  *ngIf="!is_sa" (click)="taskModal(addVisit, false)"> Add Visit</button>
+                </ng-container>
+                
+                <app-info-btn></app-info-btn>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row ">
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav"></div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<ng-template #addVisit let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-4 " id="modal-basic-title">{{title}}</span>
+      <div>
+  
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <app-addtask [refDoctor]="refDoctor" [assign]="assign" (saved)="exeVisitsGetData()"></app-addtask>
+    </div>
+  </ng-template>
+
+
+  <ng-template #addTarget let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-4 " id="modal-basic-title">Assign Target</span>
+      <div>
+  
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <app-add-target (saved)="targetGetData()"></app-add-target>
+    </div>
+  </ng-template>
+
+  <ng-template #visualizeMap let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-4 d-flex align-item-center gap-2" id="modal-basic-title"><i class="ri-line-chart-line"></i> Chart </span>
+      <div class="d-flex align-items-center flex-nowrap gap-2">
+        <div style="min-width: 230px" >
+            <app-datepicker-section (dateRangeSelected)="visualize.getRangeValue($event)"
+            [selectToday]="true"></app-datepicker-section>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+    <div class="modal-body rounded-3 py-0" style="background-color: #F8FAFC;">
+        <app-visualize-charts #visualize></app-visualize-charts>
+    </div>
+  </ng-template>
+
+  <ng-template #manageLeaves let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-4 " id="modal-basic-title">Manage Leaves</span>
+      <div>
+  
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC; min-height: 50vh">
+        <app-leave-requests></app-leave-requests>
+    </div>
+  </ng-template>
+
+  <ng-template #leavePolicy let-modal>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+      <span class="modal-title fs-4 " id="modal-basic-title">Leave Policy</span>
+      <div>
+  
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <app-leave-policy></app-leave-policy>
+    </div>
+  </ng-template>

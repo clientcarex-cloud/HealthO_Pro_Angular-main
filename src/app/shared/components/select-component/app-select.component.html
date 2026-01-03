@@ -1,0 +1,12 @@
+<label *ngIf="labelText" [attr.for]="selectId" [class]="labelClass">{{labelText}}<span *ngIf="imp" class="text-danger">*</span></label>
+<ng-select  [attr.id]="selectId" [items]="selectItems" [bindLabel]="selectBindLabel" bindId="id"
+    [placeholder]="placeHolder" [class]="classVal" (clear)="clearInput()" [closeOnSelect]="closeOnSelect"
+    [disabled]="inputDisable" [dropdownPosition]="dropPosition" appendTo="{{appendTo}}"
+    (search)="customSearch($event)" [loading]="isLoading" loadingText="Loading.." [notFoundText]="searchTm && searchTm != '' ? !isLoading ? emptyFound ? '' : searchTm + notFound : 'Searching for ' + searchTm : initTypingPlaceHolder "
+    [ngClass]="{ 'is-invalid': formSubmitted && selectErrors }" [(ngModel)]="selectValue"
+    (change)="onSelectChange($event)" [multiple]="multipleSelect" [clearable]="isClearable">
+</ng-select>
+<div *ngIf="formSubmitted && selectErrors" class="invalid-feedback" align="left">
+    <!-- <div *ngIf="selectErrors && selectErrors['required']">{{requiredMessage}}</div> -->
+</div>
+<!-- autofocus [enableAutoFocus]="applyAutoFocus"  -->

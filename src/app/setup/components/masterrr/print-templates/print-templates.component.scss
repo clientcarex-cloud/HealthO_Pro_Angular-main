@@ -1,0 +1,11 @@
+.document-editor .ck-content,
+.document-editor .ck-heading-dropdown .ck-list .ck-button__label {
+    font: 16px/1.6 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@font-face {  
+    font-family: "Hoefler Text";  
+    src: url("http://www.wilsea.com/ckeditor2/fonts/Hoefler Text.ttf" ); /* IE */  
+    src: local("Hoefler Text"), url("http://www.wilsea.com/ckeditor2/fonts/Hoefler Text.ttf") format("truetype"); /*non-IE*/  
+}
+

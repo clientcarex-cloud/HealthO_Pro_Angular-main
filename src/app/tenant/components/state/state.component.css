@@ -1,0 +1,9 @@
+.fullWidthColumn {
+  width: 35%;
+}
+
+@media screen and (max-width: 540px) {
+  .fullWidthColumn {
+    width: auto;
+  }
+}/*# sourceMappingURL=state.component.css.map */

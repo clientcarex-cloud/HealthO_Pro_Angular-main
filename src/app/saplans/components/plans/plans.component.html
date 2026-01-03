@@ -1,0 +1,258 @@
+
+<!-- PLANS COMPONENT  -->
+<app-layout [showNav]="false" [showAdd]="true" [showMap]="false" [showPageTitle]="false" [displayInformation]="true" [labPackage]="false" 
+[extraFilter]="false" [showSelectPrint]="false" [extraFilterSecond]="false">
+
+<ng-container class="addNewoptionsss">
+
+    <button class="btn bg-white border rounded-3 text-nowrap" (click)="openModal(addPlan, { size: 'lg' })">
+     Add Plan
+    </button>
+    <app-info-btn></app-info-btn>
+  </ng-container>
+
+<ng-container class="dispInfo">
+    <div class="fw-bold fs-5">
+        PLANS
+    </div>
+</ng-container>
+
+  <ng-container class="searchbox">
+    <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+      (searchTermChange)="searchQuery($event)"></app-searchbox>
+  </ng-container>
+
+  <!-- <ng-container class="datepicker">
+    <app-datepicker-section (dateRangeSelected)="getRangeValue($event)" [selectToday]="true"></app-datepicker-section>
+  </ng-container> -->
+
+  <ng-container class="showing">
+    <span class="fw-light">Showing</span>
+  </ng-container>
+
+  <ng-container class="entries">
+    <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+      name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+      <option [value]="all_count">All</option>
+    </select>
+  </ng-container>
+
+  <ng-container class="entriesLabel">
+    <span class="fw-light">Entries</span>
+  </ng-container>
+
+  <ng-container class="TableDisplay">
+    <app-datatable>
+      <ng-container class="tableheader">
+        <th class="text-nowrap text-black">Sno.</th>
+        <th>
+          <div class="d-flex gap-5 align-items-center justify-content-start">
+            <div>Plan Name & Description</div>
+            <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0" *ngIf="plans && plans.length != 0">
+              <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+              <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                  class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+            </div>
+          </div>
+        </th>
+        <th>Price</th>
+        <th>Duration</th>
+        <th >Subscription Type</th>
+        <th>Plan Type</th>
+        <th>Modules</th>
+        <th class="text-center">Is Default</th>
+      </ng-container>
+
+      <ng-container class="tablebody">
+        <tr *ngFor="let item of plans; let i=index">
+            <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+            <td>
+                <app-patient-details [name]="item?.name" [trnc_word]="item?.plan_description"></app-patient-details>
+            </td>
+            <td>
+                <span class="fw-semibold fs-5">{{'₹ ' + item?.plan_price}}</span>
+                <!-- [name]="'₹ ' + item?.plan_price" [insertTime]="'For <b>' + item?.plan_validity_in_days + '</b> Days & ' + item?.grace_period + ' Days Grace Period'" -->
+                <!-- <app-patient-details [name]="'₹ ' + item?.plan_price" insertTime="For <b class='text-black'>{{item?.plan_validity_in_days}} days</b>"></app-patient-details> -->
+            </td>
+            <td>
+                <app-patient-details *ngIf="item?.grace_period!= 0" name="{{item?.plan_validity_in_days}} days" time="{{item?.grace_period}} days grace period"></app-patient-details>
+                <app-patient-details *ngIf="item?.grace_period== 0" name="{{item?.plan_validity_in_days}} days" time="No grace period"></app-patient-details>
+            </td>
+            <td>
+              <span class="fw-medium">{{item?.subscription_type?.name}}</span>
+            </td>
+            <td>
+                <app-patient-details [time]="item?.calculation_type?.name" name="{{item?.calculation_type?.is_amount_percentage ? '' : '₹ ' }} {{item?.calculation_type?.amount_per_patient}} {{item?.calculation_type?.is_amount_percentage ? '%' : '' }}"></app-patient-details>
+          </td>
+
+            <!-- <td>
+                <div class="d-flex flex-column">
+                    <small class="text-truncate fw-medium text-black" style="max-width: 175px;">
+                        {{item?.addresses && item?.addresses.length == 1 ? item?.addresses[0].address : ''}}
+                    </small>
+                </div>
+            </td> -->
+           
+            <td>
+              <div class="d-flex flex-column td-color" *ngIf="item?.modules" [ngbTooltip]="getMenusText(item.modules)" >
+                <small class="text-truncate fw-medium" style="max-width: 175px;">
+                    {{getMenusText(item.modules)}}
+                </small>
+            </div>
+            </td>
+
+            <td>
+                <div class="d-flex justify-content-center">
+                    <app-checkbox [showLabel]="false" activeText="" (onCheckboxValueChanged)="toggleDefault(item, checkBox)"
+                    inactiveText="" [checkboxValue]="item?.is_default_plan" classVal="" #checkBox></app-checkbox>
+                </div>
+            </td>
+        </tr>
+        <tr *ngIf="pageLoading">
+          <td colspan="7">
+              <div class="p-3 text-center">
+                Loading..
+              </div>
+          </td>
+        </tr>
+      </ng-container>
+    </app-datatable>
+  </ng-container>
+
+  <ng-container class="paginationEntries">
+    <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+        all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+  </ng-container>
+
+  <ng-container class="pager">
+    <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </ng-container>
+
+</app-layout>
+
+
+<ng-template let-modal #addPlan>
+    <div class="modal-header  border-bottom py-2 px-3 bg-light-blue d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-4 " id="modal-basic-title">Add Plan</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body rounded-3" style="background-color: #F8FAFC;">
+        <form [formGroup]="baseForm">
+            <div class="container-full">
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-4 col-12">
+                        <app-input labelText="Plan Name" [imp]="true" formControlName="name" [formSubmitted]="submitted"
+                        labelClass="form-label mb-1" classVal="form-control rounded-3" placeHolder="Enter Name"></app-input>
+                    </div>
+
+                    <div class="col-lg-8 col-12">
+                        <app-input labelText="Description" formControlName="plan_description" [formSubmitted]="submitted"
+                        labelClass="form-label mb-1" classVal="form-control rounded-3" placeHolder="Enter Description"></app-input>
+                    </div>
+
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-lg-3 col-12">
+                        <app-select [imp]="true" classVal="ng-select-container border-0  rounded-3" labelText="Subscription Type" [selectItems]="sub_types" [formSubmitted]="submitted"
+                        formControlName="subscription_type" selectBindLabel="name" labelClass="form-label mb-1" placeHolder="Select Type" (onSelectionChanged)="setCalcType()"></app-select>
+                    </div>
+
+                    <ng-container *ngIf="baseForm.get('subscription_type')?.value?.id == 2">
+                        <div class="col-lg-3 col-12">
+                            <app-input labelText="Price" [imp]="true" formControlName="plan_price" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                            labelClass="form-label mb-1" classVal="form-control rounded-3" placeHolder="Enter Number"  [formSubmitted]="submitted"></app-input>
+                        </div>
+
+                        <div class="col-lg-4 col-12">
+                            <app-select [imp]="true" classVal="ng-select-container border-0  rounded-3" labelText="Calculation Type"
+                            [selectItems]="pr_cal_types" selectBindLabel="name" placeHolder="Select Type"  [formSubmitted]="submitted"
+                            formControlName="calculation_type" selectBindLabel="name" labelClass="form-label mb-1"></app-select>
+                        </div>
+                    </ng-container>
+                    
+                </div>
+
+                <div class="row mb-3">
+
+                  <div class="col-lg-3 col-12">
+                      <app-input labelText="Plan Validity(In Days)" [imp]="true" formControlName="plan_validity_in_days" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                      labelClass="form-label mb-1" classVal="form-control rounded-3" placeHolder="Enter Number"  [formSubmitted]="submitted"></app-input>
+                  </div>
+                  
+                  <div class="col-lg-3 col-12">
+                      <app-input labelText="Grace Period(In Days)" [imp]="false" formControlName="grace_period" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                      labelClass="form-label mb-1" classVal="form-control rounded-3" placeHolder="Enter Number"  [formSubmitted]="submitted"></app-input>
+                  </div>
+
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-8">
+                  <app-select [imp]="false" classVal="ng-select-container border-0  rounded-3" labelText="Modules" [multipleSelect]="true" [selectItems]="menus" [formSubmitted]="submitted"
+                  formControlName="modules" selectBindLabel="label" labelClass="form-label mb-1" placeHolder="Select Modules" ></app-select>
+                </div>
+              </div>
+
+              <div class="row" *ngIf="false">
+                <div class="col-12">
+                  <table class="table-subscribe">
+                    <thead class="fw-light">
+                        <tr>
+                            <th>Module</th>
+                            <th class="text-center">
+                                <!-- Is Active -->
+                                <div class="d-flex justify-content-center">
+                                    <div>Is Active</div>
+                                    <!-- <div>
+                                        <app-checkbox [showLabel]="false" activeText="" inactiveText="" (onCheckboxValueChanged)="toggleMenuONOFF($event, null, true)"
+                                    [checkboxValue]="accessed_menus?.modules?.length == menus.length"></app-checkbox>
+                                    </div> -->
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let item of menus">
+                        <tr class="bg-white border shadow">
+                            <td class=" fs-5">
+                                <div class="border-end">
+                                    {{item.label}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center fs-4">
+                                    <app-checkbox [showLabel]="false" activeText="" inactiveText="" (onCheckboxValueChanged)="toggleMenuONOFF($event, item)"
+                                    [checkboxValue]="item?.is_active"></app-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+              </div>
+
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-end">
+                        <button (click)="savePlan()"
+                        class="btn btn-success rounded-3 px-3 fs-5">Save</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+
+</ng-template>

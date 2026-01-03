@@ -1,0 +1,52 @@
+<!-- <div class='pulse'>sdcds</div> -->
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <div class="mb-5">
+        <a routerLink="/" class="d-block">
+          <img src="assets/images/HealthO.svg" alt="" height="35">
+        </a>
+      </div>
+
+
+    <div class="fs-3 logoColor fadeText gap-1 d-flex flex-row" *ngIf="progressPercentage <= 30">
+        <!-- Your Account Setup is starting -->
+        <span>Your</span>
+        <span>Account</span>
+        <span>Setup</span>
+        <span>Process</span>
+        <span>Has</span>
+        <span>Started</span>
+      </div>
+
+      <div class="fs-3 logoColor fadeText gap-1 d-flex flex-row" *ngIf="progressPercentage <= 80 && progressPercentage > 30">
+        <!-- 'Your Account Setup is in Process -->
+        <span>Your</span>
+        <span>Account</span>
+        <span>Setup</span>
+        <span>is</span>
+        <span>in</span>
+        <span>Process</span>
+      </div>
+
+      <div class="fs-3 logoColor fadeText gap-1 d-flex flex-row" *ngIf="progressPercentage > 80">
+        <!-- 'Your Account Setup is in Process -->
+        <span>Almost</span>
+        <span>There, </span>
+        <span>Please</span>
+        <span>Wait</span>
+        <!-- <span>in</span>
+        <span>Process</span> -->
+      </div>
+    <div>
+      <!-- <div class='pulse'></div> -->
+      <div class="loading py-5" style="transform: scale(2.0);">
+        <svg width="64px" height="48px">
+            <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+          <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+        </svg>
+      </div>
+      <!-- <img src="/assets/images/LoadingAnimation.gif" style="width: 350px ; height: 175px; object-fit: contain;"> -->
+    </div>
+    <div class="fs-2 font-DMSans fw-bold logoColor">
+        <b><b>{{ progressPercentage }}%</b></b>
+    </div>
+</div>

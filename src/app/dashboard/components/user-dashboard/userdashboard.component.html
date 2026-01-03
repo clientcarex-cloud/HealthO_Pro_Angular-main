@@ -1,0 +1,97 @@
+<ng-container>
+
+
+    <div class="row sticky-top py-2" style="z-index: 100; top: 51px; background-color: #F8FAFC;">
+        <div class="col-lg-6 col-12 d-flex align-items-center font-monsterract">
+            <span class="fs-3 fw-bold">Hi👋, {{ userName }}</span>
+        </div>
+        <div class="col-lg-6 col-12">
+            <div class="row align-items-center justify-content-end">
+                <div
+                    class="col-lg-1 col-6 px-0 d-flex flex-row text-nowrap justify-content-lg-end justify-content-start">
+                    <button
+                        class="btn d-flex bg-soft-primary inactive flex-row text-nowrap border-1 align-items-center fs-6 gap-1 px-3 rounded-pill"
+                        *ngIf="!unlockButton" (click)="addBlur()">
+                        <i class="ri-lock-line "></i> <span>Blur</span>
+                    </button>
+                </div>
+
+                <!-- *ngIf="!unlockButton" -->
+                <div class="col-lg-5 col-12" [class.d-none]="unlockButton">
+
+                    <app-datemodal (dateValueChanged)="getRangeValue($event)" [isLoading]="ptn_reg_loading"></app-datemodal>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-full"
+        style="pointer-events: none; top: 50px; z-index: 999;position: fixed; width:-webkit-fill-available;">
+        <div class="row unlock justify-content-center " *ngIf="unlockButton">
+            <div class="col-12 d-flex align-items-center justify-content-center w-100" style="height: 100vh;">
+                <button class="btn d-flex bg-transparent flex-column align-items-center justify-content-center "
+                    (click)="removeBlur()" style="pointer-events: auto;">
+                    <span class="td-color">Click to remove the Blurry Guard for Sensitive data to appear</span>
+                    <span><i class="ri-lock-unlock-line fs-1 td-color lockIcon"></i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-full" id="dashboard" (click)="$event.stopPropagation(); dateDropdown.close()">
+
+        <ng-container *ngIf="!ptn_reg_loading">
+            
+            <div  class="row ">
+                <ng-container *ngFor="let item of dashboardItems">
+                        <div [class]="item.graph_size" >
+                            <ng-container *ngIf="item?.is_financial">
+                                <app-financial-stats [business]="item?.business"></app-financial-stats>
+                            </ng-container>
+                            <ng-container *ngIf="item?.is_normal">
+                                <app-dash-graph [icon]="item?.icon" [title]="item?.dash_board" [chart]="item?.chartOptions" 
+                                [count]="item?.count || null" [countLabel]="item?.countLabel || null"></app-dash-graph>
+                            </ng-container>
+                            <ng-container *ngIf="item?.is_netcollections">
+                                <app-net-collections [collections]="item?.collections"></app-net-collections>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+            </div>
+
+        </ng-container>
+
+        <ng-container *ngIf="ptn_reg_loading">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex flex-column gap-3 justify-content-center align-items-center"
+                        style="min-height: 80vh">
+                        <div class="spinner-border text-primary" role="status" style="height: 50px; width: 50px">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="font-monsterract fs-5">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+
+</ng-container>
+
+
+
+<ng-container>
+    <div class="container-full" *ngIf="!show_org">
+        <div class="row">
+            <div class="col-12">
+                Dashboard
+            </div>
+        </div>
+    </div>
+
+</ng-container>

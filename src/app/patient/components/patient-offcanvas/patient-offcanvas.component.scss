@@ -1,0 +1,21 @@
+
+
+.off-canvas-arrow{
+    transform: translate(25px,0px);
+  }
+  
+  .dotted-line {
+    border: none;
+    border-top: 1px dotted #ccc;
+}
+
+/* Default background color */
+.off-canvas-arrow {
+background-color: rgba(94, 163, 203, 0.18) ;
+}
+
+/* Change background color on hover */
+.off-canvas-arrow:hover {
+  background-color: rgba(94, 163, 203, 0.808) ;
+  // color: white
+}

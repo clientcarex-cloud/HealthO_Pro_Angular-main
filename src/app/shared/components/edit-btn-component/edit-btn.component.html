@@ -1,0 +1,4 @@
+<button type="button" [class]="classVal" data-bs-toggle="modal" id="edit-btn" data-bs-target="#showModal"
+    [disabled]="buttonDisabled" (click)="editItem(content)" >
+    <span *ngIf="!textRemove">{{buttonText}}</span>
+    <i *ngIf="!iconRemove" [class]="icon" style="font-size: larger;"></i></button>

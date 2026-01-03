@@ -1,0 +1,228 @@
+<div class="container-full" style="min-height: 500px;">
+
+
+    <!-- search box  -->
+    <div class="row g-2 mb-3 justify-content-between">
+        <div class="col-lg-8 col-12">
+            <div class="row g-2">
+                <div class="col-4">
+                    <app-searchbox placeholder="Search Items" [spellcheck]="false" [applyAutoFocus]="false"
+                        (searchTermChange)="searchQuery($event)" [searchTerm]="query"></app-searchbox>
+                </div>
+                <div class="col-4">
+                    <app-select [selectItems]="categories" selectBindLabel="name" placeHolder="Select Category"
+                        (onSelectionChanged)="categorySelect($event)"></app-select>
+                </div>
+                <div class="col-4">
+                    <app-select [selectItems]="operational_types" selectBindLabel="name"
+                        placeHolder="Select Operation Type" (onSelectionChanged)="operationSelect($event)"></app-select>
+                </div>
+                <!-- <div class="col-2 d-flex gap-2" *ngIf="!sourcing_lab">
+                    <button class="btn btn-primary rounded-3 text-nowrap" *ngIf="!inProgress"
+                        (click)="toggleBulkEdit()">Bulk Edit</button>
+                    <button class="btn btn-success rounded-3 px-2 d-flex flex-row align-items-center gap-2 "
+                        *ngIf="isBulkEditing" [disabled]="inProgress" (click)="bulkSave()">
+                        <span>{{inProgress ? 'Saving' : 'Save'}}</span>
+                        <span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span></button>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-12 d-flex justify-content-lg-end justify-content-start align-items-center">
+            <div class="row">
+                <div class="col-4">
+                    <span class="fw-light">Showing</span>
+                </div>
+            </div>
+            <div class="col-4 px-1">
+                <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans"
+                    style="width: auto" name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option [value]="all_count">All</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <span class="fw-light">Entries</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <app-datatable>
+                <ng-container class="tableHeader">
+                    <th class="serialNumber">Sno.</th>
+                    <th>Item - Composition & Supplier</th>
+                    <th>HSN Code</th>
+                    <th>Category</th>
+                    <th>Operation Type</th>
+
+                    <th>Batch Number</th>
+                    <th>Expiry Date</th>
+
+                    <th>Tax</th>
+                    <th>Discount</th>
+                    <th>Packs</th>
+                    <th>Quantity</th>
+                    <th>MRP</th>
+                    <th>Rate</th>
+
+                </ng-container>
+                <ng-container class="tableBody">
+
+                    <tr *ngFor="let stock of global_stocks; let i = index ;" (click)="openSelected(stock)">
+                        <td class="fw-semibold text-black serialNumber">{{ (page_number * page_size) - page_size + i +
+                            1}}.</td>
+                        <td>
+                            <app-patient-details name="{{stock?.item?.name}}{{stock?.item?.composition ? ' - ' + stock?.item?.composition : ''}}"
+                                time="{{stock?.manufacturer?.name}}" [query]="query"></app-patient-details>
+                        </td>
+                        <td>
+                            <app-small-text text="{{stock?.item?.short_code}}" query="{{query}}" classVal="td-color"></app-small-text>
+                        </td>
+                        <td>
+                            <small><ngb-highlight [result]="stock?.item?.category?.name" [term]="query"></ngb-highlight></small>
+                        </td>
+                        <td>
+                            <small>
+                                <ngb-highlight [result]="stock?.item?.operation_type?.name" [term]="query"></ngb-highlight>
+                            </small>
+                        </td>
+
+                        <td><span class="fw-semibold">{{stock?.batch_number}}</span></td>
+                        <td><span class="fw-semibold">{{stock?.expiry_date}}</span></td>
+                        <td><span class="fw-semibold">{{stock?.tax || 0}} %</span></td>
+                        <td><span class="fw-semibold">{{stock?.discount || 0}} %</span></td>
+                        <td><span class="fw-semibold">{{stock?.packs || 0}} Packs</span></td>
+                        <td><span class="fw-semibold">{{stock.available_quantity}} pcs.</span></td>
+                        <td><span class="fw-semibold">₹ {{stock?.price || 0}}</span></td>
+                        <td><span class="fw-semibold">₹ {{stock?.cost || 0}}</span></td>
+                        <!-- <td *ngIf="false">
+                            <div class="d-flex align-items-center fs-5">
+                                
+                                <button class="btn bg-transparent border-0 p-1" ngbTooltip="Edit Test Details">
+                                    <i class="ri-edit-2-line fs-4"></i>
+                                </button>
+  
+                                <app-checkbox classVal="form-switch" [checkboxValue]="item?.is_active" [showLabel]="false"
+                                activeText="" inactiveText="" (onCheckboxValueChanged)="updateIsActive(item, $event)"></app-checkbox>
+                            </div>
+                        </td> -->
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+    <div class="row g-3 justify-content-between align-items-center">
+        <div class="col-lg-6 col-12 font-DMSans">
+            <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number *
+                page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }}
+                    Entries</span>
+        </div>
+
+        <div class="col-lg-6 col-12">
+            <div class="d-flex justify-content-end font-DMSans">
+                <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+                    (pageChange)="onPageChange($event)">
+                </app-pagination>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<ng-template #addUpdate let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+        <span class="modal-title fs-5" id="modal-basic-title">
+            {{selected_item ? 'Update Stock' : 'Add Stock'}}
+        </span>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <form [formGroup]="baseForm">
+            <div class="container-full">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <app-patient-details name="{{selected_item?.item?.name}}"
+                            time="{{selected_item?.manufacturer?.name}}"></app-patient-details>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-4 col-12">
+                        <app-input styleVal="font-size: 11px !important;" classVal="form-control fw-semibold rounded-3"
+                            [removeCloseIcon]="true" labelClass="form-label mb-1" labelText="Batch No." placeHolder="Batch No."
+                            formControlName="batch_number" [formSubmitted]="submitted"></app-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-datepicker styleVal="font-size: 11px !important;" datePickerFormat="Y-m-d"
+                            classVal="form-control fw-semibold rounded-3" labelClass="form-label mb-1" [labelText]="'Expiry Date'" [removeIcon]="true"
+                            placeHolder="Expiry Date" formControlName="expiry_date" [setMax]="false"
+                            [formSubmitted]="submitted"></app-datepicker>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-select formControlName="tax_type" dropPosition="top" selectBindLabel="name"
+                            classVal="fw-semibold ng-select-container border-0  rounded-3" labelClass="form-label mb-1" labelText="Tax Type"
+                            [formSubmitted]="submitted" placeHolder="Tax Type" [selectItems]="taxTypes"></app-select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg-4 col-12">
+                        <app-num-input styleVal="font-size: 11px !important;" formControlName="tax" [removeLabel]="false" labelClass="form-label mb-1" labelText="Tax %"
+                            classVal="form-control fw-semibold rounded-3" placeHolder="Tax %" [maintainLimit]="true"
+                            [formSubmitted]="submitted"></app-num-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-num-input styleVal="font-size: 11px !important;" formControlName="discount"  [removeLabel]="false" labelClass="form-label mb-1" labelText="Discount %"
+                            classVal="form-control fw-semibold rounded-3" placeHolder="Disc." [maintainLimit]="true"
+                            [formSubmitted]="submitted"></app-num-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-input styleVal="font-size: 11px !important;" formControlName="packs"
+                            [removeCloseIcon]="true" labelClass="form-label mb-1" labelText="No. of Packs" [applyDot]="false"
+                            classVal="form-control fw-semibold rounded-3" placeHolder="Packs"
+                            [formSubmitted]="submitted"></app-input>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 col-12">
+                        <app-num-input styleVal="font-size: 11px !important;"
+                            classVal="form-control fw-semibold rounded-3" placeHolder="MRP" [maintainLimit]="false"
+                            formControlName="price" [formSubmitted]="submitted" [removeLabel]="false" labelClass="form-label mb-1" labelText="MRP"></app-num-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-num-input styleVal="font-size: 11px !important;"
+                            classVal="form-control fw-semibold rounded-3" [removeLabel]="true" [maintainLimit]="false"
+                            placeHolder="Rate" formControlName="rate" [formSubmitted]="submitted" [removeLabel]="false" labelClass="form-label mb-1" labelText="Rate"></app-num-input>
+                    </div>
+
+                    <div class="col-lg-4 col-12">
+                        <app-input styleVal="font-size: 11px !important;" classVal="form-control fw-semibold rounded-3"
+                            [removeCloseIcon]="true" [removeLabel]="true" placeHolder="Qt." [applyDot]="false"
+                            formControlName="quantity" [formSubmitted]="submitted" [removeLabel]="false" labelClass="form-label mb-1" labelText="Quantity"></app-input>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer py-1 px-3 bg-light-blue border-top d-flex justify-content-end">
+
+        <button type="button" class="btn btn-success rounded-3 fs-5" aria-label="Close"
+              (click)="saveApiCall()">Save</button>
+    </div>
+</ng-template>

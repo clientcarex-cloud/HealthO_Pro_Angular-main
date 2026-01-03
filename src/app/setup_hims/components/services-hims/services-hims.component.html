@@ -1,0 +1,145 @@
+<div class="container-full py-2 px-3" style="min-height: 500px;">
+
+    <!-- HEADING  -->
+    <div class="row mb-3 g-3 justify-content-between">
+        <div class="col-lg-6 col-12">
+            <div class="row border-5 border-start border-primary rounded-2 ps-2">
+                <div class="col-12">
+                    <span class="fw-medium fs-5">Clinic Services</span>
+                </div>
+                <div class="col-12">
+                    <span class="text-wrap td-color">Turn on/off essential features required for Clinic Services</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-12 d-flex justify-content-lg-end justify-content-start">
+            <app-addnewbutton (onAddNewClick)="selected_item = null ;openModal(addUpdateService, { size: '', centered: true })" buttonText="Add Service" content="content"></app-addnewbutton>
+        </div>
+    </div>
+
+    <!-- search box  -->
+    <div class="row g-2 mb-3 justify-content-between">
+        <div class="col-lg-8 col-12">
+            <div class="row g-2">
+                <div class="col-5">
+                    <app-searchbox placeholder="Search Services" [spellcheck]="false" [applyAutoFocus]="false"
+                        (searchTermChange)="searchQuery($event)" [searchTerm]="query"></app-searchbox>
+                </div>
+                <div class="col-5">
+                    <app-select [selectItems]="departments" selectBindLabel="name" placeHolder="Select Department"
+                        (onSelectionChanged)="selectDepartment($event)" [selectValue]="selectDept"></app-select>
+                </div>
+                <!-- <div class="col-2 d-flex gap-2" *ngIf="!sourcing_lab">
+                    <button class="btn btn-primary rounded-3 text-nowrap" *ngIf="!inProgress"
+                        (click)="toggleBulkEdit()">Bulk Edit</button>
+                    <button class="btn btn-success rounded-3 px-2 d-flex flex-row align-items-center gap-2 "
+                        *ngIf="isBulkEditing" [disabled]="inProgress" (click)="bulkSave()">
+                        <span>{{inProgress ? 'Saving' : 'Save'}}</span>
+                        <span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span></button>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-12 d-flex justify-content-lg-end justify-content-start align-items-center">
+            <div class="row">
+                <div class="col-4">
+                    <span class="fw-light">Showing</span>
+                </div>
+            </div>
+            <div class="col-4 px-1">
+                <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans"
+                    style="width: auto" name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option [value]="all_count">All</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <span class="fw-light">Entries</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <app-datatable>
+                <ng-container class="tableHeader">
+                    <th>Service Name</th>
+                    <th>Short Code</th>
+                    <th>Department</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </ng-container>
+                <ng-container class="tableBody">
+                    <tr *ngFor="let item of global_services">
+                        <td (click)="selected_item = item;openModal(addUpdateService, { size: '', centered: true })">
+                            <span class="fw-semibold py-1">
+                                <ngb-highlight [result]="item?.name" [term]="query"></ngb-highlight>
+                            </span>
+                        </td>
+                        <td (click)="selected_item = item;openModal(addUpdateService, { size: '', centered: true })">
+                            <app-small-text text="{{item?.short_code}}" query="{{query}}" classVal="td-color"></app-small-text>
+                        </td>
+                        <td (click)="selected_item = item;openModal(addUpdateService, { size: '', centered: true })">
+                            <app-small-text text="{{item?.department?.name}}" query="{{query}}" classVal="td-color"></app-small-text>
+                        </td>
+                        <td (click)="selected_item = item;openModal(addUpdateService, { size: '', centered: true })">
+                            <span class="fw-semibold">{{item?.price}}</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center fs-5">
+                                
+                                <button class="btn bg-transparent border-0 p-1" ngbTooltip="Edit Test Details" (click)="selected_item = item;openModal(addUpdateService, { size: '', centered: true })">
+                                    <i class="ri-edit-2-line fs-4"></i>
+                                </button>
+
+                                <app-checkbox classVal="form-switch" [checkboxValue]="item.is_active" [showLabel]="false"
+                                activeText="" inactiveText="" (onCheckboxValueChanged)="updateIsActive(item, $event)"></app-checkbox>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </app-datatable>
+        </div>
+    </div>
+
+    <div class="row g-3 justify-content-between align-items-center">
+        <div class="col-lg-6 col-12 font-DMSans">
+            <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number *
+                page_size) < all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }}
+                    Entries</span>
+        </div>
+
+        <div class="col-lg-6 col-12">
+            <div class="d-flex justify-content-end font-DMSans">
+                <app-pagination [collectionSize]="all_count || 0" [page]="page_number" [pageSize]="page_size"
+                    (pageChange)="onPageChange($event)">
+                </app-pagination>
+            </div>
+        </div>
+    </div>
+        
+</div>
+
+
+<ng-template #addUpdateService let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+        <span class="modal-title fs-5" id="modal-basic-title">Add Service</span>
+        <button type="button" class="btn-close" aria-label="Close"
+            (click)="modal.dismiss('Cross click');"></button>
+    </div>
+
+    <div class="modal-body">
+        <app-add-service #addService [departments]="departments" [service]="selected_item || null" (saved)="getData(); modal.dismiss('Cross click');"></app-add-service>
+    </div>
+
+    <div class="modal-footer py-1 px-3 bg-light-blue border-top d-flex justify-content-end">
+        
+        <button type="button" class="btn btn-success rounded-3 fs-5" aria-label="Close"
+            (click)="addService.saveApiCall()">Save</button>
+    </div>
+</ng-template>

@@ -1,0 +1,156 @@
+<app-breadcrumbs *ngIf="pageTitle" [title]="pageTitle" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<!-- LAYOUT COMPONENT    -->
+
+<div class="container-full">
+
+    <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+    <div class="row g-1 mb-2 align-items-center justify-content-between" *ngIf="showNav">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-6 col-sm-12">
+            <div class="d-flex">
+                <div [class]="navSectionClass">
+                    <ng-content select=".tabsNavigation"></ng-content>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-6 col-lg-4 col-sm-12">
+            <div class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-end justify-content-xs-center justify-md-content-end align-items-center gap-1">
+                <ng-content select=".addNewoptions"></ng-content>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-1 mb-2 align-items-center justify-content-between" *ngIf="showAdd">
+
+        <!-- NAVIGATION  -->
+        <div class="col-lg-8 col-md-6 col-sm-12">
+            <ng-content select=".dispInfo"></ng-content>
+        </div>
+
+        <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+        <div class="col-md-6 col-lg-4 col-sm-12">
+            <div class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-end justify-content-xs-center justify-md-content-end align-items-center gap-1">
+                <ng-content select=".addNewoptionsss"></ng-content>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAP  -->
+    <div class="row mb-2" *ngIf="showMap">
+        <div class="d-flex">
+            <ng-content select=".mapp"></ng-content>
+        </div>
+
+    </div>
+
+    <!-- OPTIONAL TITLE  -->
+    <div class="row fw-semibold mb-2" *ngIf="showPageTitle">
+        <div class="col-6 fs-5">
+            <ng-content select=".optTitle"></ng-content>
+        </div>
+        <div class="col-6 d-flex justify-content-end">
+            <ng-content select=".opTitleInfoButton"></ng-content>
+        </div>
+    </div>
+
+    <!-- DISPLAY INFORMATION  -->
+    <div class="row mb-2" *ngIf="displayInformation">
+        <ng-content select=".displayInformation"></ng-content>
+    </div>
+
+    <!-- LB PACKAGE  -->
+    <div class="row g-sm-2 g-0 mb-3 justify-content-between align-items-end" *ngIf="labPackage">
+        <div class="col-md-12 col-lg-12 col-xl-9">
+            <div class="row g-2">
+                <div class="searchSort col-xl-3 col-lg-3">
+                    <ng-content select=".selectPackage"></ng-content>
+                </div>
+                <div class="col-xl-2 col-lg-2">
+                    <ng-content select=".offerPrice"></ng-content>
+                </div>
+                <div class="selectPrint col-xl-4 col-lg-4">
+                    <ng-content select=".description"></ng-content>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-lg-3 col-xl-3">
+            <div class="d-flex align-items-center gap-1 d-flex align-items-end justify-content-end">
+                <ng-content select=".addPackageOption"></ng-content>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH AND SORT OPTIONS  -->
+    <div class="row g-2 mb-2">
+        <div class="col-lg-9 col-12">
+            <div class="row g-1">
+                <div class="searchSort col-lg-3">
+                    <ng-content select=".searchbox"></ng-content>
+                </div>
+                <div class="col-lg-3 ">
+                    <ng-content select=".datepicker"></ng-content>
+                </div>
+                <div class="selectPrint col-lg-4" *ngIf="showSelectPrint">
+                    <ng-content select=".selectPrint"></ng-content>
+                </div>
+                <div class="selectPrint col-lg-3" *ngIf="extraFilter">
+                    <ng-content select=".extraFilter"></ng-content>
+                </div>
+                <div class="selectPrint col-lg-3" *ngIf="extraFilterSecond">
+                    <ng-content select=".extraFilterSecond"></ng-content>
+                </div>
+                <div class="col-lg-2">
+                    <ng-content select=".selectComp"></ng-content>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-12">
+
+            <div class="row mx-0 g-1 align-items-center justify-content-end">
+                <div class="col-3 d-flex justify-content-end">
+                    <ng-content select=".showing"></ng-content>
+                </div>
+                <div class="col-3">
+                    <ng-content select=".entries"></ng-content>
+                </div>
+                <div class="col-2 justify-content-end pe-0">
+                    <ng-content select=".entriesLabel"></ng-content>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE SECTION  -->
+    <div class="row mb-2">
+            <ng-content select=".TableDisplay"></ng-content>
+
+    </div>
+
+    <!-- PAGINATION  -->
+    <div class="row g-1 justify-content-md-between align-items-md-center font-DMSans">
+        <div class="col col-sm-6 text-sm-right ">
+            <ng-content select=".paginationEntries"></ng-content>
+        </div>
+        <div class="col col-sm-6">
+            <div class="text-sm-right float-end text-black">
+                <ng-content select=".pager"></ng-content>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="row ">
+            <div class="col-lg-12">
+                <div [ngbNavOutlet]="nav"></div>
+            </div>
+        </div> -->
+
+</div>
+

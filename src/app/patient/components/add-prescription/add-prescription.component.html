@@ -1,0 +1,297 @@
+<form [formGroup]="baseForm">
+
+    <div class="container-full">
+
+        <!-- <div class="row mb-2">
+            <div class="col-12">
+                {{title}}
+            </div>
+        </div> -->
+    
+        <div class="row mb-2">
+            <div class="col-12 fs-5 fw-light td-color border-bottom pb-1">
+                Vital Details
+            </div>
+        </div>
+    
+        <!-- blood presure, height, spo2 -->
+        <div class="row mb-2">
+    
+            <!-- blood pressure  -->
+            <div class="col-lg-4 col-12">
+                <div class="row align-items-center flex-nowrap">
+                    <div class="col-4 text-end">
+                        Blood Pressure :
+                    </div>
+    
+                    <div class="col-5">
+                        <div class="row g-1">
+                            <div class="col-6">
+                                <app-input [applyAutoFocus]="true" [removeCloseIcon]="true" [removeLabel]="true" formControlName="bp1" [formSubmitted]="submitted"
+                                classVal="form-control form-control-sm rounded-0 py-0" placeHolder=""  [applyAllowNumbersOnly]="true" [applyDot]="false"></app-input>
+                            </div>
+                            <div class="col-6">
+                                <app-input [removeCloseIcon]="true" [removeLabel]="true" [formSubmitted]="submitted" formControlName="bp2"
+                                classVal="form-control form-control-sm rounded-0 py-0" placeHolder="" [applyAllowNumbersOnly]="true" [applyDot]="false"></app-input>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="col-3">
+                        mmhg
+                    </div>
+                </div>
+            </div>
+    
+            <!-- height -->
+             <div class="col-lg-4 col-12">
+                <div class="row align-items-center flex-nowrap">
+                    <div class="col-4 text-end">
+                        Height :
+                    </div>
+    
+                    <div class="col-5">
+                        <app-input [removeCloseIcon]="true" [removeLabel]="true" formControlName="height" [applyAllowNumbersOnly]="true" [applyDot]="true"
+                        classVal="form-control form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                    </div>
+    
+                    <div class="col-3">
+                        CM
+                    </div>
+                </div>
+             </div>
+    
+    
+            <!-- spo2 -->
+            <div class="col-lg-4 col-12">
+                <div class="row align-items-center flex-nowrap">
+                    <div class="col-4 text-end">
+                        SPO2 :
+                    </div>
+    
+                    <div class="col-8">
+                        <app-input [removeCloseIcon]="true" [removeLabel]="true" formControlName="spo2"
+                        classVal="form-control form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                    </div>
+                </div>
+             </div>
+    
+        </div>
+    
+        <!-- pulse, weight, temperaturw  -->
+        <div class="row mb-2">
+    
+    
+            <div class="col-lg-4 col-12">
+                <div class="row align-items-center flex-nowrap">
+                    <div class="col-4 text-end text-nowrap">
+                        Pulse Rate :
+                    </div>
+    
+                    <div class="col-5">
+                        <app-input [removeCloseIcon]="true" [removeLabel]="true" formControlName="pulse" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                        classVal="form-control form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                    </div>
+    
+                    <div class="col-3">
+                        Minutes
+                    </div>
+                </div>
+             </div>
+    
+             <div class="col-lg-4 col-12">
+                <div class="row align-items-center flex-nowrap">
+                    <div class="col-4 text-end">
+                        Weight :
+                    </div>
+    
+                    <div class="col-5">
+                        <app-input [removeCloseIcon]="true" [removeLabel]="true" formControlName="weight" [applyAllowNumbersOnly]="true" [applyDot]="true"
+                        classVal="form-control form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                    </div>
+    
+                    <div class="col-3">
+                        Kg
+                    </div>
+                </div>
+             </div>
+    
+    
+             <div class="col-lg-4 col-12">
+                <div class="row align-items-center flex-nowrap">
+                    <div class="col-4 text-end">
+                        Temperature :
+                    </div>
+    
+                    <div class="col-5">
+                        <app-input [removeCloseIcon]="true" [removeLabel]="true" formControlName="temperature" [applyAllowNumbersOnly]="true" [applyDot]="true"
+                        classVal="form-control form-control-sm rounded-0 py-0" placeHolder="" [formSubmitted]="submitted"></app-input>
+                    </div>
+    
+                    <div class="col-3">
+                        ° F
+                    </div>
+                </div>
+             </div>
+    
+        </div>
+    
+        <div class="row mb-2">
+            <div class="col-12 fs-5 fw-light td-color border-bottom pb-1">
+                Patient Health Summary
+            </div>
+        </div>
+    
+    
+        <!-- aliments  -->
+        <div class="row mb-2 align-items-center">
+            <div class="col-lg-1 col-12 text-end">
+                Ailment :
+            </div>
+            <div class="col-lg-9 col-12">
+                <app-select [closeOnSelect]="false" [multipleSelect]="true" [labelText]="null" classVal="ng-select-container border-0  rounded-3"
+                [selectItems]="aliments" selectBindLabel="name" formControlName="ailments" placeHolder="Select" [formSubmitted]="submitted"></app-select>
+            </div>
+        </div>
+    
+    
+        <div class="row mb-2">
+            <div class="col-12 fs-5 fw-light td-color border-bottom pb-1">
+                Medicine
+            </div>
+        </div>
+    
+        
+        <!-- medicines table  -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <app-datatable>
+                    <ng-container class="tableHeader">
+                        <th class="serialNumber">#</th>
+                        <th colspan="2" class="text-nowrap">Medicine Name</th>
+                        <th class="text-nowrap width-275">In-Take Time</th>
+                        <th class="width-150">When</th>
+                        <th class="widthSevenFive">Dosage</th>
+                        <th class="width-100">Duration</th>
+                    </ng-container>
+                    <ng-container class="tablebody">
+                        <tr class="fw-semibold" *ngFor="let med of selectedMedicines; let i = index ;">
+                            <td class="serialNumber">{{i+1}}.</td>
+                            <td class="fw-semibold">{{med?.medicine?.showName}}</td>
+                            <td>
+                                <app-deletebutton btnClassVal="bg-transparent fs-6 border-0" placement="bottom"
+                                ngbTooltip="Remove Test" deleteIconClass="bi bi-x-lg text-danger fw-bold"
+                                (click)="deleteStock(med, i)"></app-deletebutton>
+                            </td>
+                            <td>
+                                <app-select [closeOnSelect]="false" classVal="fw-semibold ng-select-container border-0 rounded-3" [selectItems]="dayTimePeriods" selectBindLabel="name" [multipleSelect]="true" [formSubmitted]="true"
+                                 [selectValue]="med.in_take_time" (onSelectionChanged)="setMedData(med, 'in_take_time', $event)" placeHolder=""></app-select>
+                            </td>
+                            <td class="width-150">
+                                <app-select classVal="fw-semibold ng-select-container border-0 rounded-3" [selectItems]="foodInTakes" selectBindLabel="name" [multipleSelect]="false" [formSubmitted]="true"
+                                [selectValue]="med.when_to_take" (onSelectionChanged)="setMedData(med, 'when_to_take', $event)" placeHolder=""></app-select>
+                            </td>
+                            <td class="widthSevenFive">
+                                <app-input classVal="form-control fw-semibold rounded-3" [removeCloseIcon]="true" [removeLabel]="true"
+                                (onValueChanged)="setMedData(med, 'quantity', $event)" [inputValue]="med?.quantity" placeHolder=""></app-input>
+                            </td>
+                            <td class="width-100">
+                                <div class="d-flex flex-nowrap align-items-center gap-2">
+                                    <app-input classVal="form-control fw-semibold rounded-3" [removeCloseIcon]="true"  [removeLabel]="true" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                                    (onValueChanged)="setMedData(med, 'duration', $event)" [inputValue]="med?.duration" placeHolder=""></app-input>
+                                    <span>Days</span>
+                                </div>
+                            </td>
+                        </tr>
+    
+                        <tr>
+                            <td colspan="12">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 75px;">
+                                    
+                                </div>
+                            </td>
+                        </tr>
+    
+                        <tr>
+                            <td class="py-2" colspan="4">
+                                <div>
+        
+                                    <ng-autocomplete #autoComplete [data]="medicines" searchKeyword="showName" placeholder="Search"
+                                    (inputChanged)="getSearches($event);" (selected)="inputSelected($event, autoComplete)" [focusFirst]="true" [minQueryLength]="2"
+                                    [itemTemplate]="itemTemplate" [notFoundTemplate]="notFoundTemplate"></ng-autocomplete>
+                                
+                                    <ng-template #itemTemplate let-item>
+                                        <a class="px-2 py-1 fs-6" [innerHTML]="item.showName"></a>
+                                    </ng-template>
+                                
+                                    <ng-template #notFoundTemplate let-notFound>
+                                        <div [innerHTML]="notFound"></div>
+                                    </ng-template>
+                                </div>
+                            </td>
+    
+                            <td colspan="3"></td>
+                        </tr>
+                    </ng-container>
+                </app-datatable>
+            </div>
+        </div>
+    
+    
+        <!-- advice remarks -->
+        <div class="row mb-2 align-items-center">
+            <div class="col-lg-1 col-12 ">
+                Advice :
+            </div>
+            <div class="col-lg-9 col-12">
+                <app-textarea-input [removeCloseIcon]="true" [removeLabel]="true" classVal="form-control rounded-3"
+                formControlName="remarks" placeHolder="Enter Remarks"></app-textarea-input>
+            </div>
+        </div>
+    
+        <!-- tests  -->
+        <div class="row mb-2 align-items-center">
+            <div class="col-lg-1 col-12  text-nowrap">
+                Tests :
+            </div>
+            <div class="col-lg-9 col-12">
+                <app-select dropPosition="top" placeHolder="Select Invesigations" selectBindLabel="name" selectBindId="id" [closeOnSelect]="false"
+                [selectItems]="searchData" [formSubmitted]="submitted" [multipleSelect]="true"
+                formControlName="tests" classVal="ng-select-container border-0 rounded-3"
+                (onCustomSearch)="getTestSearches($event)" [isLoading]="testLoading" [emptyFound]="false"
+                [notFound]="testTerm != '' ? ' Not Found' : 'Search ..'">
+            </app-select>
+            </div>
+        </div>
+    
+    
+        <!-- follow days, date  -->
+        <div class="row">
+            <div class="col-lg-6 col-12">
+                <div class="row align-items-center">
+                    <div class="col-lg-2">
+                        Follow Up : 
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-flex flex-nowrap align-items-center gap-2">
+                            <app-input classVal="form-control fw-semibold rounded-3" [removeCloseIcon]="true"  [removeLabel]="true" [applyAllowNumbersOnly]="true" [applyDot]="false"
+                             placeHolder="" formControlName="follow_up_days" [applyAllowNumbersOnly]="true" [applyDot]="false" (onValueChanged)="setDate($event)"></app-input>
+                            <span class="text-nowrap">in Days</span>
+                        </div>
+                    </div>
+    
+                    <div class="col-lg-4 col-6">
+                        <app-datepicker classVal="form-control flatpickr-input rounded-3" [showCloseIcon]="false" datePickerFormat="Y-m-d" placeHolder="Select Date" formControlName="follow_up_date"
+                        [labelText]="''"  [setMin]="true" [setMax]="false" (dateValueChange)="setDays($event)"></app-datepicker>
+                    </div>
+                </div>
+            </div>
+    
+    
+        </div>
+    
+    
+    
+    </div>
+    
+    </form>

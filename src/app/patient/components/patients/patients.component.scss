@@ -1,0 +1,86 @@
+// SCSS for rotating chevron icons
+.rotate-chevron {
+  transition: transform 0.2s ease-in-out;
+}
+
+.rotate-chevron.rotate-up {
+  transform: rotate(180deg);
+}
+
+// SCSS for fading in the table
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.fade-in.active {
+  opacity: 1;
+}
+
+// SCSS for fading in the table dropdown
+.table-dropdown {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.table-dropdown.active {
+  max-height: 100%;
+  /* Adjust this value based on your desired height */
+  opacity: 1;
+}
+
+// SCSS for fading in the table dropdown
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.table-dropdown {
+  display: none;
+  animation: fadeInDown 0.2s ease forwards;
+}
+
+.table-dropdown.active {
+  display: block;
+}
+
+
+.bg-status {
+  background: rgba(134, 205, 226, 0.15);
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.02) inset;
+}
+
+.inactive {
+  color: #0E4EA3;
+}
+
+.inactive:hover {
+  color: #000;
+}
+
+
+.dateSelect {
+  background-color: rgba(20, 164, 190, 0.18) !important;
+}
+
+.dataSelect:hover {
+  background-color: rgba(111, 192, 206, 0.18) !important;
+}
+
+
+.iframeDoc {
+  width: 221mm;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  height: 80vh;
+}

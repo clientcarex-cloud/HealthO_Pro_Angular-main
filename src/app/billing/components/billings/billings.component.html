@@ -1,0 +1,39 @@
+<!-- <app-patients [is_cms]="true" routeUrl="/billing/patientbilling/" 
+[showTests]="true" [showServices]="true" [showDocCons]="true" [showMeds]="true"></app-patients> -->
+<div class="container-full" *ngIf="healthCareRegistry == 2 ; else LIMS">
+    <div class="row">
+        <div class="col-12 mb-2">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs-custom" >
+                <li ngbNavItem [ngbNavItem]="2">
+                    <a ngbNavLink>Out-Patient</a>
+                    <ng-template ngbNavContent>
+                        <app-patients [is_cms]="true" [estimatePrice]="false" [viewAppointmentsOption]="true" routeUrl="/billing/patientbilling/" addText="Add Out-Patient" extraStatusQuery="&patient_type=2"
+                            [showTests]="true" [showServices]="true" [showDocCons]="true" [showMeds]="false"></app-patients> 
+                    </ng-template>
+                </li>
+                <li ngbNavItem [ngbNavItem]="1">
+                    <a ngbNavLink>In-Patient</a>
+                    <ng-template ngbNavContent>
+                        <app-patients [is_cms]="true" [estimatePrice]="false" [viewAppointmentsOption]="true" routeUrl="/billing/patientbilling/" addText="Add In-Patient" extraStatusQuery="&patient_type=1"
+                            [showTests]="true" [showServices]="true" [showDocCons]="true" [showMeds]="false"></app-patients> 
+                    </ng-template>
+                </li>
+                <li ngbNavItem [ngbNavItem]="3">
+                    <a ngbNavLink>All</a>
+                    <ng-template ngbNavContent>
+                        <app-patients [is_cms]="true" [estimatePrice]="false" [viewAppointmentsOption]="true" routeUrl="/billing/patientbilling/"
+                            [showTests]="true" [showServices]="true" [showDocCons]="true" [showMeds]="false"></app-patients> 
+                    </ng-template>
+                </li>
+            </ul>
+        </div>
+        <div class="col-12">
+            <div [ngbNavOutlet]="nav" ></div>
+        </div>
+    </div>
+</div>
+
+<ng-template #LIMS>
+    <app-patients [is_cms]="true" routeUrl="/billing/patientbilling/" [estimatePrice]="false" [viewAppointmentsOption]="true" 
+    [showTests]="true" [showServices]="true" [showDocCons]="true" [showMeds]="false"></app-patients> 
+</ng-template>

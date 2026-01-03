@@ -1,0 +1,7 @@
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Position the menu below the input */
+    left: 0; /* Align the menu with the input */
+    z-index: 1000321321321321; /* Ensure the menu appears above other elements */
+    width: 100%; /* Set the width to match the input */
+}

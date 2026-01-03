@@ -1,0 +1,312 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=IBM+Plex+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200&family=Inter:wght@100;200;300;400;500;600;700;800&family=Merriweather+Sans:wght@300;400;500&family=Open+Sans:wght@300;400;500;600;700;800&family=Readex+Pro:wght@300;400;500;600;700&display=swap");
+@import '~ngx-toastr/toastr.css';
+.font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+.font-Readex {
+  font-family: "Readex Pro", sans-serif;
+}
+
+.font-Merriweather {
+  font-family: "Merriweather Sans", sans-serif;
+}
+
+.font-DMSans {
+  font-family: "DM Sans", sans-serif;
+}
+
+.font-IBMPlex {
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.font-opensans {
+  font-family: "Open Sans", sans-serif;
+}
+
+/* Set CKEditor content area to A4 size */
+/* Set CKEditor content area to A4 size /* Set CKEditor content area to A4 size */
+.cke_top {
+  font-family: Arial, sans-serif;
+}
+.cke_inner > .cke_contents {
+  width: 8.27in; /* Width of A4 paper */
+  height: 11.69in; /* Height of A4 paper */
+  border: 1px solid #ccc; /* Border style */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow style */
+
+  margin: 10px auto; /* Center horizontally */
+  /* Background color */
+}
+
+/* Set CKEditor content area to A4 size */
+.cke_inner {
+  border: 1px solid #ccc; /* Border style */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow style */
+  margin: 0 auto; /* Center horizontally */
+  background-color: rgb(52, 89, 176);
+  /* Background color for non-typable area */
+}
+
+.ck-editor-body {
+  background-color: blue; /* Set your desired background color */
+}
+
+.ck-content .table .ck-table-resized {
+  table-layout: fixed;
+  width: 100%;
+}
+/* @ckeditor/ckeditor5-table/theme/tablecolumnresize.css */
+.ck-content .table table {
+  overflow: hidden;
+  width: 100%;
+}
+/* @ckeditor/ckeditor5-table/theme/tablecolumnresize.css */
+.ck-content .table td,
+.ck-content .table th {
+  overflow-wrap: break-word;
+  position: relative;
+  width: 100%;
+}
+/* @ckeditor/ckeditor5-table/theme/tablecaption.css */
+.ck-content .table > figcaption {
+  display: table-caption;
+  caption-side: top;
+  word-break: break-word;
+  text-align: center;
+  width: 100%;
+  color: var(--ck-color-selector-caption-text);
+  background-color: var(--ck-color-selector-caption-background);
+  padding: 0.6em;
+  font-size: 0.75em;
+  outline-offset: -1px;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.ck-content .table {
+  margin: 0.9em auto;
+  display: table;
+  width: 100%;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.ck-content .table table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px double hsl(0, 0%, 70%);
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.ck-content .table table td,
+.ck-content .table table th {
+  min-width: 2em;
+  padding: 0.4em;
+  border: 1px solid hsl(0, 0%, 75%);
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.ck-content .table table th {
+  font-weight: bold;
+  background: hsla(0, 0%, 0%, 5%);
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.ck-content[dir='rtl'] .table th {
+  text-align: right;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.ck-content[dir='ltr'] .table th {
+  text-align: left;
+}
+
+.cke_editable table {
+  font-size: 13px;
+  line-height: 4px;
+  word-wrap: break-word;
+}
+
+/* Custom styles for table */
+.custom-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.custom-table th,
+.custom-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+.custom-table th {
+  background-color: #f2f2f2;
+}
+
+.cke_reset_all,
+.cke_reset_all *,
+.cke_reset_all a,
+.cke_reset_all textarea {
+  /* margin: 0; */
+  /* padding: 0; */
+  /* border: 0; */
+  /* background: transparent; */
+  /* text-decoration: none; */
+  /* width: auto; */
+  /* height: auto; */
+  /* vertical-align: baseline; */
+  /* box-sizing: content-box; */
+  /* position: static; */
+  /* transition: none; */
+  /* border-collapse: collapse; */
+  /* font: normal normal normal 12px Arial, Helvetica, Tahoma, Verdana, Sans-Serif; */
+  color: rgb(0, 0, 0);
+  font-weight: 600;
+  font: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans',
+    Arial, sans-serif;
+  text-align: left;
+  /* white-space: nowrap; */
+  /* cursor: auto; */
+  /* float: none; */
+}
+
+
+#loader {
+  bottom: 0;
+  height: 175px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 175px;
+}
+
+#loader {
+  bottom: 0;
+  height: 175px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 175px;
+}
+
+#loader .dot {
+  bottom: 0;
+  height: 100%;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 87.5px;
+}
+
+#loader .dot::before {
+  border-radius: 100%;
+  content: "";
+  height: 87.5px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: scale(0);
+  width: 87.5px;
+}
+
+#loader .dot:nth-child(7n+1) {
+  transform: rotate(45deg);
+}
+
+#loader .dot:nth-child(7n+1)::before {
+  animation: 0.8s linear 0.1s normal none infinite running load;
+  background: #00ff80 none repeat scroll 0 0;
+}
+
+#loader .dot:nth-child(7n+2) {
+  transform: rotate(90deg);
+}
+
+#loader .dot:nth-child(7n+2)::before {
+  animation: 0.8s linear 0.2s normal none infinite running load;
+  background: #00ffea none repeat scroll 0 0;
+}
+
+#loader .dot:nth-child(7n+3) {
+  transform: rotate(135deg);
+}
+
+#loader .dot:nth-child(7n+3)::before {
+  animation: 0.8s linear 0.3s normal none infinite running load;
+  background: #00aaff none repeat scroll 0 0;
+}
+
+#loader .dot:nth-child(7n+4) {
+  transform: rotate(180deg);
+}
+
+#loader .dot:nth-child(7n+4)::before {
+  animation: 0.8s linear 0.4s normal none infinite running load;
+  background: #0040ff none repeat scroll 0 0;
+}
+
+#loader .dot:nth-child(7n+5) {
+  transform: rotate(225deg);
+}
+
+#loader .dot:nth-child(7n+5)::before {
+  animation: 0.8s linear 0.5s normal none infinite running load;
+  background: #2a00ff none repeat scroll 0 0;
+}
+
+#loader .dot:nth-child(7n+6) {
+  transform: rotate(270deg);
+}
+
+#loader .dot:nth-child(7n+6)::before {
+  animation: 0.8s linear 0.6s normal none infinite running load;
+  background: #9500ff none repeat scroll 0 0;
+}
+
+#loader .dot:nth-child(7n+7) {
+  transform: rotate(315deg);
+}
+
+#loader .dot:nth-child(7n+7)::before {
+  animation: 0.8s linear 0.7s normal none infinite running load;
+  background: magenta none repeat scroll 0 0;
+}
+
+#loader .dot:nth-child(7n+8) {
+  transform: rotate(360deg);
+}
+
+#loader .dot:nth-child(7n+8)::before {
+  animation: 0.8s linear 0.8s normal none infinite running load;
+  background: #ff0095 none repeat scroll 0 0;
+}
+
+#loader .loading {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  bottom: -40px;
+  height: 20px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  width: 180px;
+}
+
+@keyframes load {
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+@keyframes load {
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+.spinner-message {
+  text-align: center;
+}/*# sourceMappingURL=styles.css.map */

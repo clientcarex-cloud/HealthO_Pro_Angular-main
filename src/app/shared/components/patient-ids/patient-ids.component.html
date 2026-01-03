@@ -1,0 +1,26 @@
+<div class="container-full flex-column IDs td-color" style=" min-width: 130px">
+    <div class="row IDs g-0 flex-nowrap align-items-end justify-content-between">
+        <div class="col-4 px-0 d-flex flex-row flex-nowrap" style="vertical-align: bottom;">
+            <small style="vertical-align: bottom;">
+                <small class="d-flex flex-row text-nowrap" style="vertical-align: bottom;">
+                    MR NO :
+                </small>
+            </small>
+        </div>
+        <small class="col-8 ps-0 d-flex flex-row">
+            <ngb-highlight [result]="mr_no" [term]="query"></ngb-highlight>
+        </small>
+    </div>
+    <div class="row IDs g-0 d-flex flex-nowrap align-items-center">
+        <div class="col-4 px-0">
+            <small>
+                <small class="d-flex flex-row text-nowrap">
+                    VISIT ID :
+                </small>
+            </small>
+        </div>
+        <small class="col-8 ps-0">
+            <ngb-highlight [result]="visit_id" [term]="query"></ngb-highlight>
+        </small>
+    </div>
+</div>

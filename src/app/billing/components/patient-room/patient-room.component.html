@@ -1,0 +1,120 @@
+<div class="container-full">
+    <div class="row mb-3">
+        <div class="col-lg-6 col-12">
+            <app-select [selectItems]="floors" labelText="Select Floor" labelClass="form-label mb-1" (onSelectionChanged)="floorSelected($event)"
+            [imp]="true" selectBindLabel="name" [isClearable]="false" [selectValue]="floors && floors.length != 0 ? floors[0] : null"></app-select>
+        </div>
+    </div>
+
+    <ng-container *ngFor="let item of rooms">
+        <div class="row mb-2">
+            <div class="col-12 fw-semibold bg-dark text-white">{{item?.name}}</div>
+            <div class="col-12 px-2">
+                <div class="row">
+                    <ng-container *ngFor="let room of item.rooms">
+                        <ng-container *ngIf="room?.is_active">
+                            <div class="col-12 fw-semibold">
+                                <div>- Room {{room?.room_number}} ( {{room?.room_type?.name}} )</div>
+                            </div>
+                            <div class="col-12 d-flex flex-row flex-wrap gap-3 ps-3 mb-2 font-DMSans">
+                                <ng-container *ngFor="let bed of room.beds; let index = index">
+                                    
+                                    <ng-template #roomBooking>
+                                        <div class="container-full">
+
+                                            <div class="row mb-3">
+                                                <div class="col-12 td-color fw-light">
+                                                    <u><small><i>Room Info</i></small></u>
+                                                </div>
+
+                                                <div class="col-12 fw-semibold">{{item?.name}}</div>
+                                                <div class="col-12 fw-semibold">
+                                                    <div>Room {{room?.room_number}} ( {{room?.room_type?.name}} )</div>
+                                                </div>
+                                                <div class="col-12 fw-semibold">
+                                                    Bed no. {{bed?.bed_number}}
+                                                </div>
+                                                <div class="col-12 text-danger fw-semibold">
+                                                    Not Available
+                                                </div>
+                                                <div class="col-12">
+                                                    <app-patient-details name="₹ {{room?.charges_per_bed}} / {{room?.time_category?.name}}"></app-patient-details>
+                                                </div>
+                                                <!-- <div class="col-12 fw-semibold">
+                                                    {{room?.room_type?.name}}
+                                                </div> -->
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12 td-color fw-light">
+                                                    <u><small><i>Occupied By</i></small></u>
+                                                </div>
+                                                <div class="col-12">
+                                                     <app-patient-details name="{{bed.patient?.name}}" time="Ph: {{bed.patient?.mobile_number}}"></app-patient-details>
+                                                </div>
+                                                <div class="col-12 fs-6">
+                                                    <app-patient-ids mr_no="{{bed.patient?.mr_no}}" visit_id="{{bed.patient?.visit_id}}"></app-patient-ids>
+                                                </div>
+                                                <!-- <div class="col-12">
+                                                    <app-patient-details name="Booked At" time="{{timeSrvc.dateAsString(bed.patient?.admitted_date)}}"
+                                                    [insertTime]="timeSrvc.getTAT(bed.patient?.admitted_date)"></app-patient-details>
+                                                </div> -->
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-12 td-color fw-light">
+                                                    <u><small><i>Booked At</i></small></u>
+                                                </div>
+
+                                                <div class="col-12 fw-semibold">
+                                                    {{timeSrvc.dateAsString(bed.patient?.admitted_date)}}
+                                                </div>
+
+                                                <div class="col-12 fw-semibold">
+                                                    {{timeSrvc.getTAT(bed.patient?.admitted_date)}}
+                                                </div>
+                                            </div>
+    
+                                        </div>
+                                    </ng-template>
+    
+                                    <ng-template #roomInfo>
+                                        <div class="container-full">
+                                            <div class="row">
+                                                <div class="col-12 text-success fw-semibold">
+                                                    Available
+                                                </div>
+                                                <div class="col-12 fw-semibold">{{item?.name}}</div>
+                                                <div class="col-12 fw-semibold">
+                                                    <div>Room {{room?.room_number}} ( {{room?.room_type?.name}} )</div>
+                                                </div>
+                                                <div class="col-12 fw-semibold">
+                                                    Bed no. {{bed?.bed_number}}
+                                                </div>
+                                                <div class="col-12">
+                                                    <app-patient-details name="₹ {{room?.charges_per_bed}} / {{room?.time_category?.name}}"></app-patient-details>
+                                                </div>
+                                                <!-- <div class="col-12 fw-semibold">
+                                                    {{room?.room_type?.name}}
+                                                </div> -->
+                                            </div>
+                                        </div>
+                                    </ng-template>
+    
+                                    <div [ngbPopover]="bed?.is_booked ? roomBooking : roomInfo"  triggers="mouseenter:mouseleave" >
+                                        <button [disabled]="bed?.is_booked" (click)="roomSelected(room, bed)" 
+                                                class="btn btn-dark cursor-pointer rounded fs-">
+                                                <!-- d-flex flex-column justify-content-center align-items-center -->
+                                            {{ bed?.bed_number }}
+                                        </button>
+                                    </div>
+    
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+</div>

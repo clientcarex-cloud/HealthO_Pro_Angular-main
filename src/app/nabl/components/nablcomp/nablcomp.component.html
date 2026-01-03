@@ -1,0 +1,294 @@
+<!-- NABL COMPONENT  -->
+<app-layout [showNav]="false" [showPageTitle]="true" [displayInformation]="false" [labPackage]="false">
+
+    <ng-container class="optTitle">
+        NABL REPORT
+    </ng-container>
+
+    <ng-container class="opTitleInfoButton">
+        <app-info-btn></app-info-btn>
+    </ng-container>
+
+    <ng-container class="searchbox">
+        <app-searchbox placeholder="Search" [spellcheck]="false" [applyAutoFocus]="false"
+            (searchTermChange)="searchQuery($event)"></app-searchbox>
+    </ng-container>
+
+    <ng-container class="datepicker">
+        <app-datepicker-section (dateRangeSelected)="getRangeValue($event)"
+            [selectToday]="true"></app-datepicker-section>
+    </ng-container>
+
+    <ng-container class="selectPrint">
+        <div class="d-flex gap-1">
+            <button (click)="getDataForPrint(true)" class="btn btn-success rounded-3">Print</button>
+            <button (click)="getDataForPrint(false)" class="btn btn-primary rounded-3">Export</button>
+            <!-- <app-print-btn></app-print-btn>
+            <app-export-btn></app-export-btn> -->
+        </div>
+    </ng-container>
+
+    <ng-container class="showing">
+        <span class="fw-light">Showing</span>
+    </ng-container>
+
+    <ng-container class="entries">
+        <select class="form-select form-select-sm rounded-3 fw-medium fs-6 w-100 font-DMSans" style="width: auto"
+            name="pageSize" placeholder="Select" (change)="changePageNumber($event)">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option [value]="all_count">All</option>
+        </select>
+    </ng-container>
+
+    <ng-container class="entriesLabel">
+        <span class="fw-light">Entries</span>
+    </ng-container>
+
+    <ng-container class="TableDisplay">
+        <!-- <table id="patientsDataTableExcel" class="table table-sm" *ngIf="false">
+            <thead>
+                <tr >
+                    <th class="text-nowrap text-black">Sno.</th>
+                    <th class="text-nowrap text-black">Reg. Date</th>
+                    <th class="sort1 text-nowrap fullWidthColumn " sortable="name">Name</th>
+                    <th><span>Lab Test</span></th>
+                    <th><span>Status</span></th>
+                    <th><span>Sample Collected At</span></th>
+                    <th><span>Sample Collected By</span></th>
+                    <th><span>Sample Received At</span></th>
+                    <th><span>Sample Received By</span></th>
+                    <th><span>Report Result At</span></th>
+                    <th><span>Report Result By</span></th>
+                    <th><span>Turn Around Time</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let ptn of patients; let i = index" class="font-Readex td-color">
+                    <td class="fw-semibold text-black">
+                        <app-small-text text="{{i+1}}"></app-small-text>
+                    </td>
+                    <td>
+                        <app-small-text class="td-color" text="{{timeSrvc.formatDateWithDiv(ptn.added_on, '-')}}"></app-small-text>
+                    </td>
+                    <td>
+                        <app-small-text class="td-color" text="{{ptn.patient.name}}"></app-small-text>
+                    </td>
+                    <td class="text-black">
+                        <app-small-text text="{{ptn.name}}"></app-small-text>
+                    </td>
+                    <td>
+                        <app-small-text text="{{ptn.status_id}}"></app-small-text>
+                    </td>
+                    <td>
+                        <app-small-text *ngIf="ptn.phlebotomist!==null"
+                        text="{{timeSrvc.formatDateWithDiv(ptn.phlebotomist?.collected_at, '-', true)}}"></app-small-text>
+                    </td>
+                    <td>
+                        <app-small-text *ngIf="ptn.phlebotomist!==null" text="{{ptn?.phlebotomist?.collected_by}}"></app-small-text>
+                    </td>
+                    <td>
+                        <app-small-text *ngIf="ptn.labtechnician!==null"
+                        text="{{timeSrvc.formatDateWithDiv(ptn?.phlebotomist?.received_at, '-', true)}}"></app-small-text>
+                    </td>
+
+                    <td>
+                        <app-small-text *ngIf="ptn.labtechnician!==null"
+                        text="{{ptn?.phlebotomist?.received_by}}"></app-small-text>
+                    </td>
+
+                    <td>
+                        <app-small-text *ngIf="ptn.labtechnician!==null"
+                        text="{{timeSrvc.formatDateWithDiv(ptn?.labtechnician?.completed_at, '-', true)}}"></app-small-text>
+                    </td>
+
+                    <td>
+                        <app-small-text *ngIf="ptn.labtechnician!==null"
+                        text="{{ptn?.labtechnician?.report_created_by}}"></app-small-text>
+                    </td>
+
+                    <td>
+                        <app-small-text *ngIf="ptn.result!==null" text="{{ptn.result}}"></app-small-text>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="patientsDataTable" border="1" style="border-collapse: collapse; width: 100%;" *ngIf="false">
+            <thead>
+                <tr>
+                    <th colspan="10" style="text-align: center; font-weight: bold;">NABL REPORT</th>
+                </tr>
+                <tr style="font-size: 10px !important">
+                    <th style="white-space: nowrap; color: black;">#</th>
+                    <th style="white-space: nowrap; color: black; text-align: center;">Reg. Date</th>
+                    <th style="white-space: nowrap; color: black; text-align: center;">Visit Id</th>
+                    <th style="white-space: nowrap; color: black;">Name</th>
+                    <th>Test</th>
+                    <th>Status</th>
+                    <th style="white-space: nowrap;">Sample Collection</th>
+                    <th style="white-space: nowrap;">Sample Received</th>
+                    <th style="white-space: nowrap;">Report Result</th>
+                    <th style="white-space: nowrap;">TAT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let ptn of patients; let i = index" style="font-family: 'Readex', sans-serif;">
+                    <td style="text-align: center; line-height: 10px; padding: 2px; vertical-align: middle; white-space: nowrap;">
+                        <app-small-text text="{{i+1}}"></app-small-text>
+                    </td>
+                    <td style="text-align: center; line-height: 10px; padding: 2px; vertical-align: middle; white-space: nowrap;">
+                        <app-small-text class="td-color" text="{{timeSrvc.formatDateWithDiv(ptn.patient.added_on, '-')}}"></app-small-text>
+                    </td>
+                    <td style="text-align: center; line-height: 10px; padding: 2px; vertical-align: middle; white-space: nowrap;">
+                        <app-small-text class="td-color" text="{{ptn.patient.visit_id}}"></app-small-text>
+                    </td>
+                    <td style="line-height: 10px; padding: 2px; vertical-align: middle; font-weight: 600;">
+                        <app-small-text class="td-color" text="{{ptn.patient.name}}"></app-small-text>
+                    </td>
+                    <td style="line-height: 10px; padding: 2px; vertical-align: middle;">
+                        <app-small-text text="{{ptn.name}}"></app-small-text>
+                    </td>
+                    <td style="line-height: 10px; padding: 2px; vertical-align: middle;">
+                        <app-small-text text="{{ptn.status_id}}"></app-small-text>
+                    </td>
+                    <td style="line-height: 10px; padding: 2px; vertical-align: middle;">
+                        <div style="display: flex; flex-direction: column;">
+                            <app-small-text *ngIf="ptn.phlebotomist!==null" text="{{timeSrvc.formatDateWithDiv(ptn.phlebotomist?.collected_at, '-', true)}}"></app-small-text>
+                            <app-small-text *ngIf="ptn.phlebotomist!==null" text="{{ptn?.phlebotomist?.collected_by}}"></app-small-text>
+                        </div>
+                    </td>
+                    <td style="line-height: 10px; padding: 2px; vertical-align: middle;">
+                        <div style="display: flex; flex-direction: column;">
+                            <app-small-text *ngIf="ptn.phlebotomist!==null" text="{{timeSrvc.formatDateWithDiv(ptn?.phlebotomist?.received_at, '-', true)}}"></app-small-text>
+                            <app-small-text *ngIf="ptn.phlebotomist!==null" text="{{ptn?.phlebotomist?.received_by}}"></app-small-text>
+                        </div>
+                    </td>
+                    <td style="line-height: 10px; padding: 2px; vertical-align: middle;">
+                        <div style="display: flex; flex-direction: column;">
+                            <app-small-text *ngIf="ptn.labtechnician!==null" text="{{timeSrvc.formatDateWithDiv(ptn?.labtechnician?.completed_at, '-', true)}}"></app-small-text>
+                            <app-small-text *ngIf="ptn.labtechnician!==null" text="{{ptn?.labtechnician?.report_created_by}}"></app-small-text>
+                        </div>
+                    </td>
+                    <td style="line-height: 10px; padding: 2px; vertical-align: middle;">
+                        <app-small-text *ngIf="ptn.result!==null" text="{{ptn.result}}"></app-small-text>
+                    </td>
+                </tr>
+            </tbody>
+        </table> -->
+        
+        
+
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th class="text-nowrap text-black">Sno.</th>
+                <th class="sort1 text-nowrap fullWidthColumn " sortable="name">
+                    <div class="d-flex gap-5 align-items-center justify-content-start">
+                        <div>Patients</div>
+                        <div class="d-flex flex-column align-items-center justify-content-start gap-0 p-0">
+                            <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                            <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                    class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                        </div>
+                    </div>
+                </th>
+                <th><span>Lab Test</span></th>
+                <th><span>Status</span></th>
+                <th><span>Collected By</span></th>
+                <th><span>Received By</span></th>
+                <th><span>Report Result By</span></th>
+                <th><span>Turn Around Time</span></th>
+            </ng-container>
+            <ng-container class="tablebody" *ngIf="patients && patients.length !== 0">
+                <tr *ngFor="let ptn of patients; let i = index" class="font-Readex td-color">
+                    <td class="fw-semibold text-black">{{ (page_number * page_size) - page_size + i + 1 }}.</td>
+                    <td>
+                        <div class="d-flex flex-column text-black">
+                            <span class="text-black fw-medium fs-6">
+                                <ngb-highlight [result]="ptn.patient.name" [term]="query"></ngb-highlight>
+                            </span>
+                            <small class="td-color">{{timeSrvc.decodeTimestamp(ptn.patient.added_on)}}</small>
+                        </div>
+                    </td>
+                    <td class="text-black">
+                        <small>
+                            <ngb-highlight [result]="ptn.name" [term]="query"></ngb-highlight>
+                        </small>
+                    </td>
+                    <td>
+                        <small>
+                            {{ptn.status_id}}
+                        </small>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column justify-content-start" *ngIf="ptn.phlebotomist!==null">
+                            <small class="text-black fw-medium"
+                                *ngIf="ptn.phlebotomist.collected_by!==null">{{ptn.phlebotomist.collected_by}}</small>
+                            <small
+                                *ngIf="ptn.phlebotomist.collected_at!==null">{{timeSrvc.decodeTimestamp(ptn.phlebotomist.collected_at)}}</small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column justify-content-start" *ngIf="ptn.phlebotomist!==null">
+                            <small class="text-black fw-medium"
+                                *ngIf="ptn.phlebotomist.received_by!==null">{{ptn.phlebotomist.received_by}}</small>
+                            <small
+                                *ngIf="ptn.phlebotomist.received_at!==null">{{timeSrvc.decodeTimestamp(ptn.phlebotomist.received_at)}}</small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column justify-content-start" *ngIf="ptn.labtechnician!==null">
+                            <small class="text-black  fw-medium"
+                                *ngIf="ptn.labtechnician.report_created_by!==null">{{ptn.labtechnician.report_created_by}}</small>
+                            <small class="text-black " *ngIf="ptn.labtechnician.report_created_by===null">--</small>
+
+                            <small
+                                *ngIf="ptn.labtechnician.completed_at!==null">{{timeSrvc.decodeTimestamp(ptn.labtechnician.completed_at)}}</small>
+                            <small *ngIf="ptn.labtechnician.completed_at===null">--</small>
+                        </div>
+                    </td>
+                    <td>
+                        <small *ngIf="ptn.result!==null">
+                            {{ptn.result}}
+                        </small>
+                        <small *ngIf="ptn.result===null">
+                            --
+                        </small>
+                    </td>
+
+                </tr>
+            </ng-container>
+
+            <ng-container class="tablebody" *ngIf="!patients || patients.length === 0">
+                <tr>
+                    <td colspan="8">
+                        <div class="td-color fs-6 font-monsterract d-flex align-items-center justify-content-center "
+                            style="vertical-align: middle;min-height: 100px;">
+                            <!-- NO PATIENTS -->
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </ng-container>
+
+    <ng-container class="paginationEntries">
+        <span class="text-nowrap">Showing {{(page_number * page_size) - page_size + 1}} to {{(page_number * page_size) <
+                all_count ? page_number * page_size : all_count}} of {{ all_count ? all_count : 0 }} Entries</span>
+    </ng-container>
+
+    <ng-container class="pager">
+        <div class="d-flex">
+            <ngb-pagination [collectionSize]="all_count ? all_count : 0" [(page)]="page_number" [maxSize]="3"
+                (pageChange)="onPageChange($event)" [pageSize]="page_size" [rotate]="true" [boundaryLinks]="true"
+                class="custom-pagination">
+                <ng-template ngbPaginationPrevious class="font-DMsans">Prev</ng-template>
+                <ng-template ngbPaginationNext class="font-DMSans">Next</ng-template>
+            </ngb-pagination>
+
+        </div>
+    </ng-container>
+
+</app-layout>

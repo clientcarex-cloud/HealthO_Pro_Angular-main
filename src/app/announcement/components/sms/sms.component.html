@@ -1,0 +1,567 @@
+<!-- SMS COMPONENT  -->
+<div class="container-full font-Readex">
+
+    <div class="row mb-2">
+        <span class=" fw-medium">{{sms ? 'Send SMS' : 'WhatsApp Messages'}}</span>
+    </div>
+
+    <div class="row mb-2">
+        <app-display-data [data]="dataSMS"></app-display-data>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+            <div class="row g-2">
+                <div class="col-11">
+                    <app-select [imp]="true"  labelText="Select Campaign" placeHolder="Select Campaign" [selectValue]="selected_Template"
+                        (onSelectionChanged)="selectTemplate($event)" classVal="fw-light ng-select-container border-0  rounded-3 fs-5 " selectBindLabel="templateName" selectBindId="id"
+                        [selectItems]="campaign"></app-select>
+                </div>
+                <div class="col-1 d-flex align-items-end justify-content-start">
+                    <button class="btn btn-transparent fs-4 p-0" (click)="openModal(addtemplate)">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12">
+
+            <div class="row g-0 d-flex align-items-end px-0">
+                <div class="col-7">
+
+                    <app-select [imp]="true" classVal="fw-light ng-select-container border-0  rounded-3 fs-5 "
+                     [selectValue]="selected_sendType" labelText="Send To" placeHolder="Select" 
+                     (onSelectionChanged)="sendType($event)"
+                     selectBindLabel="name" [selectItems]="sendTypes"></app-select>
+
+                </div>
+                <div class="col-5">
+
+                    <button type="button" (click)="openModalss()"
+                        class=" w-100 btn btn-success p-1 rounded-3 text-nowrap buttonSelect fs-5">
+                        Select
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-container *ngIf="selected_sendType && selected_sendType?.id == 5; else selectedItemsContainer">
+        <div class="row mb-2" *ngIf="otherData && otherData.length != 0">
+            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
+               Selected Members ( {{otherData.length}} )<span class="text-danger">*</span>
+            </div>
+    
+            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12">
+                <textarea class="form-control w-100 bg-white rounded-3" style="cursor:not-allowed" [disabled]="true" [value]="concenateNamesMob(otherData)"></textarea>
+            </div>
+        </div>
+    </ng-container>
+
+
+    <ng-template #selectedItemsContainer>
+        <div class="row mb-2" *ngIf="selectedItems && selectedItems.length != 0">
+            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-2">
+               Selected Members ( {{selectedItemsIds.length}} )<span class="text-danger">*</span>
+            </div>
+    
+            <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12">
+                <textarea class="form-control w-100 bg-white rounded-3" style="cursor:not-allowed" [disabled]="true" [value]="concenateNamesMob(selectedItems)"></textarea>
+            </div>
+        </div>
+    </ng-template>
+
+
+    <div class="row mb-2">
+        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+            <div class=" d-flex flex-column">
+                <div>
+                    <app-textarea placeholderText="Select Compaign.." [defHeight]="25" classVal="form-control w-100 bg-white rounded-3 fs-5" 
+                    [input_disabled]="true" [Value]="textareaValue"></app-textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-2">
+            <button class="btn btn-success rounded-3 btn-lg" [disabled]="loading" (click)="selected_sendType && selected_sendType?.id == 5 ? sendOtherMessages() : sendMessage()">
+                <!-- Send -->
+                 <span *ngIf="!loading">Send <i class="bi bi-send-fill ps-2"></i></span>
+                 <span *ngIf="loading">Sending ...</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+
+<ng-template #selectionModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+
+
+    <div class="modal-body p-0" style="background-color: #F8FAFC;">
+        <div class="container-full py-0 px-3 py-2">
+
+            <div class="row mb-2">
+                <div class="col-3">
+                    <app-datepicker [labelText]="'Select Date'" [imp]="true" datePickerFormat="Y-m-d" [setMax]="true" [selectToday]="true"
+                        (dateValueChange)="date = $event; getPatientsData()"></app-datepicker>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <!-- <th class="text-nowrap text-black">Sno.</th> -->
+                            <th>
+                                <app-checkbox classVal="form-check fs-5" [showLabel]="false"
+                                inactiveText="" activeText="" [ngbTooltip]="'Select All'" (onCheckboxValueChanged)="bulkPatients($event)"
+                                ></app-checkbox>
+                            </th>
+                            <th>
+                                <div class="d-flex gap-5 align-items-center justify-content-start">
+                                    <div>Patients</div>
+                                </div>
+                            </th>
+                            <th>Mobile Number</th>
+                            <th>Amount Due</th>
+
+                        </ng-container>
+
+                        <ng-container class="tablebody" *ngFor="let item of patients; let i = index">
+                            <tr class=" td-color cursor-pointer">
+                                <!-- <td class="fw-semibold text-black">{{ i + 1 }}.</td> -->
+                                <td>
+                                    <div class="fs-5">
+                                        <app-checkbox classVal="form-check" [showLabel]="false" [checkboxValue]="validatePatient(item.id)"
+                                        inactiveText="" activeText="" (onCheckboxValueChanged)="selectPatient($event, item)"
+                                        ></app-checkbox>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex flex-row gap-1">
+                                            <span class="text-black text-nowrap fs-6 fw-medium"
+                                                *ngIf="item.title!== null">{{item.title.name}}</span>
+                                            <span class="text-black text-nowrap fs-6 fw-medium">
+                                                <ngb-highlight [result]="item.name" [term]="query"></ngb-highlight>
+                                            </span>
+                                        </div>
+                                        <small class="text-nowrap">
+                                            {{timeSrvc.decodeTimestamp(item.added_on)}}
+                                        </small>
+                                    </div>
+                                </td>
+
+
+                                <td class="text-nowrap">
+                                    {{item.mobile_number}}
+                                  </td> 
+
+                                <td class="text-black fw-medium text-nowrap">
+                                    <ng-container *ngIf="item.invoice; else noInvoice">
+                                        <ng-container
+                                            *ngIf="item.invoice.total_due === 0 || item.invoice.total_due == '0.00'; else notFullyPaid">
+                                            <span class="td-color">Fully paid</span>
+                                        </ng-container>
+                                        <ng-template #notFullyPaid>
+                                            {{ 'Rs. ' + item.invoice.total_due }}
+                                        </ng-template>
+                                    </ng-container>
+                                    <ng-template #noInvoice>Rs. ---</ng-template>
+                                </td>
+
+                            </tr>
+                            <tr *ngIf="activeId === item.visit_id" class="cursor-pointer">
+                                <td colspan="8" class="bg-light-blue">
+                                    <div aria-labelledby="tableDropdown"
+                                        [ngClass]="{'active': activeId === item.visit_id}"
+                                        class="testsTable table-dropdown bg-white border border-black mx-5 mb-5 rounded-3">
+                                        <table class="table">
+                                            <thead class="fw-medium">
+                                                <tr class=" fs-6 text-white bg-black">
+                                                    <!-- <th style="width: 10px">#</th> -->
+                                                    <th class="text-nowrap">Lab Test</th>
+                                                    <th class="text-center">Status</th>
+                                                    <th class="text-center">User</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <ng-container *ngFor="let test of item.lab_tests; let i = index">
+                                                    <tr>
+                                                        <td class="text-nowrap fw-semibold">{{ test.name }}</td>
+                                                        <td class="text-center">
+                                                            <span
+                                                                [class.text-danger]="checkEmergency(test.status_id)">{{test.status_id}}</span>
+                                                        </td>
+                                                        <td class="text-nowrap text-center">{{ item.created_by }}</td>
+                                                    </tr>
+
+                                                </ng-container>
+
+                                                <ng-container
+                                                    *ngIf="item.lab_packages && item.lab_packages.length !== 0">
+                                                    <ng-container
+                                                        *ngFor="let package of item.lab_packages; let j = index">
+                                                        <tr>
+                                                            <td colspan="3" class="py-2 fw-normal fs-6 td-color">
+                                                                {{package.name}}</td>
+                                                        </tr>
+                                                        <ng-container
+                                                            *ngFor="let pkg of package.lab_tests; let k = index">
+                                                            <tr>
+                                                                <td class="text-nowrap fw-semibold py-1 ps-5">- {{
+                                                                    pkg.name }}</td>
+                                                                <td class="text-center">
+                                                                    <!-- {{ pkg.status_id }} -->
+                                                                    <span
+                                                                        [class.text-danger]="checkEmergency(pkg.status_id)">{{pkg.status_id}}</span>
+                                                                </td>
+                                                                <td class="text-nowrap text-center">{{
+                                                                    package.created_by }}</td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </ng-container>
+
+                        <ng-container class="tablebody">
+                            <tr *ngIf="!patients || patients.length === 0">
+                                <td colspan="8">
+                                    <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                                        style="vertical-align: middle;min-height: 100px;">
+
+                                        <span *ngIf="query!==''">
+                                            No Data Found with Search Query " <span
+                                                class="fw-bold text-black">{{query}}</span> "
+                                        </span>
+
+                                        <span *ngIf="query==='' && !pageLoading">
+                                            No patients registered on this day.
+                                        </span>
+
+                                        <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <div class="text-black pt-2 fw-light">Loading</div>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #StaffSelectionModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+
+
+    <div class="modal-body p-0" style="background-color: #F8FAFC;">
+        <div class="container-full py-0 px-3 py-2">
+
+            <div class="row mb-2">
+                <div class="col-3">
+                    <app-searchbox (searchTermChange)="query = $event; getStaffs()"></app-searchbox>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>
+                                <app-checkbox classVal="form-check fs-5" [showLabel]="false" (onCheckboxValueChanged)="bulkStaffs($event)"
+                                inactiveText="" activeText="" [ngbTooltip]="'Select All'" 
+                                ></app-checkbox>
+                            </th>
+                            <th>Name</th>
+                            <th>Mobile Number</th>
+                        </ng-container>
+
+                        <ng-container class="tablebody" *ngFor="let item of staffs; let i = index">
+                            <tr class=" td-color cursor-pointer" *ngIf="!check_sa || (check_sa && item.is_superadmin)">
+                                <td>
+                                    <div class="fs-5">
+                                        <app-checkbox classVal="form-check" [showLabel]="false" [checkboxValue]="validatePatient(item.id)"
+                                        inactiveText="" activeText="" (onCheckboxValueChanged)="selectPatient($event, item)"
+                                        ></app-checkbox>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-normal d-flex flex-column">
+                                        <span class="text-black fs-6">{{item.name}}</span>
+                                        <small>{{item.role.name}}</small>
+                                    </div>
+                                </td>
+
+                                <td class="text-nowrap">
+                                    <span class="fs-6 text-black">{{item.mobile_number}}</span>
+                                  </td> 
+                            </tr>
+                        </ng-container>
+
+                        <ng-container class="tablebody">
+                            <tr *ngIf="!staffs || staffs.length === 0">
+                                <td colspan="8">
+                                    <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                                        style="vertical-align: middle;min-height: 100px;">
+
+                                        <span *ngIf="query!==''">
+                                            No Data Found with Search Query " <span
+                                                class="fw-bold text-black">{{query}}</span> "
+                                        </span>
+
+                                        <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <div class="text-black pt-2 fw-light">Loading</div>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #doctorSelectionModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+
+
+    <div class="modal-body p-0" style="background-color: #F8FAFC;">
+        <div class="container-full py-0 px-3 py-2">
+
+            <div class="row mb-2">
+                <div class="col-3">
+                    <app-searchbox (searchTermChange)="query = $event; getDoctors()"></app-searchbox>
+                </div>
+                <div class="col-3">
+                    <!-- <app-searchbox (searchTermChange)="query = $event; getDoctors()"></app-searchbox> -->
+                     <app-select [labelText]="''" [selectValue]="doctorTypes[1]" [selectItems]="doctorTypes" selectBindLabel="name" (onSelectionChanged)="selectedDocType = $event?.id; getDoctors()"></app-select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>
+                                <app-checkbox classVal="form-check fs-5" [showLabel]="false" (onCheckboxValueChanged)="bulkDoctors($event)"
+                                inactiveText="" activeText="" [ngbTooltip]="'Select All'" 
+                                ></app-checkbox>
+                            </th>
+                            <th>Name</th>
+                            <th>Mobile Number</th>
+                        </ng-container>
+
+                        <ng-container class="tablebody" *ngFor="let item of doctors; let i = index">
+                            <tr class=" td-color cursor-pointer">
+           
+                                <td>
+                                    <div class="fs-5">
+                                        <app-checkbox classVal="form-check" [showLabel]="false" [checkboxValue]="validatePatient(item.id)"
+                                        inactiveText="" activeText="" (onCheckboxValueChanged)="selectPatient($event, item)"
+                                        ></app-checkbox>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-black fs-5">{{item.name}}</span>
+                                </td>
+
+                                <td class="text-nowrap">
+                                    {{item.mobile_number}}
+                                  </td> 
+                            </tr>
+                        </ng-container>
+
+                        <ng-container class="tablebody">
+                            <tr *ngIf="!doctors || doctors.length === 0">
+                                <td colspan="8">
+                                    <div class="td-color fs-6 d-flex align-items-center justify-content-center "
+                                        style="vertical-align: middle;min-height: 100px;">
+
+                                        <span *ngIf="query!==''">
+                                            No Data Found with Search Query " <span
+                                                class="fw-bold text-black">{{query}}</span> "
+                                        </span>
+
+                                        <span *ngIf="pageLoading" class="d-flex flex-column align-items-center py-5">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <div class="text-black pt-2 fw-light">Loading</div>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #otherModal let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">{{ title }}</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="container-full">
+            <div class="row mb-3">
+                <div class="col-lg-6 col-12">
+                    <div class="font-DMSans d-flex flex-row gap-2 rounded-3">
+                    
+                        <label for="fileUpload" class="visually-hidden">Upload Image</label>
+                        <input (keydown.enter)="$event.stopPropagation()" #file type="file"
+                            class="form-control bg-soft-primary rounded-5 d-none"
+                            (change)="onFileChanged($event)" name="fileUpload" id="fileUpload"
+                            accept=".xlsx, .xls">
+
+                        <button type="button" (keydown.enter)="$event.stopPropagation()"
+                            class="input-group-text btn bg-white border rounded-3 d-flex gap-2 
+                                    fs-5 fw-semibold form-control align-items-center" (click)="file.click()">
+                                <i class="ri-upload-2-line"></i> {{otherData ? fileName : 'Import from excel'}}
+                        </button>
+
+                        <button (click)="otherData = null; file.value = '' " *ngIf="otherData"
+                            class="input-group-text btn rounded-3">
+                            <i class="ri-close-line fs-5 text-danger"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- <div class="col-lg-6 col-12 d-flex justify-content-end">
+                    <button class="btn btn-success rounded-3">Save</button>
+                </div> -->
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <app-datatable>
+                        <ng-container class="tableheader">
+                            <th>S.no</th>
+                            <th class="text-nowrap" *ngFor="let key of keys">{{key}}</th>
+                        </ng-container>
+                        <ng-container class="tablebody">
+                            <ng-container *ngIf="otherData">
+                                <tr *ngFor="let item of otherData; let i = index">
+                                    <td>
+                                        <span class="fw-semibold fs-5">{{i + 1}}</span>
+                                    </td>
+                                    <!-- Dynamically display all properties of each item -->
+                                    <ng-container *ngFor="let entry of objectEntries(item)">
+                                        <td>
+                                        <span class="fw-semibold fs-5">
+                                            {{ entry[1] }} <!-- Value of the property -->
+                                        </span>
+                                        </td>
+                                    </ng-container>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                    </app-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #addtemplate let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom d-flex justify-content-between align-items-center">
+        <span class="modal-title fs-5" id="modal-basic-title">Add Compaign</span>
+        <div>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+        </div>
+    </div>
+
+
+    <div class="modal-body p-0" style="background-color: #F8FAFC;">
+        <div class="container-full py-0 px-3 py-2">
+            <form [formGroup]="baseForm">
+
+
+                <div class="row mb-2">
+                    <!-- (onValueChanged)="temp_name = $event" -->
+                    <div class="col-10">
+                        <app-input labelText="Compaign Name" [imp]="true" [formSubmitted]="submitted"
+                        [formatLetter]="true" [applyAutoFocus]="true" placeHolder=""
+                        classVal="form-control fw-medium fs-5 py-1 rounded-3" formControlName="templateName"
+                        ></app-input>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <app-textarea-input labelText="Message" [imp]="true" [formSubmitted]="submitted"
+                    placeHolder="" classVal="form-control fw-medium fs-5 py-1 rounded-3"  formControlName="templateContent"
+                    ></app-textarea-input>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <app-input labelText="Template Id" formControlName="templateId" placeHolder=""></app-input>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <app-input labelText="Sender Id" formControlName="sender_id" placeHolder=""></app-input>
+                    </div>
+                </div>
+
+            </form>
+
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-success rounded-3 fs-5" (click)="saveTemplate()" >
+                        Save
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</ng-template>
+
+
+
+

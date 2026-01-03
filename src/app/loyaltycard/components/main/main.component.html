@@ -1,0 +1,74 @@
+<div class="container-full font-Readex">
+  <!-- NAVIGATION AND ADDITIONAL BUTTONS  -->
+  <div class="row g-lg-2 g-2 flex-wrap align-items-center justify-content-between">
+    <!-- NAVIGATION  -->
+    <div class="col-lg-8 col-md-12 col-sm-12">
+      <div class="tabsNavigation d-flex">
+        <ul ngbNav #nav="ngbNav" class="nav nav-section-custom font-inter" [activeId]="1">
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Members</a>
+            <ng-template ngbNavContent>
+              <app-members></app-members>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>Cards</a>
+            <ng-template ngbNavContent>
+               <app-loyaltycard></app-loyaltycard>
+            </ng-template>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ADD NEW BUTTON & PAGE INFO BTN  -->
+    <div class="col-md-12 col-lg-4 col-sm-12">
+      <div
+        class="addNewInfoOptions d-flex justify-content-lg-end justify-content-xl-end justify-content-sm-start justify-content-xs-center justify-md-content-start align-items-center gap-1">
+        <app-addnewbutton *ngIf="nav.activeId === 1" (onAddNewClick)="openXl(membership, 'lg', true, 'Cardholder Details')" buttonText="Add Card Holder" content="content"></app-addnewbutton>
+        <app-addnewbutton *ngIf="nav.activeId === 2" (onAddNewClick)="title = 'Add New Card' ;openModal(cardFormTemp, { size: 'lg', centered: true, scrollable: true})"
+          buttonText="Add Card" content="content">
+        </app-addnewbutton>
+        <app-info-btn></app-info-btn>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #cardFormTemp let-modal>
+
+  <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+    <span class="modal-title fs-5" id="modal-basic-title">{{title}}</span>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+  </div>
+  <div class="modal-body " style="background-color: #F8FAFC; ">
+    <app-card #card (saved)="saveCard($event)" (updated)="updateCard($event)"></app-card>
+  </div>
+
+  <div class="modal-footer bg-light-blue py-1 px-3 border-top">
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-success rounded-3 fs-5" (click)="card.saveCard();">Save</button>
+    </div>
+  </div>
+
+</ng-template>
+
+
+<ng-template #membership let-modal>
+
+  <div class="modal-header py-2 px-3 font-Readex bg-light-blue">
+    <span class="modal-title fs-4" id="modal-basic-title">{{title}}</span>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click');"></button>
+  </div>
+  <div class="modal-body " style="background-color: #F8FAFC; ">
+    <app-member-ship (saved)="saveMember($event)"></app-member-ship>
+  </div>
+
+</ng-template>

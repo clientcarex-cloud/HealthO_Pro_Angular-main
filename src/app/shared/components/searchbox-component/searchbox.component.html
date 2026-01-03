@@ -1,0 +1,10 @@
+<div class="search-box w-100">
+    <input type="text" [class]="classVal" 
+    [placeholder]="placeholder || 'Search...'"
+    [attr.id]="searchId"
+    [(ngModel)]="searchTerm"
+    [spellcheck]="false"
+    (input)="onSearchChange($event)">
+    <i class="ri-search-line search-icon"></i> 
+    <i *ngIf="searchTerm" class="search-btn-icon" (click)="onClearText()"></i>   
+</div>

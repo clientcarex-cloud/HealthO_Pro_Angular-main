@@ -1,0 +1,190 @@
+<div class="container-full py-2 px-2" style="min-height: 500px;">
+
+    <!-- HEADING  -->
+    <div class="row mb-3 g-3 justify-content-between">
+        <div class="col-lg-6 col-12">
+            <!-- Discount Types -->
+            <div class="row border-5 border-start border-primary rounded-2 ps-2">
+                <div class="col-12">
+                    <span class="fw-medium fs-5">Department</span>
+                </div>
+                <div class="col-12">
+                    <span class="text-wrap td-color">Turn on/off essential features required for Department</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADD NEW BUTTON FOR ADDING TESTS  -->
+        <div class="col-lg-6 col-12 d-flex justify-content-lg-end justify-content-start">
+            <!-- addnewbutton (onAddNewClick)="openXl(addDoctor, 'Add Consulting Doctor')" -->
+            <app-addnewbutton (onAddNewClick)="openXl(addDept, '')" buttonText="Add Department"
+                content="content"></app-addnewbutton>
+        </div>
+    </div>
+
+    <div class="row">
+        <app-datatable>
+            <ng-container class="tableheader">
+                <th style="width:3px">
+                    <div class="d-flex flex-column gap-0 p-0">
+                        <small ngbTooltip="Latest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                class="ri-arrow-up-s-line cursor-pointer" [class.text-black]="sort"></i></small>
+                        <small ngbTooltip="Oldest" style="line-height: 6px;" (click)="changeSorting()"><i
+                                class="ri-arrow-down-s-line  cursor-pointer" [class.text-black]="!sort"></i></small>
+                    </div>
+                </th>
+                <th>Department <small class="text-black font-DMSans">({{depts ? depts.length : 0}})</small></th>
+                <th>Default Doctor</th>
+                <th>Lab Technicican</th>
+                <th class="text-center">Is Active</th>
+                <th class="text-center">Flow Type</th>
+                <!-- <td class="fw-semibold">Edit Name</td> -->
+            </ng-container>
+            <ng-container class="tablebody">
+                <tr *ngFor="let dept of depts" (mouseenter)="displayEdit(dept, true)"
+                    (mouseleave)="displayEdit(dept, false)">
+                    <td></td>
+                    <td>
+                        <span
+                            class="cursor-pointer border-0 bg-transparent text-nowrap d-flex align-items-center gap-2 py-1 text-black">
+                            <span *ngIf="!dept.editMode || dept.id !== activeDept.id">{{dept?.name | uppercase}}</span>
+                            <input *ngIf="dept.editMode && dept.id === activeDept.id"
+                                [class]="dept.editMode ? 'text-black form-control border bg-white my-0' : 'hidden'"
+                                type="text" [(ngModel)]="dept.name" (input)="changeDepartmentName($event, dept)">
+
+                            <button *ngIf="dept.editMode && dept.id === activeDept.id"
+                                class="btn btn-sm border-0 bg-transparent fs-4 p-0 text-success"
+                                (click)="saveDepartmentName(dept)">
+                                <i class="ri-check-line"></i>
+                            </button>
+
+                            <button *ngIf="dept.editMode && dept.id === activeDept.id"
+                                class="btn btn-sm border-0 bg-transparent fs-4 p-0 text-danger"
+                                (click)="cancelEdit(dept)">
+                                <i class="ri-close-line"></i>
+                            </button>
+                        </span>
+                    </td>
+                    <td>
+
+                        <app-select placeHolder="Select Doctor" [selectValue]="dept?.defaults?.doctor || null"
+                        selectBindLabel="name" selectBindId="id" [selectItems]="doctors"
+                        (onSelectionChanged)="defaultSelected(dept, $event, true)"
+                        classVal="fw-normal ng-select-container border-0 rounded-3"
+                        [isLoading]="docLoading"
+                        [emptyFound]="false" [notFound]="testTerm != '' ? ' Not Found' : 'Search Doctor'"
+                        ></app-select>
+                    </td>
+                    <td>
+
+                        <app-select placeHolder="Select Technican" [selectValue]="dept?.defaults?.lab_technician || null"
+                        selectBindLabel="name" selectBindId="id" [selectItems]="staffs"
+                        (onSelectionChanged)="defaultSelected(dept, $event, false)"
+                        classVal="fw-normal ng-select-container border-0 rounded-3"
+                        [isLoading]="consDocLoading"
+                        [emptyFound]="false" [notFound]="testTerm != '' ? ' Not Found' : 'Search Doctor'"
+                        ></app-select>
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <app-checkbox [checkboxValue]="dept.is_active"
+                                (onCheckboxValueChanged)="updateDepartment(dept)" classVal="form-switch"
+                                [showLabel]="false" activeText="" inactiveText="">
+                            </app-checkbox>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        {{dept.department_flow_type}}
+                    </td>
+                <!-- <td>
+                        <button class="btn edit-btn btn-sm border-0 bg-transparent fs-5 ps-2 py-0 td-color"
+                            (click)="toggleEditMode(dept)">
+                            <i class="ri-edit-line"></i>
+                        </button>
+                    </td> -->
+                </tr>
+
+
+            </ng-container>
+            <ng-container class="tablebody" *ngIf="!depts || depts.length === 0">
+                <tr>
+                    <td colspan="8">
+                        <div class="td-color fs-6 py-5 font-monsterract fw-medium d-flex flex-column align-items-center justify-content-center"
+                            style="vertical-align: middle;min-height: 100px;">
+                            <!-- NO depts -->
+                            <img src="/assets/images/file.png" style="width:17%">
+                            <small class="td-color pt-2">NO DATA</small>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </app-datatable>
+    </div>
+</div>
+
+
+<ng-template #addDept let-modal>
+    <div class="modal-header py-2 px-3 bg-light-blue border-bottom">
+        <span class="modal-title" id="modal-basic-title">Add Report Template</span>
+        <button type="button" class="btn-close" aria-label="Close"
+            (click)="modal.dismiss('Cross click');this.submitted=false;"></button>
+    </div>
+    <form [formGroup]="baseForm" (ngSubmit)="saveDepartment()">
+        <div class="modal-body font-Readex">
+
+            <div class="container-full">
+
+                <div class="row g-2 ">
+
+                    <!-- report name name input  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <div class="col-12">
+                                <!-- Name Input  -->
+                                <!-- (onValueChanged)="formatString($event, 'name')" -->
+                                <app-input placeHolder="Enter department name" labelText="Department Name"
+                                    labelClass="form-label mb-1" [imp]="true" [applyAllowLettersOnly]="true"
+                                    [applyEmptySpace]="true" [applyUpperCase]="true" [applySpecialChars]="false"
+                                    [formSubmitted]="submitted" formControlName="name" [applyAutoFocus]="true"
+                                    [applyDot]="false" classVal="form-control fw-light rounded-3"></app-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- report flow type  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <!-- <div class="col-12">Flow Type <span class="text-danger">*</span></div> -->
+                            <div class="col-12">
+
+                                <app-select labelText="Flow Type" labelClass="form-label mb-1" [imp]="true"
+                                    [selectItems]="deptFlows" selectBindLabel="name" [formSubmitted]="submitted"
+                                    formControlName="department_flow_type" placeHolder="Select Flow Type"></app-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- is Active  -->
+                    <div class="col-12 mb-2">
+                        <div class="row">
+                            <!-- <div class="col-12">Is Active</div> -->
+                            <div class="col-12 py-2 d-flex align-items-center">
+                                <app-checkbox formControlName="is_active" [formSubmitted]="submitted"
+                                    classVal="form-check" [showLabel]="false" activeText="Is Active"
+                                    inactiveText="Is Active"></app-checkbox>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-footer py-0 px-3 bg-light-blue border-top">
+            <button type="submit" class="btn btn-success btn-sm rounded-3">
+                Save Report<span *ngIf="inProgress" class="spinner-border spinner-border-sm mr-1"></span>
+            </button>
+        </div>
+    </form>
+</ng-template>
