@@ -53,6 +53,16 @@
             <ng-container *ngTemplateOutlet="PrintTmpt"></ng-container>
           </ng-template>
         </li>
+
+        <li ngbNavItem="recordsDelete">
+          <a ngbNavLink class="text-nowrap d-flex justify-content-between rounded-3 fw-light gap-2 align-items-center">
+            <span>Records Delete</span>
+            <span><i class="bi bi-chevron-right"></i></span>
+          </a>
+          <ng-template ngbNavContent>
+             <ng-container *ngTemplateOutlet="recordsDeleteTmpt"></ng-container>
+          </ng-template>
+        </li>
         
       </ul>
     </div>
@@ -78,6 +88,15 @@
 
   <ng-template #PrintTmpt>
     <app-print-templates></app-print-templates>
+  </ng-template>
+
+  <ng-template #recordsDeleteTmpt>
+    <div class="container-fluid">
+       <div class="alert alert-danger" role="alert">
+        Dangerous: Once Deleted Data then cannot recover, it's your responsibiity, our company is not responsible
+       </div>
+       <button class="btn btn-danger" (click)="deleteRecords()">DELETE RECORDS</button>
+    </div>
   </ng-template>
 
   <ng-template #businessTemplate>

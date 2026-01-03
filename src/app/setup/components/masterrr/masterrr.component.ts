@@ -24,7 +24,7 @@ export class MasterrrComponent implements OnInit {
 
   handleTabChange(tabIndex: number, template: TemplateRef<any>): void {
     // Your implementation here
-}
+  }
 
   menu = [
     'Patients Registration',
@@ -35,5 +35,8 @@ export class MasterrrComponent implements OnInit {
     'Auto Email'
   ]
 
+  deleteRecords() {
+    console.log("Delete Records button clicked");
+  }
 
 }
