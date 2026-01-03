@@ -21,23 +21,26 @@ import { NgxEditorModule } from 'ngx-editor';
 import { BusinessSettingComponent } from './components/masterrr/business-setting/business-setting.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { TestFontSizesComponent } from './components/tweaks/test-font-sizes/test-font-sizes.component';
+import { RecordsDeleteComponent } from './components/masterrr/records-delete/records-delete.component';
 
 @NgModule({
-  declarations: [   
-    TweaksComponent, 
-    SetupComponent, 
-    MasterrrComponent, 
+  declarations: [
+    TweaksComponent,
+    SetupComponent,
+    MasterrrComponent,
     BusinessPermissionsComponent,
-    MainComponent, 
-    GlobalTestsComponent, 
-    DiscountTypeComponent, 
-    DepartmentTypeComponent, 
-    StaffRoleComponent, 
+    MainComponent,
+    GlobalTestsComponent,
+    DiscountTypeComponent,
+    DepartmentTypeComponent,
+    StaffRoleComponent,
     PrintTemplatesComponent,
     LetterheadSettingComponent,
     ImportDataComponent,
     BusinessSettingComponent,
-    TestFontSizesComponent
+    BusinessSettingComponent,
+    TestFontSizesComponent,
+    RecordsDeleteComponent
   ],
   imports: [
     SetupRoutingModule,
@@ -45,13 +48,13 @@ import { TestFontSizesComponent } from './components/tweaks/test-font-sizes/test
     NgbNavModule,
     DragDropModule,
     EditorComponent,
-    CKEditorModule ,
+    CKEditorModule,
     NgxEditorModule,
     AutocompleteLibModule
   ],
-  exports: [ 
-    SetupComponent, 
-    GlobalTestsComponent, 
+  exports: [
+    SetupComponent,
+    GlobalTestsComponent,
     BusinessSettingComponent,
     DepartmentTypeComponent,
     LetterheadSettingComponent,
