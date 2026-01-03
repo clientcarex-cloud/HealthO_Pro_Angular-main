@@ -12,6 +12,24 @@
 </div>
 
 
+<!-- Manual Deletion Testing Section -->
+<div class="card mb-4 border-danger">
+    <div class="card-header bg-danger text-white">
+        Critical: Manual Deletion Testing (Bypass Fetch)
+    </div>
+    <div class="card-body">
+        <label for="manualIds" class="form-label">Enter Patient IDs to delete (comma separated, e.g., 101, 102):</label>
+        <div class="input-group">
+            <input type="text" class="form-control" id="manualIds" [(ngModel)]="manualIdsString"
+                placeholder="e.g. 1045, 1046">
+            <button class="btn btn-danger" type="button" (click)="deleteManualIds()" [disabled]="!manualIdsString">
+                Delete Manually Entered IDs
+            </button>
+        </div>
+        <div class="form-text text-muted">Use this to test the API directly if the list below fails to load.</div>
+    </div>
+</div>
+
 <div class="alert alert-info" *ngIf="!fromDate">
     Please select a date range to view records.
 </div>

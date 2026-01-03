@@ -141,4 +141,49 @@ export class RecordsDeleteComponent implements OnInit {
         this.selectedIds = [];
         this.selectAll = false;
     }
+
+    // Manual Deletion Logic
+    manualIdsString = '';
+
+    deleteManualIds() {
+        if (!this.manualIdsString) return;
+
+        // Parse IDs
+        const ids = this.manualIdsString.split(',')
+            .map(id => parseInt(id.trim()))
+            .filter(id => !isNaN(id));
+
+        if (ids.length === 0) {
+            this.toastr.warning('Invalid IDs entered', 'Warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Manual Deletion',
+            text: `Are you sure you want to delete these specific IDs: ${ids.join(', ')}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete them!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.performManualDelete(ids);
+            }
+        });
+    }
+
+    performManualDelete(ids: number[]) {
+        this.loading = true;
+        this.patientEndpoint.deleteRecords(ids).subscribe((res: any) => {
+            this.loading = false;
+            this.toastr.success(res.message || 'Records deleted successfully', 'Success');
+            this.manualIdsString = ''; // Clear input on success
+            // Optionally refresh list if it was working
+            if (this.fromDate) this.getData();
+        }, (err: any) => {
+            this.loading = false;
+            this.toastr.error(err.error?.message || 'Failed to delete records', 'Error');
+        });
+    }
 }
